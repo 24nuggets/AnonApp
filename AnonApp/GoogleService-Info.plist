@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>327117081314-t4lih8ntfc6e7to4eu8rjpcmnej79p5l.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.327117081314-t4lih8ntfc6e7to4eu8rjpcmnej79p5l</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBi_fyuHhTMf0n9ou3pxi-fLuBkPnpKiYE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>327117081314</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>HundredMillion.AnonApp</string>
+	<key>PROJECT_ID</key>
+	<string>quippet-2213</string>
+	<key>STORAGE_BUCKET</key>
+	<string>quippet-2213.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:327117081314:ios:cc1a808bbee10d35c96cbb</string>
+	<key>DATABASE_URL</key>
+	<string>https://quippet-2213.firebaseio.com</string>
+	<key>ADMOB_APP_ID</key>
+	<string>ca-app-pub-7547071361293817~3495634837</string>
+</dict>
+</plist>
