@@ -12,12 +12,12 @@ import Firebase
 class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
     
     var ref:DatabaseReference?
+    var db:Firestore?
     var myChannel:Channel?
     private var feedVC:ViewControllerFeed?
     var uid:String?
-    
-   
-    
+    private var childUpdates:[String:Any]=[:]
+ 
     @IBOutlet weak var textView: UITextView!
     
  
@@ -48,8 +48,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
         //when user presses send
         if (text == "\n" && textView.text != "Whats Happening") {
             saveQuip()
-            textView.resignFirstResponder()
-            navigationController?.popViewController(animated: true)
+            
         }
         
         // Combine the textView text and the replacement text to
@@ -101,35 +100,194 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
     
     func saveQuip(){
         guard let key = ref?.child("posts").childByAutoId().key else { return }
-        print(ServerValue.timestamp())
-        let post1 = ["d":ServerValue.timestamp(),
-                    "r": "0",
-                    "s": "0",
-                    "t": textView.text     ] as [String : Any]
-        let post2 = ["d":ServerValue.timestamp(),
-                     "r": "0",
-                     "s": "0",
-                     "t": textView.text     ] as [String : Any]
-        if myChannel!.parent != "" {
-            let post3 = ["d":ServerValue.timestamp(),
-                         "r": "0",
-                         "s": "0",
-                         "t": textView.text     ] as [String:Any]
-                let childUpdates = ["/A/\(myChannel!.key ?? "Other")/Q/\(key)":post1,
-                "/M/\(uid ?? "defaultUser")/q/\(key)":post2,
-                "/A/\(myChannel!.parentKey ?? "Other")/Q/\(key)":post3  ] as [String : Any]
-            ref?.updateChildValues(childUpdates)
+              
+       var post2:[String:Any]=[:]
+         var post3:[String:Any]=[:]
+         var post4:[String:Any]=[:]
+          
+       
+        
+        let post1 = ["s": 0,
+                          "r":0] as [String : Any]
+        
+        post3 = ["a": uid ?? "Other",
+                    "t": textView.text,
+                    "d": FieldValue.serverTimestamp()]
+        
+        post4 = ["c": myChannel?.channelName ?? "Other",
+                                    "t": textView.text,
+                                    "d": FieldValue.serverTimestamp()]
+       
+        if myChannel!.parent != nil {
+            
+             post2 = [   "t": textView.text,
+                         "k": myChannel?.key ?? "Other",
+                         "c": myChannel?.channelName ?? "Other",
+                         "pk": myChannel!.parentKey!,
+                         "p": myChannel?.parent ?? "Other",
+                          "a": uid ?? "Other",
+                          "d": FieldValue.serverTimestamp()]
+            
+        
+                childUpdates = ["/A/\(myChannel!.key ?? "Other")/Q/\(key)":post1,
+                "/M/\(uid ?? "defaultUser")/q/\(key)":post1,
+                "/A/\(myChannel!.parentKey ?? "Other")/Q/\(key)":post1  ] as [String : Any]
+            
         }
         else{
-            let childUpdates = ["/A/\(myChannel!.key ?? "Other")/Q/\(key)":post1,
-                                "/M/\(uid ?? "defaultUser")/q/\(key)":post2] as [String : Any]
+             post2 = [        "t": textView.text,
+                              "c": myChannel?.channelName ?? "Other",
+                              "k": myChannel?.key ?? "Other",
+                              "a": uid ?? "Other",
+                              "d": FieldValue.serverTimestamp()]
             
-            ref?.updateChildValues(childUpdates)
+       
+          
+            childUpdates = ["/A/\(myChannel!.key ?? "Other")/Q/\(key)":post1,
+                                "/M/\(uid ?? "defaultUser")/q/\(key)":post1] as [String : Any]
+            
+         
         }
         
+        queryRecentChannelQuips(data: post3, key: key,post4: post4, post2: post2)
+        
+       
+        
+          
         
         
+    }
+    func queryRecentChannelQuips(data:[String:Any], key:String, post4:[String:Any], post2:[String:Any]){
+         let mydata = data
+        let recentQuipsRef = self.db?.collection("Channels/\(self.myChannel?.key ?? "Other")/RecentQuips")
+                  
+        recentQuipsRef?.order(by: "t", descending: true).limit(to: 2).getDocuments(){ (querySnapshot, err) in
+                       if err != nil {
+                           return
+                       }
+                       
+            self.db?.runTransaction({ (transaction, errorPointer) -> Any? in
+                        let sfDocument: DocumentSnapshot
+                  do {
+                       try sfDocument = transaction.getDocument((querySnapshot?.documents[0].reference)!)
+                   } catch let fetchError as NSError {
+                       errorPointer?.pointee = fetchError
+                       return nil
+                   }
+                            
+                        
+                               if querySnapshot?.isEmpty ?? true ||
+                                   querySnapshot?.documents[1].data()["n"] as! Double >= 4{
+                               
+                                   self.createNewDocForRecentChannel(data: data, key: key, transaction: transaction)
+                           
+                                
+                                    let mydata2=["n":FieldValue.increment(Int64(1))]
+                                    
+                                transaction.updateData(mydata2, forDocument: sfDocument.reference)
+                                transaction.updateData(["quips.\(key)" : mydata], forDocument: sfDocument.reference)
+                                    
+                                    self.addQuipToFirebase()
+                               }
+                               else{
+                                   let mydata2=["n":FieldValue.increment(Int64(1))]
+                                  
+                                   transaction.updateData(mydata2, forDocument: (querySnapshot?.documents[1].reference)!)
+                                   transaction.updateData(["quips.\(key)" : mydata], forDocument: (querySnapshot?.documents[1].reference)!)
+                                    self.addQuipToFirebase()
+                           }
+                       
+                   
+            return nil
+        }){ (object, error) in
+            if let error = error {
+                print("Transaction failed: \(error)")
+            } else {
+                print("Transaction successfully committed!")
+                self.textView.resignFirstResponder()
+                self.navigationController?.popViewController(animated: true)
+                self.runTransactionForRecentUser(data: post4, key: key)
+                self.addQuipDocToFirestore(data: post2, key: key)
+            }
+        }
+        }
         
+    }
+   
+    
+    
+    func createNewDocForRecentChannel(data:[String:Any], key:String, transaction:Transaction){
+        
+        var mydata2:[String:Any] = [:]
+        mydata2 = ["n": 0,
+                   "t": FieldValue.serverTimestamp()]
+        
+        
+        guard let recentQuipRef = self.db?.collection("Channels/\(self.myChannel?.key ?? "Other")/RecentQuips").document() else { return  }
+       
+        transaction.setData(mydata2, forDocument: recentQuipRef)
+        
+       
+                       
+   
+        
+    }
+    
+    func runTransactionForRecentUser(data:[String:Any], key: String){
+         let mydata = data
+        
+             let recentQuipsRef = self.db?.collection("Users/\(uid ?? "Other")/RecentQuips")
+                 
+                 recentQuipsRef?.order(by: "t", descending: true).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+                     if let err = err {
+                                print("Error getting documents: \(err)")
+                     }else{
+                       
+                         if querySnapshot?.isEmpty ?? true ||
+                             querySnapshot?.documents[0].data()["n"] as! Double >= 20{
+                             self.createNewDocForRecentUser(data: data, key: key)
+                     
+                         }
+                         else{
+                             let mydata2=["n":FieldValue.increment(Int64(1))]
+                             let batch = self.db?.batch()
+                             batch?.updateData(mydata2, forDocument: (querySnapshot?.documents[0].reference)!)
+                             batch?.updateData(["quips.\(key)" : mydata], forDocument: (querySnapshot?.documents[0].reference)!)
+                             batch?.commit()
+                             
+                            }
+                        
+                    }
+       
+        }
+    }
+    func createNewDocForRecentUser(data:[String:Any], key:String){
+           
+           var mydata2:[String:Any] = [:]
+           mydata2 = ["n": 1,
+                      "t": FieldValue.serverTimestamp()]
+           let batch = db?.batch()
+           
+           guard let recentQuipRef = self.db?.collection("Users/\(uid ?? "Other")/RecentQuips").document() else { return  }
+           batch?.setData(["quips" : [key:data]], forDocument: recentQuipRef, merge: true)
+           batch?.updateData(mydata2, forDocument: recentQuipRef)
+           batch?.commit()
+       }
+    
+    func addQuipDocToFirestore(data:[String:Any],key:String){
+        let batch = db?.batch()
+        guard let newQuipRef=db?.collection("Quips").document(key) else { return  }
+        guard let newRepliesRef = db?.collection("Quips/\(key)/Replies").document() else { return  }
+        batch?.setData(data, forDocument: newQuipRef)
+        batch?.setData(["exists":true], forDocument: newRepliesRef)
+        batch?.commit()
+        
+        
+    }
+    
+    func addQuipToFirebase(){
+         ref?.updateChildValues(childUpdates)
+       
     }
     
   

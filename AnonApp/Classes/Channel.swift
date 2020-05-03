@@ -18,7 +18,7 @@ class Channel{
     var parentKey:String?
     
     
-    init(name:String, start:String, akey:String, aparent:String, aparentkey:String){
+    init(name:String, start:String?, akey:String, aparent:String?, aparentkey:String?){
         channelName = name
         startDate = start
         key=akey

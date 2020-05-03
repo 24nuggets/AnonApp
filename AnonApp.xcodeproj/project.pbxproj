@@ -12,6 +12,10 @@
 		97791C6D953EF16D73091FAD /* Pods_AnonApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9FDC6946DC51196655AA647 /* Pods_AnonApp.framework */; };
 		C73AA0C92453ACEF000C27B9 /* ViewControllerCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0C82453ACEF000C27B9 /* ViewControllerCategories.swift */; };
 		C73AA0CB2453BC66000C27B9 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CA2453BC66000C27B9 /* Category.swift */; };
+		C73AA0CD2454B451000C27B9 /* ViewControllerUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CC2454B451000C27B9 /* ViewControllerUser.swift */; };
+		C73AA0CF2454CB43000C27B9 /* ViewControllerQuip.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CE2454CB43000C27B9 /* ViewControllerQuip.swift */; };
+		C73AA0D12454FF87000C27B9 /* ViewControllerWriteReply.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0D02454FF87000C27B9 /* ViewControllerWriteReply.swift */; };
+		C73AA0D324551E9A000C27B9 /* Reply.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0D224551E9A000C27B9 /* Reply.swift */; };
 		C7726752243ABE4F000FC9C7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7726751243ABE4F000FC9C7 /* AppDelegate.swift */; };
 		C7726754243ABE4F000FC9C7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7726753243ABE4F000FC9C7 /* ViewController.swift */; };
 		C7726757243ABE4F000FC9C7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7726755243ABE4F000FC9C7 /* Main.storyboard */; };
@@ -58,6 +62,10 @@
 		C115D083437D9C0FB8D8DF2D /* Pods-AnonAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnonAppTests.debug.xcconfig"; path = "Target Support Files/Pods-AnonAppTests/Pods-AnonAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C73AA0C82453ACEF000C27B9 /* ViewControllerCategories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerCategories.swift; sourceTree = "<group>"; };
 		C73AA0CA2453BC66000C27B9 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		C73AA0CC2454B451000C27B9 /* ViewControllerUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerUser.swift; sourceTree = "<group>"; };
+		C73AA0CE2454CB43000C27B9 /* ViewControllerQuip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerQuip.swift; sourceTree = "<group>"; };
+		C73AA0D02454FF87000C27B9 /* ViewControllerWriteReply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerWriteReply.swift; sourceTree = "<group>"; };
+		C73AA0D224551E9A000C27B9 /* Reply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reply.swift; sourceTree = "<group>"; };
 		C772674E243ABE4F000FC9C7 /* AnonApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AnonApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7726751243ABE4F000FC9C7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C7726753243ABE4F000FC9C7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -160,7 +168,6 @@
 				C7726758243ABE52000FC9C7 /* Assets.xcassets */,
 				C772675A243ABE52000FC9C7 /* LaunchScreen.storyboard */,
 				C772675D243ABE52000FC9C7 /* Info.plist */,
-				C7EC25B32442A98B00827719 /* UpcomingChannelCells.swift */,
 				C7EC25B72445E95200827719 /* GoogleService-Info.plist */,
 			);
 			path = AnonApp;
@@ -192,6 +199,9 @@
 				C7E7B1E1244FBA2300D7847C /* ViewControllerWriteQuip.swift */,
 				C7E7B1E32451205700D7847C /* ViewControllerFavorites.swift */,
 				C73AA0C82453ACEF000C27B9 /* ViewControllerCategories.swift */,
+				C73AA0CC2454B451000C27B9 /* ViewControllerUser.swift */,
+				C73AA0CE2454CB43000C27B9 /* ViewControllerQuip.swift */,
+				C73AA0D02454FF87000C27B9 /* ViewControllerWriteReply.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -202,6 +212,7 @@
 				C7E7B1DB244CA2E500D7847C /* Quip.swift */,
 				C7E7B1DD244CA3AB00D7847C /* Channel.swift */,
 				C73AA0CA2453BC66000C27B9 /* Category.swift */,
+				C73AA0D224551E9A000C27B9 /* Reply.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -211,6 +222,7 @@
 			children = (
 				C7E7B1DF244EE78A00D7847C /* Utilities.swift */,
 				C7E7B1E624512C6F00D7847C /* BaseTabBarController.swift */,
+				C7EC25B32442A98B00827719 /* UpcomingChannelCells.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -520,6 +532,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C7E7B1DE244CA3AB00D7847C /* Channel.swift in Sources */,
+				C73AA0D324551E9A000C27B9 /* Reply.swift in Sources */,
 				C7E7B1DA244A588900D7847C /* ViewControllerFeed.swift in Sources */,
 				C7CC6D5C2442056F0038FA7A /* ViewControllerDiscover.swift in Sources */,
 				C7E7B1DC244CA2E500D7847C /* Quip.swift in Sources */,
@@ -527,11 +540,14 @@
 				C7EC25B42442A98B00827719 /* UpcomingChannelCells.swift in Sources */,
 				C7E7B1E724512C6F00D7847C /* BaseTabBarController.swift in Sources */,
 				C7E7B1E2244FBA2300D7847C /* ViewControllerWriteQuip.swift in Sources */,
+				C73AA0CF2454CB43000C27B9 /* ViewControllerQuip.swift in Sources */,
 				C7726754243ABE4F000FC9C7 /* ViewController.swift in Sources */,
 				C73AA0CB2453BC66000C27B9 /* Category.swift in Sources */,
 				C7E7B1E0244EE78A00D7847C /* Utilities.swift in Sources */,
 				C73AA0C92453ACEF000C27B9 /* ViewControllerCategories.swift in Sources */,
 				C7726752243ABE4F000FC9C7 /* AppDelegate.swift in Sources */,
+				C73AA0CD2454B451000C27B9 /* ViewControllerUser.swift in Sources */,
+				C73AA0D12454FF87000C27B9 /* ViewControllerWriteReply.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

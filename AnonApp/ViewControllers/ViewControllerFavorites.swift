@@ -126,8 +126,8 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
                                                   let aName = myMap2["name"] as! String
                                                   let aParent = myMap2["parent"] as? String
                                                   let aParentKey = myMap2["parentKey"] as? String
-                                                   let aStart = myMap2["start"] as! String
-                                                  let aChannel = Channel(name: aName, start: aStart, akey: aChannel.key, aparent: aParent ?? "", aparentkey: aParentKey ?? "")
+                                                   let aStart = myMap2["start"] as? String
+                                                  let aChannel = Channel(name: aName, start: aStart, akey: aChannel.key, aparent: aParent, aparentkey: aParentKey)
                                                   self.upcomingChannels.append(aChannel)
                                               })
                        

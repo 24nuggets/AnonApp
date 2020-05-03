@@ -13,30 +13,29 @@ import Firebase
 
 
 func timeSincePost(timePosted:Double, currentTime:Double)->String{
-    var _:String
     let timeSincePost = (currentTime - timePosted)/1000
     let years = floor(timeSincePost/31536000)
     if years > 0 {
-        return (String(years) + " years ago")
+        return (String(format: "%.0f",years) + " years ago")
     }
     let months = floor((timeSincePost)/2592000)
     if months > 0 {
-        return (String(months) + " months ago")
+        return (String(format: "%.0f",months) + " months ago")
     }
     let days = floor((timeSincePost)/86400)
     if days > 0 {
-        return (String(days) + " days ago")
+        return (String(format: "%.0f",days) + " days ago")
     }
     let hrs = floor((timeSincePost)/3600)
     if hrs > 0 {
-        return (String(hrs) + " hrs ago")
+        return (String(format: "%.0f",hrs) + " hrs ago")
     }
     let minutes = floor((timeSincePost)/60)
     if minutes > 0 {
-        return (String(minutes) + " minutes ago")
+        return (String(format: "%.0f",minutes) + " minutes ago")
     }
     let seconds = floor(timeSincePost)
-    return (String(seconds) + " seconds ago")
+    return (String(format: "%.0f",seconds) + " seconds ago")
     
    /* var months = floor((timeSincePost-(years*31536000))/2592000)
        var days = floor((timeSincePost  - (months*2592000))/86400)

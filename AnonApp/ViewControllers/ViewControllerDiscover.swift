@@ -38,7 +38,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
     var ref:DatabaseReference?
     var db:Firestore?
     var myCategory:Category?
-    
+    private var opQueue:OperationQueue=OperationQueue()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -121,6 +121,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
      // MARK: - Database Functions
     
     func updateActiveUpcoming(){
+        
         self.activeChannels=[]
         self.upcomingChannels=[]
         let docRef = db?.collection("Categories/AllCategories/Channels").document("\(myCategory?.activeUpcomingKey ?? "Other")")
@@ -135,7 +136,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
                             let aName = myMap2["name"] as! String
                             let aParent = myMap2["parent"] as? String
                             let aParentKey = myMap2["parentKey"] as? String
-                            let aChannel = Channel(name: aName, start: "", akey: aChannel.key, aparent: aParent ?? "", aparentkey: aParentKey ?? "")
+                            let aChannel = Channel(name: aName, start: "", akey: aChannel.key, aparent: aParent, aparentkey: aParentKey)
                             self.activeChannels.append(aChannel)
                         })
                         
@@ -146,8 +147,8 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
                                                    let aName = myMap2["name"] as! String
                                                    let aParent = myMap2["parent"] as? String
                                                    let aParentKey = myMap2["parentKey"] as? String
-                                                    let aStart = myMap2["start"] as! String
-                                                   let aChannel = Channel(name: aName, start: aStart, akey: aChannel.key, aparent: aParent ?? "", aparentkey: aParentKey ?? "")
+                                                    let aStart = myMap2["start"] as? String
+                                                   let aChannel = Channel(name: aName, start: aStart, akey: aChannel.key, aparent: aParent, aparentkey: aParentKey)
                                                    self.upcomingChannels.append(aChannel)
                                                })
                         
@@ -157,6 +158,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
                 print("Document does not exist")
             }
             self.channelTable.reloadData()
+           
         }
         
     }
@@ -209,7 +211,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
 
     }
     
-    
+ 
     
   
     
@@ -280,6 +282,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
             feedVC?.myChannel = passedChannel
             feedVC?.ref=self.ref
             feedVC?.uid=self.uid
+            feedVC?.db=self.db
             
         }
        
