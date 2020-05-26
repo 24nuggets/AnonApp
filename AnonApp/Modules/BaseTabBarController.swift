@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class BaseTabBarController: UITabBarController {
+class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
     
     private var DatabaseUrl:String="https://quippet-2213.firebaseio.com/"
     var userID:String?
@@ -20,7 +20,7 @@ class BaseTabBarController: UITabBarController {
 
         // Do any additional setup after loading the view.
        
-       
+        self.delegate = self
         
        
        
@@ -37,6 +37,10 @@ class BaseTabBarController: UITabBarController {
     func refDatabaseFirestore()->Firestore{
         let db = Firestore.firestore()
         return db
+    }
+    func refStorage()->StorageReference{
+        let storageRef = Storage.storage().reference()
+        return storageRef
     }
     
     func authorizeUser(){
@@ -55,15 +59,18 @@ class BaseTabBarController: UITabBarController {
          return self.userID ?? "defaultUser"
     }
     
-
-    /*
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+      
+    }
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
+      
     }
-    */
+   
 
 }

@@ -8,8 +8,12 @@
 
 import UIKit
 import Firebase
+import GiphyUISDK
+import GiphyCoreSDK
 
-class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
+
+
+class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     
     var ref:DatabaseReference?
     var db:Firestore?
@@ -17,18 +21,43 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
     private var feedVC:ViewControllerFeed?
     var uid:String?
     private var childUpdates:[String:Any]=[:]
- 
+    var storageRef:StorageReference?
+    var mediaView:GPHMediaView?
+    var giphyBottomSpaceConstraint:NSLayoutConstraint?
+    var giphyTrailingSpace:NSLayoutConstraint?
+    
     @IBOutlet weak var textView: UITextView!
     
- 
+  
+    @IBOutlet weak var Quipit: UINavigationItem!
+    
+    
+    @IBOutlet weak var toolBar: UIToolbar!
+    
+    @IBOutlet weak var imageView: UIImageView!
+    
+    @IBOutlet weak var imageBtn: UIBarButtonItem!
+    
+    @IBOutlet weak var textViewHeight: NSLayoutConstraint!
+    
+    @IBOutlet weak var imageViewSpaceToBottom: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         textView.delegate = self
         textView.textColor = UIColor.lightGray
+        textView.translatesAutoresizingMaskIntoConstraints = true
+        textView.isScrollEnabled = false
         
+        Quipit.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.cancelClicked))
+        Quipit.leftBarButtonItem?.tintColor = .black
         
+        Quipit.rightBarButtonItem = UIBarButtonItem(title: "Post", style: .plain, target: self, action: #selector(self.postClicked))
+        Quipit.rightBarButtonItem?.tintColor = .black
+        
+        imageView.layer.cornerRadius = 8.0
+        hideKeyboardWhenTappedAround()
         // Do any additional setup after loading the view.
     }
     
@@ -36,69 +65,118 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        //have text view be selected and keyboard appear when view appears
         textView.becomeFirstResponder()
         textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
     }
     
     
+    // -MARK: ActionFunctions
+    
+    @objc func postClicked(){
+        saveQuip()
+    }
+  
     
     
-    
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        //when user presses send
-        if (text == "\n" && textView.text != "Whats Happening") {
-            saveQuip()
-            
-        }
+    @objc func cancelClicked(){
+        self.textView.resignFirstResponder()
+        self.dismiss(animated: true, completion: nil)
         
-        // Combine the textView text and the replacement text to
-        // create the updated text string
-        let currentText:String = textView.text
-        let updatedText = (currentText as NSString).replacingCharacters(in: range, with: text)
-
-        // If updated text view will be empty, add the placeholder
-        // and set the cursor to the beginning of the text view
-        if updatedText.isEmpty {
-
-            textView.text = "Whats Happening"
-            textView.textColor = UIColor.lightGray
-
-            textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
-        }
-
-        // Else if the text view's placeholder is showing and the
-        // length of the replacement string is greater than 0, set
-        // the text color to black then set its text to the
-        // replacement string
-         else if textView.textColor == UIColor.lightGray && !text.isEmpty {
-            textView.textColor = UIColor.black
-            textView.text = text
-            
-        }
-
-        // For every other case, the text should change with the usual
-        // behavior...
-        else {
-            //max 140 characters
-            let newText = (textView.text as NSString).replacingCharacters(in: range, with: text)
-            let numberOfChars = newText.count
-            return numberOfChars < 140
-        }
-
-        // ...otherwise return false since the updates have already
-        // been made
-        return false
+    }
+  
+    
+    @IBAction func imageClicked(_ sender: Any) {
+        showImagePickerController()
+        
     }
     
-    func textViewDidChangeSelection(_ textView: UITextView) {
-        if self.view.window != nil {
-            if textView.textColor == UIColor.lightGray {
-                textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
-            }
+    
+    @IBAction func gifClicked(_ sender: Any) {
+        let g = GiphyViewController()
+        g.theme = .automatic
+        g.layout = .waterfall
+        g.mediaTypeConfig = [.gifs, .recents]
+        g.showConfirmationScreen = true
+        g.rating = .ratedPG13
+        g.delegate = self
+        present(g, animated: true, completion: nil)
+    }
+    
+     // -MARK: TextViewFunctions
+    
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        textView.inputAccessoryView = toolBar
+        return true
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = "Type something"
+            textView.textColor = .gray
+            self.adjustTextViewHeight()
+        } else {
+            textView.textColor = .black
+            self.adjustTextViewHeight()
         }
     }
+    func adjustTextViewHeight() {
+       let fixedWidth = textView.frame.size.width
+        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        textView.frame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
+       
+    }
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        
+        if text.isEmpty {
+            let updatedText = (textView.text as NSString).replacingCharacters(in: range, with: text)
+            if updatedText.isEmpty {
+                textView.text = "Type something"
+                textView.textColor = .gray
+                textView.selectedRange = NSRange(location: 0, length: 0)
+            }
+        } else {
+            if textView.text == "Type something" {
+                textView.text = ""
+            }
+            
+            
+            textView.textColor = .black
+            
+            return textView.text.count < 141
+            
+        }
+        return true
+    }
+    
+     // -MARK: SaveQuip
     
     func saveQuip(){
+        var imageRef:String?
+        var hasImage:Bool=false
+        var gifID:String?
+        var hasGif:Bool=false
+        if imageView.image != nil  && imageView.isHidden==false{
+            if true { //send to google sensor api
+                hasImage=true
+                let randomID = UUID.init().uuidString
+                imageRef = "\(uid ?? "Other")/\(randomID)"
+                let uploadref = storageRef?.child(imageRef!)
+                guard let imageData = imageView.image?.jpegData(compressionQuality: 0.75) else {print("error getting image")
+                    return
+                }
+                uploadref?.putData(imageData)
+                
+            }
+            else{
+                return
+            }
+        }
+        else if mediaView?.media != nil && mediaView?.isHidden == false{
+            gifID = mediaView?.media?.id
+            hasGif = true
+        }
         guard let key = ref?.child("posts").childByAutoId().key else { return }
               
        var post2:[String:Any]=[:]
@@ -110,43 +188,69 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
         let post1 = ["s": 0,
                           "r":0] as [String : Any]
         
-        post3 = ["a": uid ?? "Other",
-                    "t": textView.text,
+       
+        if let auid = uid{
+            
+            post3 = ["a": auid,
+                    "t": textView.text ?? "",
                     "d": FieldValue.serverTimestamp()]
         
-        post4 = ["c": myChannel?.channelName ?? "Other",
-                                    "t": textView.text,
-                                    "d": FieldValue.serverTimestamp()]
+        if let myChannelKey = myChannel?.key{
+            if let myChannelName = myChannel?.channelName{
+                
        
-        if myChannel!.parent != nil {
-            
-             post2 = [   "t": textView.text,
-                         "k": myChannel?.key ?? "Other",
-                         "c": myChannel?.channelName ?? "Other",
-                         "pk": myChannel!.parentKey!,
-                         "p": myChannel?.parent ?? "Other",
-                          "a": uid ?? "Other",
-                          "d": FieldValue.serverTimestamp()]
-            
-        
-                childUpdates = ["/A/\(myChannel!.key ?? "Other")/Q/\(key)":post1,
-                "/M/\(uid ?? "defaultUser")/q/\(key)":post1,
-                "/A/\(myChannel!.parentKey ?? "Other")/Q/\(key)":post1  ] as [String : Any]
-            
-        }
-        else{
-             post2 = [        "t": textView.text,
-                              "c": myChannel?.channelName ?? "Other",
-                              "k": myChannel?.key ?? "Other",
-                              "a": uid ?? "Other",
+            if let myParentChannelKey = myChannel?.parentKey {
+                if let myParentChannelName = myChannel?.parent{
+                post2 = [   "t": textView.text ?? "",
+                             "k": myChannelKey,
+                             "c": myChannelName,
+                             "pk": myParentChannelKey,
+                             "p": myParentChannelName,
+                              "a": auid,
                               "d": FieldValue.serverTimestamp()]
+                
+                post4 = ["c": myChannel?.channelName ?? "Other",
+                                "t": textView.text ?? "",
+                               "d": FieldValue.serverTimestamp(),
+                               "k": myChannelKey,
+                               "pk":myParentChannelKey]
+                
             
-       
-          
-            childUpdates = ["/A/\(myChannel!.key ?? "Other")/Q/\(key)":post1,
-                                "/M/\(uid ?? "defaultUser")/q/\(key)":post1] as [String : Any]
-            
-         
+                    childUpdates = ["/A/\(myChannelKey)/Q/\(key)":post1,
+                    "/M/\(auid)/q/\(key)":post1,
+                    "/A/\(myParentChannelKey)/Q/\(key)":post1  ] as [String : Any]
+                }
+            }
+            else{
+                post2 = [        "t": textView.text ?? "",
+                                  "c": myChannelName,
+                                  "k": myChannelKey,
+                                  "a": auid,
+                                  "d": FieldValue.serverTimestamp()]
+                
+                    post4 = ["c": myChannelName,
+                     "t": textView.text ?? "",
+                    "d": FieldValue.serverTimestamp(),
+                    "k": myChannelKey]
+              
+                childUpdates = ["/A/\(myChannelKey)/Q/\(key)":post1,
+                                    "/M/\(auid)/q/\(key)":post1] as [String : Any]
+                
+             
+                }
+                
+            }
+        }
+        }
+        if hasImage {
+            post3["i"]=imageRef
+            post4["i"]=imageRef
+            post2["i"]=imageRef
+        }
+        else if hasGif{
+            post3["g"]=gifID
+            post4["g"]=gifID
+            post2["g"]=gifID
         }
         
         queryRecentChannelQuips(data: post3, key: key,post4: post4, post2: post2)
@@ -157,9 +261,12 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
         
         
     }
+    
+    //add quips to recentChannelDoc
     func queryRecentChannelQuips(data:[String:Any], key:String, post4:[String:Any], post2:[String:Any]){
          let mydata = data
-        let recentQuipsRef = self.db?.collection("Channels/\(self.myChannel?.key ?? "Other")/RecentQuips")
+        if let myChannelKey = self.myChannel?.key{
+        let recentQuipsRef = self.db?.collection("Channels/\(myChannelKey)/RecentQuips")
                   
         recentQuipsRef?.order(by: "t", descending: true).limit(to: 2).getDocuments(){ (querySnapshot, err) in
                        if err != nil {
@@ -177,9 +284,9 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
                             
                         
                                if querySnapshot?.isEmpty ?? true ||
-                                   querySnapshot?.documents[1].data()["n"] as! Double >= 4{
+                                   querySnapshot?.documents[1].data()["n"] as! Double >= 20{
                                
-                                   self.createNewDocForRecentChannel(data: data, key: key, transaction: transaction)
+                                   self.createNewDocForRecentChannel(data: data, key: key, transaction: transaction, channelKey: myChannelKey)
                            
                                 
                                     let mydata2=["n":FieldValue.increment(Int64(1))]
@@ -203,27 +310,78 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
             if let error = error {
                 print("Transaction failed: \(error)")
             } else {
-                print("Transaction successfully committed!")
+               
                 self.textView.resignFirstResponder()
-                self.navigationController?.popViewController(animated: true)
+             self.dismiss(animated: true, completion: nil)
                 self.runTransactionForRecentUser(data: post4, key: key)
                 self.addQuipDocToFirestore(data: post2, key: key)
             }
         }
         }
-        
+        }
+        if let myParentChannelKey = self.myChannel?.parentKey{
+              let recentQuipsRef = self.db?.collection("Channels/\(myParentChannelKey)/RecentQuips")
+                        
+              recentQuipsRef?.order(by: "t", descending: true).limit(to: 2).getDocuments(){ (querySnapshot, err) in
+                             if err != nil {
+                                 return
+                             }
+                             
+                  self.db?.runTransaction({ (transaction, errorPointer) -> Any? in
+                              let sfDocument: DocumentSnapshot
+                        do {
+                             try sfDocument = transaction.getDocument((querySnapshot?.documents[0].reference)!)
+                         } catch let fetchError as NSError {
+                             errorPointer?.pointee = fetchError
+                             return nil
+                         }
+                                  
+                              
+                                     if querySnapshot?.isEmpty ?? true ||
+                                         querySnapshot?.documents[1].data()["n"] as! Double >= 20{
+                                     
+                                         self.createNewDocForRecentChannel(data: data, key: key, transaction: transaction, channelKey: myParentChannelKey)
+                                 
+                                      
+                                          let mydata2=["n":FieldValue.increment(Int64(1))]
+                                          
+                                      transaction.updateData(mydata2, forDocument: sfDocument.reference)
+                                      transaction.updateData(["quips.\(key)" : mydata], forDocument: sfDocument.reference)
+                                          
+                                         
+                                     }
+                                     else{
+                                         let mydata2=["n":FieldValue.increment(Int64(1))]
+                                        
+                                         transaction.updateData(mydata2, forDocument: (querySnapshot?.documents[1].reference)!)
+                                         transaction.updateData(["quips.\(key)" : mydata], forDocument: (querySnapshot?.documents[1].reference)!)
+                                         
+                                 }
+                             
+                         
+                  return nil
+              }){ (object, error) in
+                  if let error = error {
+                      print("Transaction failed: \(error)")
+                  } else {
+                     
+                    
+                  }
+              }
+              }
+              }
     }
    
     
     
-    func createNewDocForRecentChannel(data:[String:Any], key:String, transaction:Transaction){
+    func createNewDocForRecentChannel(data:[String:Any], key:String, transaction:Transaction, channelKey:String){
         
         var mydata2:[String:Any] = [:]
         mydata2 = ["n": 0,
                    "t": FieldValue.serverTimestamp()]
         
         
-        guard let recentQuipRef = self.db?.collection("Channels/\(self.myChannel?.key ?? "Other")/RecentQuips").document() else { return  }
+        guard let recentQuipRef = self.db?.collection("Channels/\(channelKey)/RecentQuips").document() else { return  }
        
         transaction.setData(mydata2, forDocument: recentQuipRef)
         
@@ -235,8 +393,8 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
     
     func runTransactionForRecentUser(data:[String:Any], key: String){
          let mydata = data
-        
-             let recentQuipsRef = self.db?.collection("Users/\(uid ?? "Other")/RecentQuips")
+        if let auid = uid{
+             let recentQuipsRef = self.db?.collection("Users/\(auid)/RecentQuips")
                  
                  recentQuipsRef?.order(by: "t", descending: true).limit(to: 1).getDocuments(){ (querySnapshot, err) in
                      if let err = err {
@@ -260,6 +418,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
                     }
        
         }
+        }
     }
     func createNewDocForRecentUser(data:[String:Any], key:String){
            
@@ -267,19 +426,20 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
            mydata2 = ["n": 1,
                       "t": FieldValue.serverTimestamp()]
            let batch = db?.batch()
-           
-           guard let recentQuipRef = self.db?.collection("Users/\(uid ?? "Other")/RecentQuips").document() else { return  }
+        if let auid = uid{
+           guard let recentQuipRef = self.db?.collection("Users/\(auid)/RecentQuips").document() else { return  }
            batch?.setData(["quips" : [key:data]], forDocument: recentQuipRef, merge: true)
            batch?.updateData(mydata2, forDocument: recentQuipRef)
            batch?.commit()
+        }
        }
     
     func addQuipDocToFirestore(data:[String:Any],key:String){
         let batch = db?.batch()
         guard let newQuipRef=db?.collection("Quips").document(key) else { return  }
-        guard let newRepliesRef = db?.collection("Quips/\(key)/Replies").document() else { return  }
+        
         batch?.setData(data, forDocument: newQuipRef)
-        batch?.setData(["exists":true], forDocument: newRepliesRef)
+       
         batch?.commit()
         
         
@@ -288,6 +448,30 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
     func addQuipToFirebase(){
          ref?.updateChildValues(childUpdates)
        
+    }
+    
+    func setUpGiphyView(){
+        mediaView?.removeFromSuperview()
+        mediaView = GPHMediaView()
+        view.addSubview(mediaView!)
+        mediaView?.translatesAutoresizingMaskIntoConstraints = false
+        let leadingSpace = NSLayoutConstraint(item: mediaView!, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1, constant: 15)
+      giphyBottomSpaceConstraint = NSLayoutConstraint(item: self.view!, attribute: .bottom, relatedBy: .equal, toItem: mediaView!, attribute: .bottom, multiplier: 1, constant: 40)
+        giphyTrailingSpace = NSLayoutConstraint(item: self.view!, attribute: .trailing, relatedBy: .equal, toItem: mediaView!, attribute: .trailing, multiplier: 1, constant: 40)
+        let topSpace = NSLayoutConstraint(item: mediaView!, attribute: .top, relatedBy: .equal, toItem: textView, attribute: .bottom, multiplier: 1, constant: 10)
+       resetGiphyView()
+        self.view.addConstraints([leadingSpace,topSpace, giphyTrailingSpace!, giphyBottomSpaceConstraint!])
+        
+        mediaView?.isHidden=true
+        mediaView?.contentMode = UIView.ContentMode.scaleAspectFit
+       
+        
+    }
+    
+    func resetGiphyView(){
+       
+               self.view.addConstraints([giphyTrailingSpace!,giphyBottomSpaceConstraint!])
+        
     }
     
   
@@ -303,3 +487,59 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate {
     */
 
 }
+extension ViewControllerWriteQuip: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+    func showImagePickerController(){
+        let imagePickerController = UIImagePickerController()
+           imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
+        imagePickerController.sourceType = .photoLibrary
+        present(imagePickerController,animated: true, completion: nil)
+    }
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        mediaView?.isHidden=true
+        imageView.isHidden=false
+        if let myImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
+            imageView.translatesAutoresizingMaskIntoConstraints=false
+             let newImage = resizeImage(image: myImage, targetSize: CGSize(width: imageView.frame.width, height: imageView.frame.width * 2 ))
+            if imageViewSpaceToBottom != nil {
+            imageViewSpaceToBottom.isActive = false
+            }
+            imageView.image = newImage
+        }
+        
+        dismiss(animated: true, completion: nil)
+
+    }
+  
+}
+
+extension ViewControllerWriteQuip: GiphyDelegate {
+   func didSelectMedia(giphyViewController: GiphyViewController, media: GPHMedia)   {
+   // let giphyID = media.id
+    setUpGiphyView()
+    mediaView?.isHidden = false
+    imageView.isHidden = true
+    
+    mediaView?.media = media
+    if giphyBottomSpaceConstraint != nil {
+        giphyBottomSpaceConstraint?.isActive = false
+    }
+    if giphyTrailingSpace != nil{
+        giphyTrailingSpace?.isActive = false
+    }
+    mediaView?.widthAnchor.constraint(equalTo: mediaView!.heightAnchor, multiplier: media.aspectRatio).isActive = true
+    
+    mediaView?.layer.cornerRadius = 8.0
+    mediaView?.clipsToBounds = true 
+    
+ //   mediaView?.frame.size = resizeGIF(image: media, targetSize: CGSize(width: (mediaView?.frame.width)!, height: (mediaView?.frame.width)! * 2))
+        
+        // your user tapped a GIF!
+        giphyViewController.dismiss(animated: true, completion: nil)
+   }
+   
+   func didDismiss(controller: GiphyViewController?) {
+        // your user dismissed the controller without selecting a GIF.
+   }
+}
+

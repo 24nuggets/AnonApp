@@ -12,15 +12,13 @@ import Foundation
 class Category{
     
     var categoryName:String?
-    var activeUpcomingKey:String?
-    var pastKey:String?
+    var priority:Int?
     
     
-    init(name:String, akeyUpcomingActive:String,  aKeyPast:String){
+    init(name:String, aPriority:Int?){
         categoryName = name
         
-        activeUpcomingKey=akeyUpcomingActive
-        pastKey=aKeyPast
+        priority = aPriority
         
     }
     

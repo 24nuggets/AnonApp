@@ -1,0 +1,240 @@
+//
+//  CustomTableCells.swift
+//  AnonApp
+//
+//  Created by Matthew Capriotti on 5/25/20.
+//  Copyright © 2020 Matthew Capriotti. All rights reserved.
+//
+
+import UIKit
+import GiphyUISDK
+import GiphyCoreSDK
+
+
+protocol MyCellDelegate: AnyObject {
+    func btnUpTapped(cell: QuipCells)
+    func btnDownTapped(cell: QuipCells)
+    func btnSharedTapped(cell: QuipCells)
+    
+}
+
+protocol MyCellDelegate2: AnyObject {
+    
+    func arrowTapped(cell:CategoryCells)
+}
+protocol MyCellDelegate3: AnyObject {
+    
+    func arrowTap(cell:ChannelCells)
+}
+
+class UpcomingChannelCells:UITableViewCell{
+   
+    @IBOutlet weak var channelName: UILabel!
+    
+    @IBOutlet weak var startDate: UILabel!
+    
+    
+}
+
+class ChannelCells: UITableViewCell {
+
+    @IBOutlet weak var channelName: UILabel!
+    weak var delegate: MyCellDelegate3?
+    
+    @IBAction func arrowTap(_ sender: Any) {
+        delegate?.arrowTap(cell: self)
+    }
+    
+
+}
+class CategoryCells:UITableViewCell{
+    @IBOutlet weak var categoryName: UILabel!
+    weak var delegate: MyCellDelegate2?
+    
+    @IBAction func arrowTapped(_ sender: Any) {
+        delegate?.arrowTapped(cell: self)
+        
+    }
+    
+}
+
+class QuipCells:UITableViewCell{
+    
+  
+    
+    @IBOutlet weak var quipText: UILabel!
+    @IBOutlet weak var upButton: UIButton!
+    @IBOutlet weak var score: UILabel!
+    @IBOutlet weak var downButton: UIButton!
+    @IBOutlet weak var timePosted: UILabel!
+    @IBOutlet weak var replyButton: UIButton!
+    @IBOutlet weak var shareButton: UIButton!
+    
+    @IBOutlet weak var categoryLabel: UILabel!
+    
+  
+    
+    weak var delegate: MyCellDelegate?
+    
+    @IBAction func btnUpTapped(_ sender: Any) {
+        
+        delegate?.btnUpTapped(cell: self)
+    }
+    
+    @IBAction func btnDownTapped(_ sender: Any) {
+        
+         delegate?.btnDownTapped(cell: self)
+    }
+    
+    @IBAction func btnSharedTapped(_ sender: Any) {
+        
+         delegate?.btnSharedTapped(cell: self)
+    }
+    
+    let myImageView : CustomImageView = {
+    let imgView = CustomImageView()
+   
+    return imgView
+    }()
+    
+    let myGifView : GPHMediaView = {
+     let gifView = GPHMediaView()
+    
+     return gifView
+     }()
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        myGifView.media = nil
+        myImageView.image = nil
+        myImageView.removeConstraints(myImageView.constraints)
+        myGifView.removeConstraints(myGifView.constraints)
+        myImageView.removeFromSuperview()
+        myGifView.removeFromSuperview()
+        upButton.isSelected = false
+        downButton.isSelected = false
+        upButton.tintColor = .lightGray
+        downButton.tintColor = .lightGray
+        myGifView.cancelLoad()
+        myImageView.cancelLoad()
+       
+    }
+    
+   
+    func upToDown(quipScore:Int, quip:Quip?)->Int{
+        
+                   
+                          self.upButton.isSelected = false
+                          self.downButton.isSelected = true
+                      
+                      self.upButton.tintColor = UIColor.lightGray
+                      self.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                     
+                      let originalScore = Int(self.score.text!)!
+                          let newScore = originalScore-2
+                          self.score.text = String(newScore)
+      
+        quip?.tempScore=newScore
+               
+       return newScore - quipScore
+           
+       }
+       
+    func noneToDown(quipScore:Int, quip:Quip?)->Int{
+        self.downButton.isSelected=true
+        self.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+            let originalScore = Int(self.score.text!)
+            let newScore = originalScore! - 1
+            self.score.text = String(newScore)
+        if let aquip = quip {
+                   aquip.tempScore=newScore
+               }
+         return  newScore - quipScore
+           
+       }
+       
+    func downToNone(quipScore:Int, quip:Quip?)->Int{
+                self.downButton.isSelected=false
+                     self.downButton.tintColor = UIColor.lightGray
+                         let originalScore = Int(self.score.text!)
+                         let newScore = originalScore! + 1
+                         self.score.text = String(newScore)
+        if let aquip = quip {
+                   aquip.tempScore=newScore
+               }
+        return newScore - quipScore
+           
+       }
+       
+    func downToUp(quipScore:Int, quip:Quip?)->Int{
+                    self.downButton.isSelected=false
+                           self.upButton.isSelected=true
+                      self.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                      self.downButton.tintColor = UIColor.lightGray
+                           let originalScore = Int(self.score.text!)
+                      let newScore = originalScore! + 2
+                           self.score.text = String(newScore)
+                     if let aquip = quip {
+                                aquip.tempScore=newScore
+                            }
+                       return newScore - quipScore
+           
+       }
+    func noneToUp(quipScore:Int, quip:Quip?)->Int{
+        self.upButton.isSelected=true
+        self.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+             let originalScore = Int(self.score.text!)
+        let newScore = originalScore! + 1
+        if let aquip = quip {
+            aquip.tempScore=newScore
+        }
+             self.score.text = String(newScore)
+         return newScore - quipScore
+           
+       }
+    func upToNone(quipScore:Int, quip:Quip?)->Int{
+        self.upButton.isSelected = false
+         self.upButton.tintColor = UIColor.lightGray
+              let originalScore = Int(self.score.text!)
+         let newScore = originalScore! - 1
+              self.score.text = String(newScore)
+        if let aquip = quip {
+                   aquip.tempScore=newScore
+               }
+          return newScore - quipScore
+           
+       }
+   
+    
+   
+    
+    func addGifViewToTableCell(){
+          
+          self.contentView.addSubview(self.myGifView)
+          self.myGifView.translatesAutoresizingMaskIntoConstraints = false
+                     
+          let bottomConstraint = NSLayoutConstraint(item: self.contentView, attribute: .bottom, relatedBy: .equal, toItem: self.myGifView, attribute: .bottom, multiplier: 1, constant: 40)
+          let leadingContraint = NSLayoutConstraint(item: self.myGifView, attribute: .leading, relatedBy: .equal, toItem: self.contentView, attribute: .leading, multiplier: 1, constant: 10)
+          let trailingConstraint = NSLayoutConstraint(item: self.contentView, attribute: .trailing, relatedBy: .equal, toItem: self.myGifView, attribute: .trailing, multiplier: 1, constant: 77)
+          let topConstraint = NSLayoutConstraint(item: self.myGifView, attribute: .top, relatedBy: .equal, toItem: self.quipText, attribute: .bottom, multiplier: 1, constant: 4)
+                      
+          self.contentView.addConstraints([bottomConstraint,leadingContraint,trailingConstraint, topConstraint])
+                      
+      }
+    func addImageViewToTableCell(){
+          
+          self.contentView.addSubview(self.myImageView)
+          self.myImageView.translatesAutoresizingMaskIntoConstraints = false
+                            
+          let bottomConstraint = NSLayoutConstraint(item: self.contentView, attribute: .bottom, relatedBy: .equal, toItem: self.myImageView, attribute: .bottom, multiplier: 1, constant: 40)
+          let leadingContraint = NSLayoutConstraint(item: self.myImageView, attribute: .leading, relatedBy: .equal, toItem: self.contentView, attribute: .leading, multiplier: 1, constant: 10)
+          let trailingConstraint = NSLayoutConstraint(item: self.contentView, attribute: .trailing, relatedBy: .equal, toItem: self.myImageView, attribute: .trailing, multiplier: 1, constant: 77)
+          let topConstraint = NSLayoutConstraint(item: self.myImageView, attribute: .top, relatedBy: .equal, toItem: self.quipText, attribute: .bottom, multiplier: 1, constant: 4)
+                             
+          self.contentView.addConstraints([bottomConstraint,leadingContraint,trailingConstraint, topConstraint])
+          
+      }
+    
+    
+    
+}

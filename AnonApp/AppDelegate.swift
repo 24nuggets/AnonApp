@@ -8,6 +8,8 @@
 
 import UIKit
 import Firebase
+import GiphyUISDK
+import GiphyCoreSDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,11 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
        Database.database().isPersistenceEnabled=false
-        
+        Giphy.configure(apiKey: "2OFJFhBB22BPrYcLHLs2JtaMA5xSrQ2Y")
         
         return true
     }
