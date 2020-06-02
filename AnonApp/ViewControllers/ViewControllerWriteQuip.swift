@@ -7,21 +7,20 @@
 //
 
 import UIKit
-import Firebase
 import GiphyUISDK
 import GiphyCoreSDK
+import Firebase
 
 
 
 class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     
-    var ref:DatabaseReference?
-    var db:Firestore?
+    
     var myChannel:Channel?
     private var feedVC:ViewControllerFeed?
     var uid:String?
     private var childUpdates:[String:Any]=[:]
-    var storageRef:StorageReference?
+    
     var mediaView:GPHMediaView?
     var giphyBottomSpaceConstraint:NSLayoutConstraint?
     var giphyTrailingSpace:NSLayoutConstraint?
@@ -161,13 +160,15 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
             if true { //send to google sensor api
                 hasImage=true
                 let randomID = UUID.init().uuidString
-                imageRef = "\(uid ?? "Other")/\(randomID)"
-                let uploadref = storageRef?.child(imageRef!)
+                if let auid = uid{
+                imageRef = "\(auid)/\(randomID)"
+                    if let myimageRef = imageRef{
                 guard let imageData = imageView.image?.jpegData(compressionQuality: 0.75) else {print("error getting image")
                     return
                 }
-                uploadref?.putData(imageData)
-                
+                FirebaseStorageService.sharedInstance.uploadImage(imageRef: myimageRef, imageData: imageData)
+                }
+                }
             }
             else{
                 return
@@ -177,7 +178,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
             gifID = mediaView?.media?.id
             hasGif = true
         }
-        guard let key = ref?.child("posts").childByAutoId().key else { return }
+        guard let key = FirebaseService.sharedInstance.generatePostKey() else { return }
               
        var post2:[String:Any]=[:]
          var post3:[String:Any]=[:]
@@ -264,189 +265,42 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     
     //add quips to recentChannelDoc
     func queryRecentChannelQuips(data:[String:Any], key:String, post4:[String:Any], post2:[String:Any]){
-         let mydata = data
+         
         if let myChannelKey = self.myChannel?.key{
-        let recentQuipsRef = self.db?.collection("Channels/\(myChannelKey)/RecentQuips")
-                  
-        recentQuipsRef?.order(by: "t", descending: true).limit(to: 2).getDocuments(){ (querySnapshot, err) in
-                       if err != nil {
-                           return
-                       }
-                       
-            self.db?.runTransaction({ (transaction, errorPointer) -> Any? in
-                        let sfDocument: DocumentSnapshot
-                  do {
-                       try sfDocument = transaction.getDocument((querySnapshot?.documents[0].reference)!)
-                   } catch let fetchError as NSError {
-                       errorPointer?.pointee = fetchError
-                       return nil
-                   }
-                            
-                        
-                               if querySnapshot?.isEmpty ?? true ||
-                                   querySnapshot?.documents[1].data()["n"] as! Double >= 20{
-                               
-                                   self.createNewDocForRecentChannel(data: data, key: key, transaction: transaction, channelKey: myChannelKey)
-                           
-                                
-                                    let mydata2=["n":FieldValue.increment(Int64(1))]
-                                    
-                                transaction.updateData(mydata2, forDocument: sfDocument.reference)
-                                transaction.updateData(["quips.\(key)" : mydata], forDocument: sfDocument.reference)
-                                    
-                                    self.addQuipToFirebase()
-                               }
-                               else{
-                                   let mydata2=["n":FieldValue.increment(Int64(1))]
-                                  
-                                   transaction.updateData(mydata2, forDocument: (querySnapshot?.documents[1].reference)!)
-                                   transaction.updateData(["quips.\(key)" : mydata], forDocument: (querySnapshot?.documents[1].reference)!)
-                                    self.addQuipToFirebase()
-                           }
-                       
-                   
-            return nil
-        }){ (object, error) in
-            if let error = error {
-                print("Transaction failed: \(error)")
-            } else {
-               
-                self.textView.resignFirstResponder()
-             self.dismiss(animated: true, completion: nil)
+            FirestoreService.sharedInstance.addQuipToRecentChannelTransaction(myChannelKey: myChannelKey, data: data, key: key) {
+                self.addQuipToFirebase()
+                 self.textView.resignFirstResponder()
+                self.dismiss(animated: true, completion: nil)
                 self.runTransactionForRecentUser(data: post4, key: key)
                 self.addQuipDocToFirestore(data: post2, key: key)
             }
         }
-        }
-        }
         if let myParentChannelKey = self.myChannel?.parentKey{
-              let recentQuipsRef = self.db?.collection("Channels/\(myParentChannelKey)/RecentQuips")
-                        
-              recentQuipsRef?.order(by: "t", descending: true).limit(to: 2).getDocuments(){ (querySnapshot, err) in
-                             if err != nil {
-                                 return
-                             }
-                             
-                  self.db?.runTransaction({ (transaction, errorPointer) -> Any? in
-                              let sfDocument: DocumentSnapshot
-                        do {
-                             try sfDocument = transaction.getDocument((querySnapshot?.documents[0].reference)!)
-                         } catch let fetchError as NSError {
-                             errorPointer?.pointee = fetchError
-                             return nil
-                         }
-                                  
-                              
-                                     if querySnapshot?.isEmpty ?? true ||
-                                         querySnapshot?.documents[1].data()["n"] as! Double >= 20{
-                                     
-                                         self.createNewDocForRecentChannel(data: data, key: key, transaction: transaction, channelKey: myParentChannelKey)
-                                 
-                                      
-                                          let mydata2=["n":FieldValue.increment(Int64(1))]
-                                          
-                                      transaction.updateData(mydata2, forDocument: sfDocument.reference)
-                                      transaction.updateData(["quips.\(key)" : mydata], forDocument: sfDocument.reference)
-                                          
-                                         
-                                     }
-                                     else{
-                                         let mydata2=["n":FieldValue.increment(Int64(1))]
-                                        
-                                         transaction.updateData(mydata2, forDocument: (querySnapshot?.documents[1].reference)!)
-                                         transaction.updateData(["quips.\(key)" : mydata], forDocument: (querySnapshot?.documents[1].reference)!)
-                                         
-                                 }
-                             
-                         
-                  return nil
-              }){ (object, error) in
-                  if let error = error {
-                      print("Transaction failed: \(error)")
-                  } else {
-                     
-                    
-                  }
-              }
-              }
-              }
+            FirestoreService.sharedInstance.addQuipToRecentChannelTransaction(myChannelKey: myParentChannelKey, data: data, key: key) {
+                
+            }
+        }
     }
    
     
     
-    func createNewDocForRecentChannel(data:[String:Any], key:String, transaction:Transaction, channelKey:String){
-        
-        var mydata2:[String:Any] = [:]
-        mydata2 = ["n": 0,
-                   "t": FieldValue.serverTimestamp()]
-        
-        
-        guard let recentQuipRef = self.db?.collection("Channels/\(channelKey)/RecentQuips").document() else { return  }
-       
-        transaction.setData(mydata2, forDocument: recentQuipRef)
-        
-       
-                       
    
-        
-    }
     
     func runTransactionForRecentUser(data:[String:Any], key: String){
-         let mydata = data
         if let auid = uid{
-             let recentQuipsRef = self.db?.collection("Users/\(auid)/RecentQuips")
-                 
-                 recentQuipsRef?.order(by: "t", descending: true).limit(to: 1).getDocuments(){ (querySnapshot, err) in
-                     if let err = err {
-                                print("Error getting documents: \(err)")
-                     }else{
-                       
-                         if querySnapshot?.isEmpty ?? true ||
-                             querySnapshot?.documents[0].data()["n"] as! Double >= 20{
-                             self.createNewDocForRecentUser(data: data, key: key)
-                     
-                         }
-                         else{
-                             let mydata2=["n":FieldValue.increment(Int64(1))]
-                             let batch = self.db?.batch()
-                             batch?.updateData(mydata2, forDocument: (querySnapshot?.documents[0].reference)!)
-                             batch?.updateData(["quips.\(key)" : mydata], forDocument: (querySnapshot?.documents[0].reference)!)
-                             batch?.commit()
-                             
-                            }
-                        
-                    }
-       
-        }
+            FirestoreService.sharedInstance.addQuipToRecentUserQuips(auid: auid, data: data, key: key)
         }
     }
-    func createNewDocForRecentUser(data:[String:Any], key:String){
-           
-           var mydata2:[String:Any] = [:]
-           mydata2 = ["n": 1,
-                      "t": FieldValue.serverTimestamp()]
-           let batch = db?.batch()
-        if let auid = uid{
-           guard let recentQuipRef = self.db?.collection("Users/\(auid)/RecentQuips").document() else { return  }
-           batch?.setData(["quips" : [key:data]], forDocument: recentQuipRef, merge: true)
-           batch?.updateData(mydata2, forDocument: recentQuipRef)
-           batch?.commit()
-        }
-       }
+   
     
     func addQuipDocToFirestore(data:[String:Any],key:String){
-        let batch = db?.batch()
-        guard let newQuipRef=db?.collection("Quips").document(key) else { return  }
-        
-        batch?.setData(data, forDocument: newQuipRef)
-       
-        batch?.commit()
-        
+      
+        FirestoreService.sharedInstance.addQuipDocToFirestore(data: data, key: key)
         
     }
     
     func addQuipToFirebase(){
-         ref?.updateChildValues(childUpdates)
+        FirebaseService.sharedInstance.updateChildValues(myUpdates: childUpdates)
        
     }
     

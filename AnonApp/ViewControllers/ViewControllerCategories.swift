@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Firebase
+import FirebaseAuth
 
 class ViewControllerCategories: UIViewController, UITableViewDataSource, UITableViewDelegate, MyCellDelegate2, MyCellDelegate3, UISearchBarDelegate {
   
@@ -20,9 +20,21 @@ class ViewControllerCategories: UIViewController, UITableViewDataSource, UITable
     
     @IBOutlet weak var searchBar: UISearchBar!
     
+    @IBOutlet weak var bottomBar: UIView!
     
-    private var ref:DatabaseReference?
-    private var db:Firestore?
+    @IBOutlet weak var bottomBarLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bottomBarTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var bottomBarTrailing2: NSLayoutConstraint!
+    @IBOutlet weak var bottomBarLeading2: NSLayoutConstraint!
+    @IBOutlet weak var bottomBarLeading3: NSLayoutConstraint!
+    
+    @IBOutlet weak var bottomBarTrailing3: NSLayoutConstraint!
+    
+    @IBOutlet weak var menuView: UIView!
+    
+    
+    
+   
     private var discoverVC:ViewControllerDiscover?
     private var uid:String?
     private var category:[String:String]=[:]
@@ -32,8 +44,8 @@ class ViewControllerCategories: UIViewController, UITableViewDataSource, UITable
     private var allEntertainment:[Category]=[]
     private var myEntertainment:[Category]=[]
     private var filteredCats:[Category]=[]
-    private var storageRef:StorageReference?
-    private var activeBorder:CALayer?
+   
+   
     
     
 
@@ -45,13 +57,11 @@ class ViewControllerCategories: UIViewController, UITableViewDataSource, UITable
         categoriesTable.dataSource=self
         
         liveBtn.isSelected=true
-        activeBorder = liveBtn.selectCategoryButton()
+        
         
         let tabBar = tabBarController as! BaseTabBarController
         authorizeUser(tabBar: tabBar)
-        self.ref = tabBar.refDatabaseFirebase()
-        self.db = tabBar.refDatabaseFirestore()
-        self.storageRef = tabBar.refStorage()
+        
         setUpButtons()
         self.searchBar.layer.borderWidth = 1
         if #available(iOS 13.0, *) {
@@ -61,7 +71,7 @@ class ViewControllerCategories: UIViewController, UITableViewDataSource, UITable
         }    
         self.searchBar.layoutIfNeeded()
         self.searchBar.delegate=self
-        hideKeyboardWhenTappedAround()
+       
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -100,11 +110,22 @@ class ViewControllerCategories: UIViewController, UITableViewDataSource, UITable
     
     @IBAction func sportsClicked(_ sender: Any) {
         if sportsBtn.isSelected==false{
-            liveBtn.isSelected=false
-            entertainmentBtn.isSelected=false
-        sportsBtn.isSelected=true
-        activeBorder?.removeFromSuperlayer()
-        activeBorder = sportsBtn.selectCategoryButton()
+            UIView.animate(withDuration: 1, animations: {
+                self.liveBtn.isSelected=false
+                self.entertainmentBtn.isSelected=false
+                self.sportsBtn.isSelected=true
+                self.bottomBarLeading2.priority = .required
+                self.bottomBarTrailing2.priority = .required
+                self.bottomBarTrailingConstraint.priority = .defaultLow
+                self.bottomBarLeadingConstraint.priority = .defaultLow
+                self.bottomBarLeading3.priority = .defaultLow
+                self.bottomBarTrailing3.priority = .defaultLow
+                UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                    self.menuView.layoutIfNeeded()
+                }, completion: nil)
+                
+            })
+           
             updateTable()
         }
     
@@ -115,8 +136,16 @@ class ViewControllerCategories: UIViewController, UITableViewDataSource, UITable
                    liveBtn.isSelected=true
                    entertainmentBtn.isSelected=false
                sportsBtn.isSelected=false
-               activeBorder?.removeFromSuperlayer()
-               activeBorder = liveBtn.selectCategoryButton()
+               self.bottomBarLeading2.priority = .defaultLow
+                              self.bottomBarTrailing2.priority = .defaultLow
+                              self.bottomBarTrailingConstraint.priority = .required
+                              self.bottomBarLeadingConstraint.priority = .required
+                              self.bottomBarLeading3.priority = .defaultLow
+                              self.bottomBarTrailing3.priority = .defaultLow
+            
+            UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                               self.menuView.layoutIfNeeded()
+                           }, completion: nil)
             updateTable()
                }
         
@@ -128,8 +157,15 @@ class ViewControllerCategories: UIViewController, UITableViewDataSource, UITable
                    liveBtn.isSelected=false
                    entertainmentBtn.isSelected=true
                sportsBtn.isSelected=false
-               activeBorder?.removeFromSuperlayer()
-               activeBorder = entertainmentBtn.selectCategoryButton()
+               self.bottomBarLeading2.priority = .defaultLow
+                              self.bottomBarTrailing2.priority = .defaultLow
+                              self.bottomBarTrailingConstraint.priority = .defaultLow
+                              self.bottomBarLeadingConstraint.priority = .defaultLow
+                              self.bottomBarLeading3.priority = .required
+                              self.bottomBarTrailing3.priority = .required
+            UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                               self.menuView.layoutIfNeeded()
+                           }, completion: nil)
             updateTable()
                }
     }
@@ -149,95 +185,30 @@ class ViewControllerCategories: UIViewController, UITableViewDataSource, UITable
     
     func getLive(){
         self.myLiveEvents=[]
-        let docRef = db?.collection("Categories").document("Live")
-
-        docRef?.getDocument { (document, error) in
-            if let document = document, document.exists {
-                if let myLiveEvents = document.data() {
-                
-                for aEvent in myLiveEvents.keys{
-                    let eventID = aEvent
-                    if let eventInfo = myLiveEvents[aEvent] as? [String:Any]{
-                        if let eventName = eventInfo["name"] as? String{
-                            let priority = eventInfo["priority"] as? Int
-                            let myEvent = Channel(name: eventName, start: nil, akey: eventID, aparent: nil, aparentkey: nil, apriority: priority)
-                            self.myLiveEvents.append(myEvent)
-                        }
-                    }
-                }
-                    self.categoriesTable.reloadData()
-                
-                
-                
-                }
-                
-            } else {
-                print("Document does not exist")
-            }
+        FirestoreService.sharedInstance.getLiveEvents { (myLiveEvents) in
+            self.myLiveEvents = myLiveEvents
+            self.categoriesTable.reloadData()
+        }
+           
+       }
+    func getSports(){
+        self.allSports = []
+        self.mySports = []
+        FirestoreService.sharedInstance.getSports { (mySports, allSports) in
+            self.mySports = mySports
+            self.allSports = allSports
+            self.categoriesTable.reloadData()
         }
         
     }
-    
-    func getSports(){
-        allSports = []
-           self.mySports=[]
-           let docRef = db?.collection("Categories").document("Sports")
-
-           docRef?.getDocument { (document, error) in
-               if let document = document, document.exists {
-                if let mySports = document.data(){
-                    for aSport in mySports.keys{
-                        let name = aSport
-                        if let myInfo = mySports[aSport] as? [String:Any]{
-                             let priority = myInfo["priority"] as? Int
-                            let mySport = Category(name: name, aPriority: priority)
-                            self.allSports.append(mySport)
-                            if priority != 0 {
-                            self.mySports.append(mySport)
-                            }
-                        }
-                        
-                    }
-                     self.categoriesTable.reloadData()
-                }
-                    
-                  
-                       
-                   
-               } else {
-                   print("Document does not exist")
-               }
-           }
-           
-       }
     func getEntertainment(){
         allEntertainment = []
            self.myEntertainment=[]
-           let docRef = db?.collection("Categories").document("Entertainment")
-
-           docRef?.getDocument { (document, error) in
-           if let document = document, document.exists {
-            if let myEntertainments = document.data(){
-                for aEntertainment in myEntertainments.keys{
-                    let name = aEntertainment
-                    if let myInfo = myEntertainments[aEntertainment] as? [String:Any]{
-                         let priority = myInfo["priority"] as? Int
-                        let myEntertainment = Category(name: name, aPriority: priority)
-                        self.allEntertainment.append(myEntertainment)
-                        if priority != 0 {
-                        self.myEntertainment.append(myEntertainment)
-                        }
-                    }
-                    
-                }
-                 self.categoriesTable.reloadData()
-                }
-                       
-                   
-               } else {
-                   print("Document does not exist")
-               }
-           }
+        FirestoreService.sharedInstance.getEntertainment { (myEntertainment, allEntertainment) in
+            self.myEntertainment = myEntertainment
+            self.allEntertainment = allEntertainment
+             self.categoriesTable.reloadData()
+        }
            
        }
     
@@ -365,19 +336,17 @@ class ViewControllerCategories: UIViewController, UITableViewDataSource, UITable
                         discoverVC.bigCategory = "Entertainment"
                     }
                     }
-                 discoverVC.ref=self.ref
-                discoverVC.db=self.db
+                
                  discoverVC.uid=self.uid
-                discoverVC.storageRef=self.storageRef
+                
                 }
                 if let feedVC = segue.destination as? ViewControllerFeed{
                 if liveBtn.isSelected {
                 
                feedVC.myChannel = myLiveEvents[index]
-                 feedVC.ref=self.ref
+                 
                  feedVC.uid=self.uid
-                 feedVC.db=self.db
-                 feedVC.storageRef=self.storageRef
+                 
                 }
                  
         }

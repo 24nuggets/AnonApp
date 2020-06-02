@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Firebase
+
 
 class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableViewDelegate, MyCellDelegate3 {
   
@@ -19,7 +19,9 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
     @IBOutlet weak var pastBtn: UIButton!
     @IBOutlet weak var catName: UILabel!
     
-   
+    @IBOutlet weak var bottomBarLeadingConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var menuView: UIView!
     @IBOutlet weak var navBar: UINavigationItem!
     
     
@@ -32,14 +34,12 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
     private var seenActive:Bool = false
     private var feedVC:ViewControllerFeed?
     private var passedChannel:Channel?
-    var ref:DatabaseReference?
-    var db:Firestore?
-    var storageRef:StorageReference?
+  
+    
     var myCategory:Category?
     var bigCategory:String?
-    private var activeBorder:CALayer?
     private var isfav:Bool?
-    private var myFavs:[String:Any] = [:]
+    private var myFavs:[Category] = []
     private var isFavourited:Bool = false
     
     override func viewDidLoad() {
@@ -60,7 +60,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         
         
         activeBtn.isSelected=true
-        activeBorder = activeBtn.selectCategoryButton()
+       
        
         setUpButtons()
        
@@ -139,28 +139,16 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
      // MARK: - Database Functions
     
     func getIfUserFavCategory(){
-        self.myFavs = [:]
+        self.myFavs = []
         if let aUid = uid{
-                 
+            FirestoreService.sharedInstance.getUserFavCategories(aUid: aUid) { (myFavs) in
+                self.myFavs = myFavs
+                self.updateFavButton()
+            }
                   
-                 let docRef = db?.collection("/Users/\(aUid)/Favorites").document("Favs")
-                        
-                    
-                        docRef?.getDocument{ (document, error) in
-                            if let document = document, document.exists {
-                              if let myMap = document.data() as? [String:String]{
-                                  self.myFavs=myMap
-                              }
-                              
-                            
-                             
-                            } else {
-                             self.myFavs = [:]
-                            }
-                            self.updateFavButton()
-                        }
+                 
                       
-                  }
+        }
               
     }
     
@@ -191,16 +179,17 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
 
     
     func updateFavButton(){
-        if let aCatName = myCategory?.categoryName{
-            if let bigCat = myFavs[aCatName] as? String{
-            if bigCat != "None"{
-                isFavourited = true
-                updateRighBarButton(isFavourite: isFavourited)
-                
-                return
-            }
-            }
+        for aCat in myFavs{
+            if aCat.categoryName == myCategory?.categoryName{
+                      
+                           isFavourited = true
+                           updateRighBarButton(isFavourite: isFavourited)
+                           
+                           return
+                       
+                   }
         }
+       
         updateRighBarButton(isFavourite: isFavourited)
         
     }
@@ -211,39 +200,10 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         
         if let aGenCat = bigCategory{
             if let aCatName = myCategory?.categoryName{
-                if  let docRef = db?.collection("Categories/\(aGenCat)/\(aCatName)").document("Active"){
-
-                docRef.getDocument { (document, error) in
-                    if let document = document, document.exists {
-                        
-                      if let myChannels = document.data(){
-                            for aChannel in myChannels.keys{
-                                let key = aChannel
-                                if let myInfo = myChannels[aChannel] as? [String:Any]{
-                                     let priority = myInfo["priority"] as? Int
-                                    if let name = myInfo["name"] as? String{
-                                    let parent = myInfo["parent"] as? String
-                                    let parentkey = myInfo["parentkey"] as? String
-                                        let myChannel = Channel(name: name, start: nil, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority)
-                                    self.activeChannels.append(myChannel)
-                                    }
-                                }
-                                
-                            }
-                             self.channelTable.reloadData()
-                        }
-                               
-                                
-                            
-                            
-                            
-                    } else {
-                        print("Document does not exist")
-                    }
-                   
-                   
+                FirestoreService.sharedInstance.getActive(aGenCat: aGenCat, aCatName: aCatName) { (activeChannels) in
+                    self.activeChannels = activeChannels
+                      self.channelTable.reloadData()
                 }
-            }
         }
         }
         
@@ -252,39 +212,11 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         self.upcomingChannels=[]
         if let aGenCat = bigCategory{
                    if let aCatName = myCategory?.categoryName{
-                       if  let docRef = db?.collection("Categories/\(aGenCat)/\(aCatName)").document("Upcoming"){
+                    FirestoreService.sharedInstance.getUpcoming(aGenCat: aGenCat, aCatName: aCatName) { (upcomingChannels) in
+                        self.upcomingChannels = upcomingChannels
+                        self.channelTable.reloadData()
 
-                       docRef.getDocument { (document, error) in
-                           if let document = document, document.exists {
-                               
-                             if let myChannels = document.data(){
-                                   for aChannel in myChannels.keys{
-                                       let key = aChannel
-                                       if let myInfo = myChannels[aChannel] as? [String:Any]{
-                                            let priority = myInfo["priority"] as? Int
-                                           if let name = myInfo["name"] as? String{
-                                           let parent = myInfo["parent"] as? String
-                                           let parentkey = myInfo["parentkey"] as? String
-                                               let myChannel = Channel(name: name, start: nil, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority)
-                                           self.upcomingChannels.append(myChannel)
-                                           }
-                                       }
-                                       
-                                   }
-                                    self.channelTable.reloadData()
-                               }
-                                      
-                                       
-                                   
-                                   
-                                   
-                           } else {
-                               print("Document does not exist")
-                           }
-                          
-                          
-                       }
-                   }
+                    }
                }
                }
         
@@ -294,39 +226,9 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         self.pastChannels=[]
                if let aGenCat = bigCategory{
                           if let aCatName = myCategory?.categoryName{
-                              if  let docRef = db?.collection("Categories/\(aGenCat)/\(aCatName)").document("Past"){
-
-                              docRef.getDocument { (document, error) in
-                                  if let document = document, document.exists {
-                                      
-                                    if let myChannels = document.data(){
-                                          for aChannel in myChannels.keys{
-                                              let key = aChannel
-                                              if let myInfo = myChannels[aChannel] as? [String:Any]{
-                                                   let priority = myInfo["priority"] as? Int
-                                                  if let name = myInfo["name"] as? String{
-                                                  let parent = myInfo["parent"] as? String
-                                                  let parentkey = myInfo["parentkey"] as? String
-                                                      let myChannel = Channel(name: name, start: nil, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority)
-                                                  self.pastChannels.append(myChannel)
-                                                  }
-                                              }
-                                              
-                                          }
-                                           self.channelTable.reloadData()
-                                      }
-                                             
-                                              
-                                          
-                                          
-                                          
-                                  } else {
-                                      print("Document does not exist")
-                                  }
-                                 
-                                 
-                              }
-                          }
+                            FirestoreService.sharedInstance.getPast(aGenCat: aGenCat, aCatName: aCatName) { (pastChannels) in
+                                self.pastChannels = pastChannels
+                            }
                       }
                       }
         
@@ -352,19 +254,17 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
     
     func favourite(){
         if let aUid = uid{
-        let favdoc = db?.collection("/Users/\(aUid)/Favorites").document("Favs")
             if let myCatName = myCategory?.categoryName{
-                let mydata = [myCatName:bigCategory]
-                favdoc?.setData(mydata as [String : Any], merge: true)
+                FirestoreService.sharedInstance.favoriteCatagory(aUid: aUid, myCatName: myCatName, bigCategory: bigCategory ?? "None")
             }
         }
     }
     func unfavourite(){
         if let aUid = uid{
-               let favdoc = db?.collection("/Users/\(aUid)/Favorites").document("Favs")
-                   if let myCatName = myCategory?.categoryName{
-                    let mydata = [myCatName:"None"] as [String : Any?]
-                    favdoc?.setData(mydata as [String : Any], merge: true)
+            if let myCatName = myCategory?.categoryName{
+                if let bigCat = bigCategory{
+                FirestoreService.sharedInstance.unfavoriteCatagory(aUid: aUid, myCatName: myCatName, bigCategory: bigCat)
+                }
                    }
                }
         
@@ -377,10 +277,11 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         upcomingBtn.isSelected = false
              activeBtn.isSelected = true
              pastBtn.isSelected = false
-        activeBorder?.removeFromSuperlayer()
-               activeBorder = activeBtn.selectCategoryButton()
+        bottomBarLeadingConstraint.constant = 0
         getActive()
-
+        UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                                      self.menuView.layoutIfNeeded()
+                                  }, completion: nil)
         
         
         
@@ -392,9 +293,11 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         upcomingBtn.isSelected = false
         activeBtn.isSelected = false
         pastBtn.isSelected = true
-        activeBorder?.removeFromSuperlayer()
-        activeBorder = pastBtn.selectCategoryButton()
+        bottomBarLeadingConstraint.constant = activeBtn.frame.width
         getPast()
+        UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                                      self.menuView.layoutIfNeeded()
+                                  }, completion: nil)
     }
     
     //event when upcoming is clicked
@@ -403,11 +306,13 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         upcomingBtn.isSelected = true
         activeBtn.isSelected = false
         pastBtn.isSelected = false
-        activeBorder?.removeFromSuperlayer()
-        activeBorder = upcomingBtn.selectCategoryButton()
+        bottomBarLeadingConstraint.constant = activeBtn.frame.width + pastBtn.frame.width
+        
         getUpcoming()
       
-        
+        UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                                      self.menuView.layoutIfNeeded()
+                                  }, completion: nil)
      
 
     }
@@ -495,10 +400,10 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
             
             feedVC = segue.destination as? ViewControllerFeed
             feedVC?.myChannel = passedChannel
-            feedVC?.ref=self.ref
+           
             feedVC?.uid=self.uid
-            feedVC?.db=self.db
-            feedVC?.storageRef=self.storageRef
+            
+            
         }
        
         

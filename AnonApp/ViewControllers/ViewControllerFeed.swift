@@ -12,18 +12,18 @@ import GiphyUISDK
 import GiphyCoreSDK
 
 class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDelegate, MyCellDelegate {
+    
+    
    
     
     
     
 
     var myChannel:Channel?
-    var ref:DatabaseReference?
-    var db:Firestore?
-    var storageRef:StorageReference?
     private var timesDownloaded:Int=0
     private var newQuips:[Quip?] = []
     private var hotQuips:[Quip?] = []
+    private var firestoreQuips:[Quip?] = []
     private var currentTime:Double?
     private var writeQuip:ViewControllerWriteQuip?
     var uid:String?
@@ -34,25 +34,22 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
     private var hotQuipsInfo:[String:Any]=[:]
     private var hotQuipAdds:[String]=[]
     private var myNewHotQuipData:[String:Any] = [:]
-    private var lastRecentKeyFirebase:String?
     private var moreRecentQuipsFirebase:Bool = false
     private var moreRecentQuipsFirestore:Bool = false
-    private var tempMoreRecentQuipsFirebase:Bool = false
-    private var tempMoreRecentQuipsFirestore:Bool = false
     private var moreHotQuipsFirebase:Bool = false
-    private var lastHotQuipKeyFirebase:String?
-    private var tempMoreHotQuipsFirebase:Bool = false
-    private var lastRecentDocumentFirestore:DocumentSnapshot?
-    private var lastHotDocumentFirestore:DocumentSnapshot?
-    private var lastHotScore:Int?
+
     private var myVotes:[String:Any] = [:]
      var myLikesDislikesMap:[String:Int] = [:]
      var myNewLikesDislikesMap:[String:Int] = [:]
     var myUserMap:[String:String] = [:]
     private var refreshControl=UIRefreshControl()
+    lazy var MenuLauncher:ellipsesMenuFeed = {
+           let launcher = ellipsesMenuFeed()
+        launcher.feedController = self
+            return launcher
+       }()
     
     @IBOutlet weak var feedTable: UITableView!
-    @IBOutlet weak var topBar: UINavigationItem!
     @IBOutlet weak var newHot: UISegmentedControl!
     
     
@@ -63,8 +60,10 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
       //  self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for:.default)
         
         //gets rid of border between the two navigation bars on top
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.layoutIfNeeded()
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.layoutIfNeeded()
+        
+        self.title =  myChannel?.channelName
         
         feedTable.delegate=self
         feedTable.dataSource=self
@@ -72,17 +71,25 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
         feedTable.refreshControl=refreshControl
         //notification when app will enter foreground
         NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-       topBar.title = myChannel?.channelName
+         
+       
         resetVars()
         //move user likes so its asynchronous in loading process
         
        
-         refreshData()
        
     }
+    
     override func viewDidAppear(_ animated: Bool){
               super.viewDidAppear(animated)
-
+        
+        navigationController?.hidesBarsOnSwipe = true
+        
+       
+        
+        
+        
+        refreshData()
            
               
     }
@@ -92,10 +99,9 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
            super.viewWillDisappear(animated)
 
          updateFirestoreLikesDislikes()
-        ref?.updateChildValues(myVotes)
+        FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
        resetVars()
-           
-         }
+    }
     
     //resets all arrays haveing to do with new user likes/dislikes
     func resetVars(){
@@ -110,6 +116,7 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                // viewController is visible
                onLoad()
            }
+        
        }
     
     //deinitializer for notification center
@@ -153,6 +160,11 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                   // present the view controller
                   self.present(activityViewController, animated: true, completion: nil)
           }
+    
+    func btnEllipsesTapped(cell: QuipCells) {
+        MenuLauncher.makeViewFade()
+        MenuLauncher.addMenuFromBottom()
+    }
     
     func btnUpTapped(cell: QuipCells) {
         //Get the indexpath of cell where button was tapped
@@ -288,72 +300,33 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
     
     func updateVotesFirebase(diff:Int, quipID:String){
         //increment value has to be double or long or it wont work properly
-        let myDiff = Double(diff)
+        let myDiff2 = Double(diff)
+        let myDiff = NSNumber(value: myDiff2)
         if let aChannelKey = myChannel?.key {
-            myVotes["A/\(aChannelKey)/Q/\(quipID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
+            myVotes["A/\(aChannelKey)/Q/\(quipID)/s"] = ServerValue.increment(myDiff)
         }
         if let aParentChannelKey = myChannel?.parentKey {
-            myVotes["A/\(aParentChannelKey)/Q/\(quipID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
+            myVotes["A/\(aParentChannelKey)/Q/\(quipID)/s"] = ServerValue.increment(myDiff)
         }
         if let aUID = uid {
-        myVotes["M/\(aUID)/q/\(quipID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
+        myVotes["M/\(aUID)/q/\(quipID)/s"] = ServerValue.increment(myDiff)
+            
         }
     }
     
     func updateFirestoreLikesDislikes(){
         if myNewLikesDislikesMap.count>0{
             if let aUID = uid {
-                let batch = self.db?.batch()
                 if let aChannelKey = myChannel?.key{
-                    let docRef = db?.collection("/Users/\(aUID)/LikesDislikes").document(aChannelKey)
+                    FirestoreService.sharedInstance.updateLikesDislikes(myNewLikesDislikesMap: myNewLikesDislikesMap, aChannelOrUserKey: aChannelKey, myMap: myUserMap, aUID: aUID, parentChannelKey: myChannel?.parentKey, parentChannelMap: nil)
                     
-                    batch?.setData(myNewLikesDislikesMap, forDocument: docRef!,merge: true)
-                }
-                for aKey in myNewLikesDislikesMap.keys{
-                                   
-                                   if let myUser = myUserMap[aKey]{
-                                       let docRefChannel = db?.collection("/Users/\(aUID)/LikesDislikes").document(myUser)
-                                    batch?.setData([aKey:myNewLikesDislikesMap[aKey]  as Any], forDocument: docRefChannel!, merge: true)
-                                   }
-                }
-                batch?.commit()
                 myNewLikesDislikesMap = [:]
+                }
             }
         }
     }
     
     // MARK: - GetFirestoreVotes
-    
-    func getUserLikesDislikesForChannel(){
-          
-        if let aUid = uid{
-            if let aChannelKey = myChannel?.key{
-            
-           let docRef = db?.collection("/Users/\(aUid)/LikesDislikes").document(aChannelKey)
-                  
-              
-                  docRef?.getDocument{ (document, error) in
-                      if let document = document, document.exists {
-                        if let myMap = document.data() as? [String:Int]{
-                            self.myLikesDislikesMap=myMap
-                        }
-                        
-                      
-                       
-                      } else {
-                       self.myLikesDislikesMap = [:]
-                        
-                      }
-                    self.feedTable.reloadData()
-                    self.refreshControl.endRefreshing()
-                  }
-                
-            }
-        }
-           
-       }
-       
-    
     
     
    
@@ -378,540 +351,168 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
         
     }
     
-    func setCurrentTime(){
-        if let myChannelKey = myChannel?.key{
-           let timeUpdates = ["d":ServerValue.timestamp(),
-                              "s":10000] as [String : Any]
-           ref?.child("A/" + myChannelKey + "/Q/z").updateChildValues(timeUpdates)
-        }
-       }
+  
     
     
     // MARK: - LoadNewQuips
     
     func updateNew(){
-       
-            self.newQuips = []
-            self.myScores = [:]
-            setCurrentTime()
-        self.lastRecentKeyFirebase = ""
+        self.refreshControl.beginRefreshing()
+        self.firestoreQuips = []
+        self.myScores = [:]
         self.moreRecentQuipsFirebase = false
         if let myChannelKey = myChannel?.key{
-        let query1 = ref?.child("A/" + myChannelKey + "/Q").queryOrderedByKey().queryLimited(toLast:  41)
-        //query should be limited to double the firestore doc storage plus 1 to account for fetching time, could have extra as well
+            FirebaseService.sharedInstance.getNewScoresFeed(myChannelKey: myChannelKey) { (myScores, currentTime,  moreRecentQuipsFirebase) in
+                self.myScores = myScores
+                self.currentTime = currentTime
+                self.moreRecentQuipsFirebase = moreRecentQuipsFirebase
+                if let myChannelName = self.myChannel?.channelName{
+                    FirestoreService.sharedInstance.getNewQuipsFeed(myChannelKey: myChannelKey, myChannelName: myChannelName) { (newQuips, moreRecentQuipsFirestore) in
+                        self.firestoreQuips = newQuips
+                        self.mergeFirestoreFirebaseNewQuips()
+                        self.moreRecentQuipsFirestore = moreRecentQuipsFirestore
+                        if let aUid = self.uid {
+                            FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { (myLikesDislikesMap) in
+                                self.myLikesDislikesMap = myLikesDislikesMap
+                                self.feedTable.reloadData()
+                                self.refreshControl.endRefreshing()
+                            }
+                        }
+                    }
+                }
+                
+            }
+        
        
-        query1?.observeSingleEvent(of: .value, with: {(snapshot)   in
-            
-             var i = 0
-            let enumerator = snapshot.children
-            var tempLastRecentkey:String?
-            while let rest = enumerator.nextObject() as? DataSnapshot {
-                 i += 1
-                if rest.key == "z"{
-                    self.currentTime = rest.childSnapshot(forPath: "d").value as? Double
-                
-                }
-                else{
-                        
-                   let aQuipID:String? = rest.key
-                    if let actualkey = aQuipID {
-                        if i == 0 {
-                         tempLastRecentkey = actualkey
-                        }
-                       
-                        
-                        let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
-                        let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
-                       
-                        self.myScores[actualkey]=["s":myQuipScore2,
-                                                  "r":myReplies2]
-                        
-                       
-                     
-                        if i == 41 {
-                            self.lastRecentKeyFirebase = tempLastRecentkey!
-                            self.moreRecentQuipsFirebase = true
-                            
-                        }
-                       
-                        }
-                    }
-            }
-           
-           
-            self.getRecentFirestoreQuips()
-                  
-            })
+       
         }
         
     }
-    
-    func getRecentFirestoreQuips(){
-        if let myChannelKey = myChannel?.key{
-        let channelRef = db?.collection("Channels/\(myChannelKey)/RecentQuips")
-        self.moreRecentQuipsFirestore = false
-        //gets 2 most recent documents that have quips
-        channelRef?.order(by: "t", descending: true).limit(to: 2).getDocuments(){ (querySnapshot, err) in
-            if let err = err {
-                            print("Error getting documents: \(err)")
-            }
-            else{
-                let length = querySnapshot!.documents.count
-                if length == 0 {
-                    return
-                }
-                
-                for i in 0...length-1{
-                    if i == 0 {
-                        continue
-                    }
-                    
-                    let document = querySnapshot!.documents[i]
-                
-                    if i == 2{
-                        self.lastRecentDocumentFirestore = document
-                        self.moreRecentQuipsFirestore = true
-                    }
-                    
-                    guard document.data(with: ServerTimestampBehavior.estimate)["quips"] != nil else {continue}
-                    let myQuips = document.data(with: ServerTimestampBehavior.estimate)["quips"] as! [String:Any]
-                let sortedKeys = Array(myQuips.keys).sorted(by: >)
-                
-                for aQuip in sortedKeys{
-                    let myInfo = myQuips[aQuip] as! [String:Any]
-                    let aQuipID = aQuip
-                    let atimePosted = myInfo["d"] as? Timestamp
-                    let aQuipText = myInfo["t"] as? String
-                    let myAuthor = myInfo["a"] as? String
-                    
-                    
-                   
-                    guard let myQuipNumbers = self.myScores[aQuipID] as? [String:Int] else {continue}
-                    let aQuipScore = myQuipNumbers["s"]
-                    let aReplies = myQuipNumbers["r"]
-                   let myImageRef = myInfo["i"] as? String
-                    
-                    
-                    let myGifRef = myInfo["g"] as? String
-                    let myQuip = Quip(text: aQuipText!, bowl: (self.myChannel?.channelName)!, time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, author: myAuthor!, replies: aReplies!, myImageRef: myImageRef, myGifID: myGifRef)
-                  
-                        self.newQuips.append(myQuip)
-                  
-                    
-                }
-                
-            }
-                self.getUserLikesDislikesForChannel()
-                
-            }
-            
-        }
-        
-        }
-    }
-    
-    func loadMoreRecentFirebase(){
-           moreRecentQuipsFirebase=false
-        //need temp because dont want to change it and have another thread call it again before this one is done executing
-        tempMoreRecentQuipsFirebase = false
-        //limited to last should be at least the size of a firestore doc + 1 becasue one of the ones retrieved will be the quip we ended at last time
-           let query1 = ref?.child("A/" + (myChannel?.key)! + "/Q").queryOrderedByKey().queryLimited(toLast:  21).queryEnding(atValue:lastRecentKeyFirebase)
-                  query1?.observeSingleEvent(of: .value, with: {(snapshot)   in
-                   self.lastRecentKeyFirebase = ""
-                       var i = 0
-                      let enumerator = snapshot.children
-                   var tempLastRecentkey:String?
-                      while let rest = enumerator.nextObject() as? DataSnapshot {
-                         i += 1
-                          if rest.key == "z"{
-                              self.currentTime = rest.childSnapshot(forPath: "d").value as? Double
-                          
-                          }
-                          else{
-                                  
-                            let aQuipID:String? = rest.key
-                              if let actualkey = aQuipID {
-                                  
-                               if i == 0 {
-                                   tempLastRecentkey = actualkey
-                               }
-                                  
-                                  let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
-                                  let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
-                                  
-                                  self.myScores[actualkey]=["s":myQuipScore2,
-                                                            "r":myReplies2]
-                                  
-                                  
-                              
-                                   if i == 21 {
-                                       self.lastRecentKeyFirebase = tempLastRecentkey!
-                                           self.tempMoreRecentQuipsFirebase = true
-                                                        
-                                   }
-                                  }
-                              }
-                      }
-                     
-                     
-                      self.loadMoreRecentQuipsFirestore()
-                            
-                      })
-           
-       }
-       func loadMoreRecentQuipsFirestore(){
-           moreRecentQuipsFirestore = false
-           tempMoreRecentQuipsFirestore=false
-        if let myChannelKey = myChannel?.key{
-           let channelRef = db?.collection("Channels/\(myChannelKey)/RecentQuips")
-            
-           channelRef?.order(by: "t", descending: true).start(afterDocument: self.lastRecentDocumentFirestore!).limit(to: 1).getDocuments(){ (querySnapshot, err) in
-                     if let err = err {
-                                     print("Error getting documents: \(err)")
-                     }
-                     else{
-                         let length = querySnapshot!.documents.count
-                         if length == 0 {
-                             return
-                         }
-                         
-                        
-                            
-                         
-                             
-                             let document = querySnapshot!.documents[0]
-                          
-                                   self.lastRecentDocumentFirestore = document
-                                   self.tempMoreRecentQuipsFirestore = true
-                           
-                             
-                             guard document.data(with: ServerTimestampBehavior.estimate)["quips"] != nil else {return}
-                             let myQuips = document.data(with: ServerTimestampBehavior.estimate)["quips"] as! [String:Any]
-                         let sortedKeys = Array(myQuips.keys).sorted(by: >)
-                         for aQuip in sortedKeys{
-                             let myInfo = myQuips[aQuip] as! [String:Any]
-                             let aQuipID = aQuip
-                             let atimePosted = myInfo["d"] as? Timestamp
-                             let aQuipText = myInfo["t"] as? String
-                             let myAuthor = myInfo["a"] as? String
-                            
-                             guard let myQuipNumbers = self.myScores[aQuipID] as? [String:Int] else {continue}
-                             let aQuipScore = myQuipNumbers["s"]
-                             let aReplies = myQuipNumbers["r"]
-                             let myImageRef = myInfo["i"] as? String
-                            let myGifRef = myInfo["g"] as? String
-                            let myQuip = Quip(text: aQuipText!, bowl: (self.myChannel?.channelName)!, time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, author: myAuthor!, replies: aReplies!, myImageRef: myImageRef, myGifID: myGifRef)
-                             self.newQuips.append(myQuip)
-                             
-                         }
-                         
-                     
-                         self.feedTable.reloadData()
-                        //have to reload table before setting these to true
-                       if self.tempMoreRecentQuipsFirestore {
-                           self.moreRecentQuipsFirestore = true
-                       }
-                       if self.tempMoreRecentQuipsFirebase {
-                           self.moreRecentQuipsFirebase = true
-                       }
-                     }
-                     
-                 }
-        }
-       }
     
    
     
+    func loadMoreRecent(){
+           moreRecentQuipsFirebase=false
+        
+        if let myChannelKey = myChannel?.key{
+            FirebaseService.sharedInstance.getMoreNewScoresFeed(myChannelKey: myChannelKey) { (myScores, moreRecentQuipsFirebase) in
+                self.myScores = self.myScores.merging(myScores, uniquingKeysWith: { (_, new) -> Any in
+                    new
+                })
+                //need to make sure firebase is always ahead of firestore
+                if self.moreRecentQuipsFirestore{
+                    if let myChannelName = self.myChannel?.channelName{
+                        FirestoreService.sharedInstance.loadMoreNewQuipsFeed(myChannelKey: myChannelKey, channelName: myChannelName) { (newQuips, moreRecentQuipsFirestore) in
+                            self.firestoreQuips = self.firestoreQuips + newQuips
+                            self.mergeFirestoreFirebaseNewQuips()
+                            self.feedTable.reloadData()
+                             //have to reload table before setting these to true
+                            self.moreRecentQuipsFirebase = moreRecentQuipsFirebase
+                            self.moreRecentQuipsFirestore = moreRecentQuipsFirestore
+                        }
+                        
+                    }
+                }else{
+                    self.mergeFirestoreFirebaseNewQuips()
+                    self.feedTable.reloadData()
+                    self.moreRecentQuipsFirebase = moreRecentQuipsFirebase
+                }
+                
+            }
+        }
+        
+        
+          
+           
+       }
+    
+    func mergeFirestoreFirebaseNewQuips(){
+        newQuips = []
+        for aQuip in firestoreQuips{
+            guard let myQuipInfo = myScores[aQuip?.quipID ?? ""] as? [String:Int] else {continue}
+            aQuip?.setScore(aScore:myQuipInfo["s"] ?? 0)
+            aQuip?.quipReplies = myQuipInfo["r"]
+            newQuips.append(aQuip)
+        }
+        
+    }
    
     
      // MARK: - LoadHotQuips
     
     func updateHot(){
-        setCurrentTime()
+        
         self.hotQuips = []
         self.myHotIDs = []
         
         moreHotQuipsFirebase = false
-        let query1 = ref?.child("A/" + (myChannel?.key)! + "/Q").queryOrdered(byChild: "s").queryLimited(toLast: 10)
-       
-        query1?.observeSingleEvent(of: .value, with: {(snapshot)   in
-            
-            let enumerator = snapshot.children
-            var i = 0
-            var tempLastHotKeyFirebase:String?
-            var tempHotScore:Int?
-            while let rest = enumerator.nextObject() as? DataSnapshot {
-                 i += 1
-               if rest.key == "z"{
-                    self.currentTime = rest.childSnapshot(forPath: "d").value as? Double
-                
-                }
-                else{
-                        
-                var aQuipID:String?
-                aQuipID = rest.key
-                
-                                      if  let actualkey = aQuipID{
-                                          
-                                       
-                                          
-                                          let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
-                                          let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
-                                         
-                                        let myQuip = Quip(score: myQuipScore2!, replies: myReplies2!, myQuipID: actualkey)
-                                        if i == 0 {
-                                            tempLastHotKeyFirebase = actualkey
-                                            tempHotScore = myQuipScore2
-                                        }
-                                                                 
-                                          self.hotQuips.insert(myQuip, at: 0)
-                                        self.myHotIDs.append(actualkey)
-                                        
-                                        
-                                       
-                                                               
-                                        if i == 10 {
-                                            self.lastHotQuipKeyFirebase = tempLastHotKeyFirebase
-                                            self.lastHotScore=tempHotScore
-                                            self.moreHotQuipsFirebase = true
-                                                }
-                                       }
-               
-                                               
-                        
-                        }
-                    }
-            
-            self.getHotQuipsFromFirestore(aHotIDs: self.myHotIDs)
-            
-        })
-        
-    }
-    func getHotQuipsFromFirestore(aHotIDs:[String]){
         if let myChannelKey = myChannel?.key{
-             let channelRef = db?.collection("Channels/\(myChannelKey)/HotQuips")
-            channelRef?.order(by: "t", descending: false).limit(to: 1).getDocuments(){ (querySnapshot, err) in
-                  if let err = err {
-                                  print("Error getting documents: \(err)")
-                  }
-                  else{
-                    if let querySnapshot = querySnapshot{
-                      let length = querySnapshot.documents.count
-                      if length == 0 {
-                       
-                        self.createHotQuipsDoc(aHotIDs: aHotIDs, aHotQuips: self.hotQuips, more:false)
-                        
-                      }
-                      else if self.compareHotQuips(doc: querySnapshot.documents[0], aHotIDs: aHotIDs)==false{
-                        self.updateHotQuipsDoc(doc: querySnapshot.documents[0],aHotQuips: self.hotQuips, more:false)
-                        self.lastHotDocumentFirestore = querySnapshot.documents[0]
-        
-                      }else{
-                        self.populateHotQuipsArr(data: querySnapshot.documents[0].data(), aHotQuips: self.hotQuips, more:false)
-                        self.lastHotDocumentFirestore = querySnapshot.documents[0]
-                        }
-                   
-                    }
-                    
-                      
-                  }
-                  
-              }
-        
+            
+            FirebaseService.sharedInstance.getHotFeed(myChannelKey: myChannelKey) { (myHotQuips, myHotQuipIDs, moreHotQuipsFirebase, currentTime)  in
+                self.hotQuips = myHotQuips
+                self.myHotIDs = myHotQuipIDs
+                self.currentTime = currentTime
+                FirestoreService.sharedInstance.getHotQuipsFeed(myChannelKey: myChannelKey, aHotIDs: myHotQuipIDs, hotQuips: myHotQuips) { (myData, aHotQuips, more) in
+                    self.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
+                    self.moreHotQuipsFirebase = moreHotQuipsFirebase
+                    self.refreshControl.endRefreshing()
+                }
+            }
+            
         }
+        
     }
+    
+    
+    
     func populateHotQuipsArr(data:[String:Any], aHotQuips:[Quip?], more:Bool){
-        for aQuip in aHotQuips{
-            if let myQuip = aQuip{
-                if let myID = myQuip.quipID{
-                    let quipData = data[myID] as! [String:Any]
-                    myQuip.user = quipData["a"] as? String
-                    myQuip.channel = quipData["c"] as? String
-                    myQuip.channelKey = quipData["k"] as? String
-                    myQuip.quipText = quipData["t"] as? String
-                    myQuip.timePosted = quipData["d"] as? Timestamp
-                
-            }
-            }
-            
-        }
-        if more{
-            self.hotQuips = self.hotQuips + aHotQuips
-        }
-        self.feedTable.reloadData()
-        if tempMoreHotQuipsFirebase {
-            moreHotQuipsFirebase = true
-        }
-        
-    }
-   
-    func updateHotQuipsDoc(doc:DocumentSnapshot, aHotQuips:[Quip?], more:Bool){
-       
-        var i:Int = 0
-        
-        for aHotId in self.hotQuipAdds{
-               self.db?.collection("Quips").document(aHotId).getDocument { (document, error) in
-                   if let document = document, document.exists {
-                    let data = document.data(with: ServerTimestampBehavior.estimate)
-                    self.myNewHotQuipData[aHotId] = data
-                     i += 1
-                   }
-                if i == self.hotQuipAdds.count{
-                
-                    
-                    doc.reference.updateData(self.myNewHotQuipData)
-                    self.populateHotQuipsArr(data: self.myNewHotQuipData, aHotQuips:aHotQuips, more:more )
-                }
-               }
-               
-            }
-        
-    }
-  
-    func compareHotQuips(doc:DocumentSnapshot, aHotIDs:[String])->Bool{
-        self.hotQuipAdds = []
-        let myData = doc.data(with: ServerTimestampBehavior.estimate)! as [String:Any]
-        self.myNewHotQuipData = [:]
-        var isSame = true
-        for aHotId in aHotIDs{
-            let keyExists = myData[aHotId] != nil
-            if keyExists{
-                myNewHotQuipData[aHotId] = myData[aHotId]
-            }
-            else{
-                isSame = false
-                hotQuipAdds.append(aHotId)
-               
-                    }
-            }
-        
-        
-        return isSame
-    }
-    
-    func createHotQuipsDoc(aHotIDs:[String], aHotQuips:[Quip?], more:Bool){
-        var i:Int = 0
-        var myData:[String:Any] = [:]
-        for aHotId in aHotIDs{
-           self.db?.collection("Quips").document(aHotId).getDocument { (document, error) in
-               if let document = document, document.exists {
-                let data = document.data(with: ServerTimestampBehavior.estimate)
-                myData[aHotId] = data
-                i += 1
-               }
-            if i == self.myHotIDs.count{
-            myData["t"] = FieldValue.serverTimestamp()
-                if let myChannelKey = self.myChannel?.key{
-                let docRef=self.db?.collection("Channels/\(myChannelKey)/HotQuips").addDocument(data: myData)
-              //   sleep(1)
-                self.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more:more)
-                docRef?.getDocument { (document, error) in
-                if let document = document, document.exists {
-                    self.lastHotDocumentFirestore = document
-                 
-                    }
-                    }
-                }
-           }
-           
-        }
-       
-    }
-    }
-   
-    
-   
-    func loadMoreHotQuipsFirebase(){
-        moreHotQuipsFirebase = false
-        tempMoreHotQuipsFirebase = false
-        let query1 = ref?.child("A/" + (myChannel?.key)! + "/Q").queryOrdered(byChild: "s").queryLimited(toLast: 10).queryEnding(atValue: self.lastHotScore, childKey: self.lastHotQuipKeyFirebase)
-              
-               query1?.observeSingleEvent(of: .value, with: {(snapshot)   in
-                let count = snapshot.childrenCount
-                   let enumerator = snapshot.children
-                var i = 0
-                var tempLastHotKeyFirebase:String?
-                var tempHotScore:Int?
-                var aHotQuips:[Quip] = []
-                var aHotIDs:[String] = []
-                
-                   while let rest = enumerator.nextObject() as? DataSnapshot {
-                   
-                    if i == count - 1{
-                        continue
-                    }
-                      if rest.key == "z"{
-                           self.currentTime = rest.childSnapshot(forPath: "d").value as? Double
-                       
-                       }
-                       else{
-                               
-                       var aQuipID:String?
-                       aQuipID = rest.key
-                                    if  let actualkey = aQuipID{
-                                                 
-                                                
-                                                 
-                                        let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
-                                        let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
-                                                
-                                        let myQuip = Quip(score: myQuipScore2!, replies: myReplies2!, myQuipID: actualkey)
-                                               
-                                                                        
-                                                 aHotQuips.insert(myQuip, at: 0)
-                                               aHotIDs.append(actualkey)
-                                                if i == 0 {
-                                                    tempLastHotKeyFirebase = actualkey
-                                                    tempHotScore = myQuipScore2
-                                                }
-                                                i += 1
-                                                                            
-                                            if i == 9 {
-                                            self.lastHotQuipKeyFirebase = tempLastHotKeyFirebase
-                                                self.lastHotScore = tempHotScore
-                                            self.tempMoreHotQuipsFirebase = true
-                                                }
-                                        }
-                        
-                               
-                               }
-                           }
-                   
-                   self.loadMoreHotQuipsFireStore(aHotQuips: aHotQuips, aHotIDs: aHotIDs)
-                   
-               })
-        
-        
-    }
-    func loadMoreHotQuipsFireStore(aHotQuips:[Quip], aHotIDs:[String]){
-        if let myChannelKey = myChannel?.key{
-        let channelRef = db?.collection("Channels/\(myChannelKey)/HotQuips")
-        channelRef?.order(by: "t", descending: false).start(afterDocument: self.lastHotDocumentFirestore!).limit(to: 1).getDocuments(){ (querySnapshot, err) in
-                   if let err = err {
-                                   print("Error getting documents: \(err)")
-                   }
-                   else{
-                       let length = querySnapshot!.documents.count
-                       if length == 0 {
-                        self.createHotQuipsDoc(aHotIDs: aHotIDs, aHotQuips: aHotQuips, more:true)
-                       }
-                       else if self.compareHotQuips(doc: querySnapshot!.documents[0],aHotIDs: aHotIDs)==false{
-                        self.updateHotQuipsDoc(doc: querySnapshot!.documents[0], aHotQuips: aHotQuips, more:true)
-                        self.lastHotDocumentFirestore = querySnapshot!.documents[0]
-                       }else{
-                        self.populateHotQuipsArr(data: querySnapshot!.documents[0].data(), aHotQuips: aHotQuips, more:true)
-                        self.lastHotDocumentFirestore = querySnapshot!.documents[0]
-                         }
-                    
+             for aQuip in aHotQuips{
+                 if let myQuip = aQuip{
+                     if let myID = myQuip.quipID{
+                         let quipData = data[myID] as! [String:Any]
+                         myQuip.user = quipData["a"] as? String
+                         myQuip.channel = quipData["c"] as? String
+                         myQuip.channelKey = quipData["k"] as? String
+                         myQuip.quipText = quipData["t"] as? String
+                         myQuip.timePosted = quipData["d"] as? Timestamp
+                        myQuip.gifID = quipData["g"] as? String
+                        myQuip.imageRef = quipData["i"] as? String
                      
-                    
-                       
-                   }
-                   
-               }
+                 }
+                 }
+                 
+             }
+             if more{
+                 self.hotQuips = self.hotQuips + aHotQuips
+             }
+             self.feedTable.reloadData()
+             
+             
+         }
+    
+    
+   
+    
+   
+    
+   
+    func loadMoreHotQuips(){
+        moreHotQuipsFirebase = false
+        if let myChannelKey = myChannel?.key{
+            FirebaseService.sharedInstance.loadMoreHotFeed(myChannelKey: myChannelKey) { (aHotQuips, aHotIDs, moreHotQuipsFirebase) in
+                FirestoreService.sharedInstance.loadMoreHotFeed(myChannelKey: myChannelKey, aHotIDs: aHotIDs, hotQuips: aHotQuips) { (myData, aHotQuips, more) in
+                    self.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
+                    self.moreHotQuipsFirebase = moreHotQuipsFirebase
+                    self.refreshControl.endRefreshing()
+                }
+                
+                
+            }
         }
+       
         
     }
+   
     
  
    
@@ -964,21 +565,7 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
         }
         return 0
     }
-   func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-       
-        switch newHot.selectedSegmentIndex
-        {
-            case 0:
-                 break
-                  
-            case 1:
-                break
-            
-            default:
-                break
-        }
-    }
-    
+ 
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -991,55 +578,39 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                     if newQuips.count > 0 {
                         
                             if let myQuip = self.newQuips[indexPath.row]{
+                                cell.aQuip = myQuip
+                                    if let myImageRef = myQuip.imageRef  {
+                                        cell.addImageViewToTableCell()
+                                        cell.myImageView.getImage(myQuipImageRef: myImageRef,  feedTable: self.feedTable)
+                                                                       }
+                                                                                                                                                          
+                                    else if let myGifID = myQuip.gifID  {
+                                        cell.addGifViewToTableCell()
+                                        cell.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.feedTable)
+                                                                            
+                                                                       }
                                     
-                                        if let myImageRef = myQuip.imageRef  {
-                                            if let aStorageRef = storageRef{
-                                                cell.addImageViewToTableCell()
-                                                cell.myImageView.getImage(myQuipImageRef: myImageRef, storageRef: aStorageRef, feedTable: self.feedTable)
-                                            }
-                                                                                        
-                                        }
-                                                                                                                           
-                                        else if let myGifID = myQuip.gifID  {
-                                                                                     
-                                                cell.addGifViewToTableCell()
-                                                cell.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.feedTable)
-                                                                                                                               
-                                        }
                                 
-                                       
-                                     
-                                  
-                                        cell.categoryLabel.text = String(indexPath.row)
-                                        cell.categoryLabel.font = UIFont.boldSystemFont(ofSize: 14.0)
-                                        cell.quipText?.text = myQuip.quipText
-                                                                                                  
-                                    if let aQuipScore=myQuip.tempScore{
-                                        cell.score?.text = String(aQuipScore)
-                                    }
-                                    if let dateVal = myQuip.timePosted?.seconds{
-                                        let milliTimePost = dateVal * 1000
-                                        if let aCurrentTime = self.currentTime{
-                                        cell.timePosted.text = timeSincePost(timePosted: Double(milliTimePost), currentTime: aCurrentTime)
-                                        }
-                                    }
-                                        if let aID = myQuip.quipID{
-                                            if self.myLikesDislikesMap[aID] == 1{
-                                                    cell.upButton.isSelected=true
-                                                    
-                                                    cell.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
-                                            }
-                                            else if self.myLikesDislikesMap[aID] == -1{
-                                                    cell.downButton.isSelected=true
-                                                   
-                                                    cell.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
-                                                                                                          
-                                            }
-                                        }
-                                      
-                                    
-                            }
-                        
+                        if let dateVal = myQuip.timePosted?.seconds{
+                            let milliTimePost = dateVal * 1000
+                        if let aCurrentTime = self.currentTime{
+                                cell.timePosted.text = timeSincePost(timePosted: Double(milliTimePost), currentTime: aCurrentTime)
+                                                       }
+                                                   }
+                        if let aID = myQuip.quipID{
+                        if self.myLikesDislikesMap[aID] == 1{
+                            cell.upButton.isSelected=true
+                                                
+                                                               cell.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                                       }
+                                                       else if self.myLikesDislikesMap[aID] == -1{
+                                                               cell.downButton.isSelected=true
+                                                              
+                                                               cell.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                                                                                                     
+                                                       }
+                                                   }
+                        }
                         }
                         else{
                             return cell
@@ -1047,12 +618,13 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                         
                case 1:
                    if hotQuips.count > 0 {
-                    if let myQuip = self.newQuips[indexPath.row]{
+                    if let myQuip = self.hotQuips[indexPath.row]{
+                        cell.aQuip=myQuip
                     if let myImageRef = myQuip.imageRef {
-                        if let aStorage = storageRef{
+                        
                             cell.addImageViewToTableCell()
-                            cell.myImageView.getImage(myQuipImageRef: myImageRef, storageRef: aStorage, feedTable: self.feedTable)
-                        }
+                            cell.myImageView.getImage(myQuipImageRef: myImageRef, feedTable: self.feedTable)
+                        
                                                      
                     }
                                                                                         
@@ -1064,10 +636,7 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                     }
                    
                     
-                    cell.quipText?.text = myQuip.quipText
-                        if let aQuipScore=myQuip.tempScore {
-                    cell.score?.text = String(aQuipScore)
-                        }
+                   
                     if let dateVal = myQuip.timePosted?.seconds{
                         let milliTimePost = dateVal * 1000
                         cell.timePosted.text = timeSincePost(timePosted: Double(milliTimePost), currentTime: self.currentTime!)
@@ -1102,6 +671,7 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
         return UITableViewCell()
     }
     
+ 
    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let height = scrollView.frame.size.height
@@ -1116,15 +686,12 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                               {
                               case 0:
                                if moreRecentQuipsFirebase {
-                                  loadMoreRecentFirebase()
-                                    moreRecentQuipsFirestore = false
+                                  loadMoreRecent()
                                }
-                               else if moreRecentQuipsFirestore{
-                                   loadMoreRecentQuipsFirestore()
-                               }
+                               
                               case 1:
                                    if moreHotQuipsFirebase {
-                                    loadMoreHotQuipsFirebase()
+                                    loadMoreHotQuips()
                                     }
                               default:
                                   break
@@ -1162,11 +729,11 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                 quipVC?.quipLikeStatus = false
             }
             quipVC?.myQuip = self.passedQuip
-            quipVC?.ref=self.ref
+            
             quipVC?.uid=self.uid
-            quipVC?.db=self.db
+            
             quipVC?.myChannel=self.myChannel
-            quipVC?.storageRef = self.storageRef
+            
             quipVC?.currentTime = self.currentTime
             quipVC?.parentViewFeed = self
             quipVC?.passedQuipCell = myCell
@@ -1177,9 +744,7 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
         
         
         writeQuip.myChannel = self.myChannel
-        writeQuip.ref=self.ref
-        writeQuip.db=self.db
-        writeQuip.storageRef=self.storageRef
+        
         writeQuip.uid=self.uid
         
         newHot.selectedSegmentIndex = 0

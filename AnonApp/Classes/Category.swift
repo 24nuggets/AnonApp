@@ -13,11 +13,12 @@ class Category{
     
     var categoryName:String?
     var priority:Int?
+    var bigCat:String?
     
     
-    init(name:String, aPriority:Int?){
+    init(name:String, aPriority:Int?, aBigCat:String?){
         categoryName = name
-        
+        bigCat = aBigCat
         priority = aPriority
         
     }

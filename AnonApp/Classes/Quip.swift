@@ -87,7 +87,10 @@ class Quip{
         quipReplies=replies
     }
     
-   
+    func setScore(aScore:Int){
+        quipScore = aScore
+        tempScore = aScore
+    }
     
    
     

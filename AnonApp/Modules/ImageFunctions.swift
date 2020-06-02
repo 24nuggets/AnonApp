@@ -18,10 +18,10 @@ private var runningRequestsImageViews:[CustomImageView:StorageDownloadTask]=[:]
 private var runningRequestsGifViews:[GPHMediaView:Operation]=[:]
 
 class CustomImageView:UIImageView{
-    
+     let storageRef = Storage.storage().reference()
     var myImageRef:String?
     
-    func getImage(myQuipImageRef:String, storageRef: StorageReference,  feedTable:UITableView){
+    func getImage(myQuipImageRef:String, feedTable:UITableView){
         myImageRef = myQuipImageRef
         
         if let cacheImage = imageCache.object(forKey: myQuipImageRef as NSString){

@@ -11,16 +11,15 @@ import Firebase
 import GiphyUISDK
 import GiphyCoreSDK
 
-class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, MyCellDelegate {
+class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, MyCellDelegate{
+    
+    
     
     
 
     
     var myQuip:Quip?
     var myChannel:Channel?
-    var ref:DatabaseReference?
-    var db:Firestore?
-    var storageRef:StorageReference?
     var uid:String?
     var mediaView:GPHMediaView?
     var imageView:UIImageView?
@@ -39,7 +38,6 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
     private var timePosted:String?
     private var myReplies:[Quip?] = []
     private var origBottom:CGFloat?
-    private var writeReply:ViewControllerWriteReply?
     var parentViewFeed:ViewControllerFeed?
     var parentViewUser:ViewControllerUser?
     var passedQuipCell:QuipCells?
@@ -48,6 +46,11 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
     private var myNewLikesDislikesMap:[String:Int] = [:]
     var myUserMap:[String:String] = [:]
     private var refreshControl = UIRefreshControl()
+    lazy var MenuLauncher:ellipsesMenuQuip = {
+              let launcher = ellipsesMenuQuip()
+           launcher.quipController = self
+               return launcher
+          }()
 
     @IBOutlet weak var replyTable: UITableView!
     
@@ -91,7 +94,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
       
         textView.isScrollEnabled = false
         
-        hideKeyboardWhenTappedAround()
+       // hideKeyboardWhenTappedAround()
         
         resetVars()
         refreshData()
@@ -110,7 +113,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
       super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
         updateFirestoreLikesDislikes()
-        ref?.updateChildValues(myVotes)
+        FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
         resetVars()
       
     }
@@ -173,53 +176,27 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
     
     
     
-    @IBAction func postBtnClicked(_ sender: Any) {
-        
+    @IBAction func postButtonClicked(_ sender: UIButton) {
         saveReply()
-        
     }
     
+   
     
     
     func updateReplies(){
         self.replyScores = [:]
-           setCurrentTime()
-           
-        ref?.child("Q/" + (myQuip?.quipID)! + "/R").observeSingleEvent(of: .value, with: {(snapshot)   in
-               
-               let enumerator = snapshot.children
-               while let rest = enumerator.nextObject() as? DataSnapshot {
-                   if rest.key == "z"{
-                       self.currentTime = rest.childSnapshot(forPath: "d").value as? Double
-                   
-                   }
-                   else{
-                           
-                       self.myReplyID = rest.key
-                       if let actualkey = self.myReplyID {
-                           
-                           
-                           let myReplyScore = rest.childSnapshot(forPath: "s").value as? Int
-                           
-                          
-                          
-                    
-                           
-                           self.replyScores[actualkey]=myReplyScore
-                                                  
-                           
-                           }
-                       }
-               }
-            self.getFirestoreReplies()
-            
-               
-           })
-           
+        if let quipId = myQuip?.quipID{
+            FirebaseService.sharedInstance.getReplyScores(quipId: quipId) { (currentTime, replyScores) in
+                self.currentTime = currentTime
+                self.replyScores = replyScores
+                if replyScores.count > 0 {
+                 self.getFirestoreReplies()
+                }else{
+                    self.refreshControl.endRefreshing()
+                }
+            }
                   
-           
-       
-           
+        }
            
        }
     
@@ -293,57 +270,19 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
     
     func getFirestoreReplies(){
         self.myReplies = []
-        let repliesRef = db?.collection("/Quips/\(myQuip?.quipID ?? "Other")/Replies")
-        
-        repliesRef?.getDocuments() {(querySnapshot, err) in
-        if let err = err {
-                print("Error getting documents: \(err)")
-        }
-        else{
-                      
-            if querySnapshot!.documents.count == 0{
+        if let aQuipID = myQuip?.quipID{
+            FirestoreService.sharedInstance.getReplies(quipID: aQuipID, replyScores: replyScores) { (myReplies) in
+                self.myReplies = myReplies
+                self.replyTable.reloadData()
                 self.refreshControl.endRefreshing()
-                return
             }
-             let document = querySnapshot!.documents[0]
-                           
-       
-            let myReplies = document.data(with: ServerTimestampBehavior.estimate)
-            let sortedKeys = Array(myReplies.keys).sorted(by: <)
-            for aKey in sortedKeys{
-                let myInfo = myReplies[aKey] as! [String:Any]
-                           let aReplyID = aKey
-                           let atimePosted = myInfo["d"] as? Timestamp
-                           let aReplyText = myInfo["t"] as? String
-                           let myAuthor = myInfo["a"] as? String
-                          let myImageRef = myInfo["i"] as? String
-                            let myGifRef = myInfo["g"] as? String
-                if self.replyScores[aKey] == nil{
-                    continue
-                } else {
-                        let aReplyScore = self.replyScores[aKey]
-                          
-                    let myReply = Quip(aScore: aReplyScore ?? 0, aKey: aReplyID, atimePosted: atimePosted!, aText: aReplyText!, aAuthor: myAuthor!, image:myImageRef, gif:myGifRef, quipParentID: self.myQuip?.quipID)
-                        self.myReplies.append(myReply)
-                }
-            }
-                       
         }
-            self.replyTable.reloadData()
-            self.refreshControl.endRefreshing()
-        
-    }
         
         
         
         
     }
        
-       func setCurrentTime(){
-           
-        ref!.child("Q/" + (myQuip?.quipID)! + "/R/z/d").setValue(ServerValue.timestamp())
-           
-       }
        
     
     
@@ -404,6 +343,11 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
        }
     func btnSharedTapped(cell: QuipCells) {
         
+    }
+    
+    func btnEllipsesTapped(cell: QuipCells) {
+        MenuLauncher.makeViewFade()
+        MenuLauncher.addMenuFromBottom()
     }
     func downButtonPressedReply(aReply:Quip, cell:QuipCells){
         if cell.upButton.isSelected {
@@ -498,18 +442,10 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
          
         if let aUID = uid {
             if let quipKey = myQuip?.quipID {
-                   let docRef = db?.collection("/Users/\(aUID)/LikesDislikes").document(quipKey)
-                    let batch = self.db?.batch()
-                                 batch?.setData(myNewLikesDislikesMap, forDocument: docRef!, merge: true)
-                                 
-                                 for aKey in myNewLikesDislikesMap.keys{
-                                     if let myUser = myUserMap[aKey]{
-                                        let docRefChannel = db?.collection("/Users/\(aUID)/LikesDislikes").document(myUser)
-                                        batch?.setData([aKey:myNewLikesDislikesMap[aKey]  as Any], forDocument: docRefChannel!, merge: true)
-                                                                       }
-                                     
-                                 }
-                                    batch?.commit()
+                
+                
+                FirestoreService.sharedInstance.updateLikesDislikes(myNewLikesDislikesMap: myNewLikesDislikesMap, aChannelOrUserKey: quipKey, myMap: myUserMap, aUID: aUID, parentChannelKey: nil, parentChannelMap: nil)
+                  
             }
         }
        }
@@ -517,22 +453,10 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
     func getUserLikesDislikesForQuip(){
           // let myRef = "Users/\(uid ?? "Other")/LikesDislikes"
         if let aUID = uid, let aQuipKey = myQuip?.quipID {
-           let docRef = db?.collection("/Users/\(aUID)/LikesDislikes").document(aQuipKey)
-                  
-              
-                  docRef?.getDocument{ (document, error) in
-                      if let document = document, document.exists {
-                       if let myMap = document.data() as? [String:Int]{
-                             self.myLikesDislikesMap=myMap
-                         }
-                         
-                       
-                        
-                       } else {
-                        self.myLikesDislikesMap = [:]
-                       }
-                    self.updateReplies()
-                  }
+            FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUID, aKey: aQuipKey) { (myLikesDislikesMap) in
+                self.myLikesDislikesMap = myLikesDislikesMap
+                self.updateReplies()
+            }
         }
            
        }
@@ -727,13 +651,16 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                    if true { //send to google sensor api
                        hasImage=true
                        let randomID = UUID.init().uuidString
-                       imageRef = "\(uid ?? "Other")/\(randomID)"
-                       let uploadref = storageRef?.child(imageRef!)
+                    if let auid = uid{
+                        imageRef = "\(auid)/\(randomID)"
+                            if let myimageRef = imageRef{
                        guard let imageData = imageView?.image?.jpegData(compressionQuality: 0.75) else {print("error getting image")
                            return
                        }
-                       uploadref?.putData(imageData)
-                       
+                        FirebaseStorageService.sharedInstance.uploadImage(imageRef: myimageRef, imageData: imageData)
+                        }
+                        
+                    }
                    }
                    else{
                        return
@@ -743,7 +670,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                    gifID = mediaView?.media?.id
                    hasGif = true
                }
-         guard let key = ref?.child("replies").childByAutoId().key else { return }
+        guard let key = FirebaseService.sharedInstance.generateReplyKey() else { return }
              
         var post2 = [   "t": textView.text ?? "",
                         "a": uid ?? "Other",
@@ -768,65 +695,25 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
      }
     
     func addReplyToFirestore(key:String, data:[String:Any]){
-        let mydata = data
         
-        let repliesQuipsRef = self.db?.collection("/Quips/\(myQuip?.quipID ?? "Other")/Replies").document("RecentReplies")
-
-                             let batch = self.db?.batch()
-                             batch?.setData([key : mydata], forDocument: repliesQuipsRef!, merge: true)
-                            batch?.commit()
-                             addReplyToFirebase(key: key)
-                            runTransactionForRecentUser(data: mydata, key: key)
-                     
-                        
-                 
-         
-         
+        if let aQuipID = myQuip?.quipID{
+            FirestoreService.sharedInstance.saveReply(quipId: aQuipID, mydata: data, key: key) {
+                self.addReplyToFirebase(key: key)
+                self.addQuipToRecentsForUser(data: data, key: key)
+            }
         
-        
+       
+        }
         
     }
-    func runTransactionForRecentUser(data:[String:Any], key: String){
-            var mydata = data
+    func addQuipToRecentsForUser(data:[String:Any], key: String){
+        var mydata = data
             mydata["reply"] = true
-                let recentQuipsRef = self.db?.collection("Users/\(uid ?? "Other")/RecentQuips")
-                    
-                    recentQuipsRef?.order(by: "t", descending: true).limit(to: 1).getDocuments(){ (querySnapshot, err) in
-                        if let err = err {
-                                   print("Error getting documents: \(err)")
-                        }else{
-                          
-                            if querySnapshot?.isEmpty ?? true ||
-                                querySnapshot?.documents[0].data()["n"] as! Double >= 20{
-                                self.createNewDocForRecentUser(data: data, key: key)
-                        
-                            }
-                            else{
-                                let mydata2=["n":FieldValue.increment(Int64(1))]
-                                let batch = self.db?.batch()
-                                batch?.updateData(mydata2, forDocument: (querySnapshot?.documents[0].reference)!)
-                                batch?.updateData(["quips.\(key)" : mydata], forDocument: (querySnapshot?.documents[0].reference)!)
-                                batch?.commit()
-                                
-                               }
-                           
-                       }
-          
-           }
+        if let auid = uid{
+        FirestoreService.sharedInstance.addQuipToRecentUserQuips(auid: auid, data: mydata, key: key)
+        }
        }
     
-    func createNewDocForRecentUser(data:[String:Any], key:String){
-            
-            var mydata2:[String:Any] = [:]
-            mydata2 = ["n": 1,
-                       "t": FieldValue.serverTimestamp()]
-            let batch = db?.batch()
-            
-            guard let recentQuipRef = self.db?.collection("Users/\(uid ?? "Other")/RecentQuips").document() else { return  }
-            batch?.setData(["quips" : [key:data]], forDocument: recentQuipRef, merge: true)
-            batch?.updateData(mydata2, forDocument: recentQuipRef)
-            batch?.commit()
-        }
     
     
     func addReplyToFirebase(key:String){
@@ -836,7 +723,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
         var childUpdates:[String:Any]=[:]
         if myChannel != nil{
                  childUpdates = ["/Q/\(myQuip!.quipID ?? "Other")/R/\(key)":reply1,
-                                    "/M/\(uid ?? "Other")/\(key)":reply1,
+                                    "/M/\(uid ?? "Other")/q/\(key)":reply1,
                                     "A/\(myChannel?.key ?? "Other")/Q/\(myQuip?.quipID ?? "Other")/r": ServerValue.increment(1),
                                     "M/\(myQuip?.user ?? "Other")/q/\(myQuip?.quipID ?? "Other")/r":ServerValue.increment(1)] as [String : Any]
                  
@@ -844,18 +731,19 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                   if myChannel?.parentKey != nil{
                     childUpdates["A/\(myChannel?.parentKey ?? "Other")/Q/\(myQuip?.quipID ?? "Other")/r"]=ServerValue.increment(1)
                   }
-              }else{
+              }
+        else{
              childUpdates = ["/Q/\(myQuip!.quipID ?? "Other")/R/\(key)":reply1,
-                            "/M/\(uid ?? "Other")/\(key)":reply1,
+                            "/M/\(uid ?? "Other")/q/\(key)":reply1,
                             "A/\(myQuip?.channelKey ?? "Other")/Q/\(myQuip?.quipID ?? "Other")/r": ServerValue.increment(1),
                             "M/\(myQuip?.user ?? "Other")/q/\(myQuip?.quipID ?? "Other")/r":ServerValue.increment(1)] as [String : Any]
-                     if myQuip?.parentKey != nil{
+                if myQuip?.parentKey != nil{
                         childUpdates["A/\(myQuip?.parentKey ?? "Other")/Q/\(myQuip?.quipID ?? "Other")/r"]=ServerValue.increment(1)
                         
-                    }
+                }
             }
                    
-        ref?.updateChildValues(childUpdates)
+        FirebaseService.sharedInstance.updateChildValues(myUpdates: childUpdates)
         textView.text = "Type something"
         textView.resignFirstResponder()
         if imageView?.image != nil || mediaView?.media != nil{
@@ -883,9 +771,9 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
              if let cell = replyTable.dequeueReusableCell(withIdentifier: "mainQuip", for: indexPath) as? QuipCells{
              if let myImageRef = myQuip?.imageRef  {
                      cell.addImageViewToTableCell()
-                 if let aStorageRef = storageRef{
-                     cell.myImageView.getImage(myQuipImageRef: myImageRef, storageRef: aStorageRef, feedTable: self.replyTable)
-                 }
+                 
+                     cell.myImageView.getImage(myQuipImageRef: myImageRef,  feedTable: self.replyTable)
+                 
              }
                                                                                         
              else if let aGifID = myQuip?.gifID{
@@ -919,10 +807,9 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                if myReplies.count > 0 {
                  if let aReply = self.myReplies[indexPath.row - 1] {
                      if let myImageRef = aReply.imageRef {
-                         if let aStorageRef = storageRef{
-                         cell.addImageViewToTableCell()
-                         cell.myImageView.getImage(myQuipImageRef: myImageRef, storageRef: aStorageRef, feedTable: self.replyTable)
-                         }
+                                                  cell.addImageViewToTableCell()
+                         cell.myImageView.getImage(myQuipImageRef: myImageRef,  feedTable: self.replyTable)
+                         
                                                                                      
                  }
                                                                              
@@ -977,13 +864,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
          // Get the new view controller using segue.destination.
          // Pass the selected object to the new view controller.
-         writeReply = segue.destination as? ViewControllerWriteReply
-         writeReply?.myQuip = self.myQuip
-         writeReply?.ref=self.ref
-         writeReply?.uid=self.uid
-         writeReply?.db = self.db
-         writeReply?.storageRef = self.storageRef
-         writeReply?.myChannel=self.myChannel
+      
                 
                
      }

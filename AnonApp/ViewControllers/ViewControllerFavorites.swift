@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Firebase
+
 
 class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableViewDelegate, MyCellDelegate2 {
    
@@ -16,15 +16,18 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
     
     
     //Declare Variables
-       private var ref:DatabaseReference?
-       private var db:Firestore?
-    private var storageRef:StorageReference?
+    
        private var index:Int?
+    private var didReorder:Bool = false
        var uid:String?
        private var feedVC:ViewControllerFeed?
        private var passedChannel:Channel?
-    private var myFavs:[String:Any] = [:]
     private var myFavCats:[Category] = []
+    lazy var MenuLauncher:addFavsMenu = {
+        let launcher = addFavsMenu()
+        launcher.favController = self
+        return launcher
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,20 +43,39 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
         NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerFavorites.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         let tabBar = tabBarController as! BaseTabBarController
-        self.ref = tabBar.refDatabaseFirebase()
+        
         self.uid = tabBar.userID
-        self.db = tabBar.refDatabaseFirestore()
-        self.storageRef = tabBar.refStorage()
+        
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
          super.viewWillAppear(animated)
-         if let selectedIndexPath = favCategoriesTable  .indexPathForSelectedRow {
-             favCategoriesTable.deselectRow(at: selectedIndexPath, animated: animated)
-         }
+         
+        resetVars()
          onLoad()
      }
+    
+    func resetVars(){
+        didReorder = false
+        if let selectedIndexPath = favCategoriesTable  .indexPathForSelectedRow {
+            favCategoriesTable.deselectRow(at: selectedIndexPath, animated: false)
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+       changeTableToNormal()
+        if didReorder{
+            reorderFavs()
+        }
+    }
+    
+    func reorderFavs(){
+        if let auid = uid{
+            FirestoreService.sharedInstance.reorderUserFavs(aUid: auid , myFavs: myFavCats)
+        }
+    }
     
     //deinitializer for notification center
     deinit {
@@ -78,41 +100,50 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
            }
        }
     
-  
+    @IBAction func editButtonClicked(_ sender: Any) {
+        if(favCategoriesTable.isEditing == true)
+          {
+              changeTableToNormal()
+            
+          }
+          else
+          {
+              changeTableToEdit()
+          }
+    }
+    private func changeTableToEdit(){
+        favCategoriesTable.isEditing = true
+        self.navigationItem.leftBarButtonItem?.title = "Done"
+    }
+    private func changeTableToNormal(){
+        favCategoriesTable.isEditing = false
+        self.navigationItem.leftBarButtonItem?.title = "Edit"
+    }
+    
+    @IBAction func addFavClick(_ sender: Any) {
+      
+        MenuLauncher.makeViewFade()
+        MenuLauncher.addMenuFromBottom()
+    }
+    
+    func showAddViewController(menuItem: MenuItem){
+        let nextViewController = UIViewController()
+               navigationController?.pushViewController(nextViewController, animated: true)
+          
+    }
     
        
         // MARK: - Database Functions
     
     func getIfUserFavCategories(){
         self.myFavCats = []
-        self.myFavs = [:]
+        
           if let aUid = uid{
-                   
+            FirestoreService.sharedInstance.getUserFavCategories(aUid: aUid) { (myFavCats) in
+                self.myFavCats = myFavCats
+                self.favCategoriesTable.reloadData()
+            }
                     
-                   let docRef = db?.collection("/Users/\(aUid)/Favorites").document("Favs")
-                          
-                      
-                          docRef?.getDocument{ (document, error) in
-                              if let document = document, document.exists {
-                                if let myMap = document.data() {
-                                    self.myFavs=myMap
-                                    for akey in self.myFavs.keys{
-                                        if let output = self.myFavs[akey] as? String{
-                                            if output != "None"{
-                                                let myCat = Category(name: akey, aPriority: nil)
-                                                self.myFavCats.append(myCat)
-                                        }
-                                        }
-                                    }
-                                }
-                                
-                              
-                               
-                              } else {
-                               self.myFavs = [:]
-                              }
-                            self.favCategoriesTable.reloadData()
-                          }
                         
                     }
                 
@@ -122,6 +153,33 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
            self.favCategoriesTable.selectRow(at: self.favCategoriesTable.indexPath(for: cell), animated: true, scrollPosition: .middle)
        }
      // MARK: - TableView Functions
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            // handle delete (by removing the data from your array and updating the tableview)
+            
+            let myCat = myFavCats[indexPath.row]
+            if let auid = uid{
+                if let myCatName = myCat.categoryName{
+                    if let bigCat = myCat.bigCat{
+                        FirestoreService.sharedInstance.unfavoriteCatagory(aUid: auid, myCatName: myCatName, bigCategory: bigCat)
+                        myFavCats.remove(at: indexPath.row)
+                        tableView.deleteRows(at: [indexPath], with: .automatic)
+                    }
+                }
+               
+            }
+        }
+    }
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCell.EditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+       
+    }
+    
+   func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+    didReorder = true
+       let movedObject = self.myFavCats[sourceIndexPath.row]
+       myFavCats.remove(at: sourceIndexPath.row)
+       myFavCats.insert(movedObject, at: destinationIndexPath.row)
+   }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return myFavCats.count
@@ -149,12 +207,9 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
                
             if let discoverVC = segue.destination as? ViewControllerDiscover{
                 discoverVC.myCategory = myFavCats[index]
-                if let aCatName = myFavCats[index].categoryName{
-                discoverVC.bigCategory = myFavs[aCatName] as? String
-                }
-            discoverVC.ref=self.ref
-            discoverVC.db=self.db
-            discoverVC.storageRef=self.storageRef
+            
+                discoverVC.bigCategory = myFavCats[index].bigCat
+           
                 discoverVC.uid=self.uid
             }
            }

@@ -15,6 +15,7 @@ protocol MyCellDelegate: AnyObject {
     func btnUpTapped(cell: QuipCells)
     func btnDownTapped(cell: QuipCells)
     func btnSharedTapped(cell: QuipCells)
+    func btnEllipsesTapped(cell:QuipCells)
     
 }
 
@@ -44,7 +45,7 @@ class ChannelCells: UITableViewCell {
     @IBAction func arrowTap(_ sender: Any) {
         delegate?.arrowTap(cell: self)
     }
-    
+   
 
 }
 class CategoryCells:UITableViewCell{
@@ -76,6 +77,34 @@ class QuipCells:UITableViewCell{
     
     weak var delegate: MyCellDelegate?
     
+    var aQuip:Quip? {
+        didSet{
+            if let myQuip = aQuip{
+                                         
+                self.categoryLabel.text = "Catagory"
+                self.categoryLabel.font = UIFont.boldSystemFont(ofSize: 14.0)
+                self.quipText?.text = myQuip.quipText
+                
+                if let numOfReplies = myQuip.quipReplies {
+                if numOfReplies == 1{
+                    self.replyButton.setTitle("\(numOfReplies) Reply", for: .normal)
+                }else if numOfReplies > 1{
+                    self.replyButton.setTitle("\(numOfReplies) Replies", for: .normal)
+                }
+                else{
+                   self.replyButton.setTitle("Replies", for: .normal)
+                    }
+                }
+                if let aQuipScore=myQuip.tempScore{
+                    self.score?.text = String(aQuipScore)
+                }
+                
+                
+                                             
+            }
+        }
+    }
+    
     @IBAction func btnUpTapped(_ sender: Any) {
         
         delegate?.btnUpTapped(cell: self)
@@ -90,6 +119,11 @@ class QuipCells:UITableViewCell{
         
          delegate?.btnSharedTapped(cell: self)
     }
+    
+    @IBAction func ellipsesTapped(_ sender: Any) {
+        delegate?.btnEllipsesTapped(cell: self)
+    }
+    
     
     let myImageView : CustomImageView = {
     let imgView = CustomImageView()
@@ -117,7 +151,7 @@ class QuipCells:UITableViewCell{
         downButton.tintColor = .lightGray
         myGifView.cancelLoad()
         myImageView.cancelLoad()
-       
+        
     }
     
    
