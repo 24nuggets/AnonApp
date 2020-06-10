@@ -23,6 +23,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
     var uid:String?
     var mediaView:GPHMediaView?
     var imageView:UIImageView?
+    var deleteBtn:UIButton?
     var giphyBottomSpaceConstraint:NSLayoutConstraint?
     var giphyTrailingSpace:NSLayoutConstraint?
     var imageViewSpaceToBottom:NSLayoutConstraint?
@@ -241,6 +242,10 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
        }
     func adjustStackViewHeigt(height:CGFloat){
         stackViewHeight.constant += height
+        UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.stackView.layoutIfNeeded()
+                              }, completion: nil)
+       
         
         
     }
@@ -288,23 +293,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
     
 
     
-    func setUpGiphyView(){
-        mediaView?.removeFromSuperview()
-        mediaView = GPHMediaView()
-        stackView.addSubview(mediaView!)
-        mediaView?.translatesAutoresizingMaskIntoConstraints = false
-        let leadingSpace = NSLayoutConstraint(item: mediaView!, attribute: .leading, relatedBy: .equal, toItem: stackView, attribute: .leading, multiplier: 1, constant: 4)
-        giphyBottomSpaceConstraint = NSLayoutConstraint(item: stackView!, attribute: .bottom, relatedBy: .equal, toItem: mediaView!, attribute: .bottom, multiplier: 1, constant: 4)
-        giphyTrailingSpace = NSLayoutConstraint(item: stackView!, attribute: .trailing, relatedBy: .equal, toItem: mediaView!, attribute: .trailing, multiplier: 1, constant: 4)
-        let topSpace = NSLayoutConstraint(item: mediaView!, attribute: .top, relatedBy: .equal, toItem: textView, attribute: .bottom, multiplier: 1, constant: 8)
-       
-        stackView.addConstraints([leadingSpace,topSpace, giphyTrailingSpace!, giphyBottomSpaceConstraint!])
-        
-        mediaView?.isHidden=true
-        mediaView?.contentMode = UIView.ContentMode.scaleAspectFit
-       
-        
-    }
+   
     func btnUpTapped(cell: QuipCells) {
            //Get the indexpath of cell where button was tapped
          if let indexPath = self.replyTable.indexPath(for: cell){
@@ -616,7 +605,23 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
            
        }
  
-   
+   func setUpGiphyView(){
+          mediaView?.removeFromSuperview()
+          mediaView = GPHMediaView()
+          stackView.addSubview(mediaView!)
+          mediaView?.translatesAutoresizingMaskIntoConstraints = false
+          let leadingSpace = NSLayoutConstraint(item: mediaView!, attribute: .leading, relatedBy: .equal, toItem: stackView, attribute: .leading, multiplier: 1, constant: 4)
+          giphyBottomSpaceConstraint = NSLayoutConstraint(item: stackView!, attribute: .bottom, relatedBy: .equal, toItem: mediaView!, attribute: .bottom, multiplier: 1, constant: 4)
+          giphyTrailingSpace = NSLayoutConstraint(item: stackView!, attribute: .trailing, relatedBy: .equal, toItem: mediaView!, attribute: .trailing, multiplier: 1, constant: 4)
+          let topSpace = NSLayoutConstraint(item: mediaView!, attribute: .top, relatedBy: .equal, toItem: textView, attribute: .bottom, multiplier: 1, constant: 8)
+         
+          stackView.addConstraints([leadingSpace,topSpace, giphyTrailingSpace!, giphyBottomSpaceConstraint!])
+          
+          mediaView?.isHidden=true
+          mediaView?.contentMode = UIView.ContentMode.scaleAspectFit
+         
+          
+      }
     func setUpImageView(){
         imageView?.removeFromSuperview()
         
@@ -636,11 +641,43 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
           
       }
     
-    func resetGiphyView(){
-       
-               self.view.addConstraints([giphyTrailingSpace!,giphyBottomSpaceConstraint!])
+    func addCancelImageButton(isGif:Bool){
+         let width:CGFloat = 20
+         deleteBtn = UIButton()
+         self.stackView.addSubview(deleteBtn!)
+         deleteBtn?.setImage(UIImage(named: "multiply")?.withRenderingMode(.alwaysTemplate), for: .normal)
+         deleteBtn?.tintColor = .white
+         deleteBtn?.backgroundColor = .black
+         deleteBtn?.translatesAutoresizingMaskIntoConstraints = false
+         deleteBtn?.widthAnchor.constraint(equalToConstant: width).isActive=true
+         deleteBtn?.heightAnchor.constraint(equalToConstant:  width ).isActive = true
+        if isGif{
+         let mybuttonTopConstraint = NSLayoutConstraint(item: deleteBtn!, attribute: .top, relatedBy: .equal, toItem: mediaView, attribute: .top, multiplier: 1, constant: 10)
+         let mybuttonSideConstraint = NSLayoutConstraint(item: deleteBtn!, attribute: .trailing, relatedBy: .equal, toItem: mediaView, attribute: .trailing, multiplier: 1, constant: -10)
+             self.stackView.addConstraints([mybuttonTopConstraint,mybuttonSideConstraint])
+        }else{
+            let mybuttonTopConstraint = NSLayoutConstraint(item: deleteBtn!, attribute: .top, relatedBy: .equal, toItem: imageView, attribute: .top, multiplier: 1, constant: 10)
+            let mybuttonSideConstraint = NSLayoutConstraint(item: deleteBtn!, attribute: .trailing, relatedBy: .equal, toItem: imageView, attribute: .trailing, multiplier: 1, constant: -10)
+                self.stackView.addConstraints([mybuttonTopConstraint,mybuttonSideConstraint])
+        }
         
-    }
+         deleteBtn?.addTarget(self, action: #selector(self.deleteImage), for: .touchUpInside)
+         deleteBtn?.layer.cornerRadius = width / 2
+         deleteBtn?.clipsToBounds = true
+         
+         self.stackView.bringSubviewToFront(deleteBtn!)
+        
+     }
+     
+     @objc func deleteImage(){
+        adjustStackViewHeigt(height: -210)
+        imageView?.removeFromSuperview()
+         mediaView?.removeFromSuperview()
+         deleteBtn?.removeFromSuperview()
+        isNewImage = true
+        
+         
+     }
     
     func saveReply(){
             var imageRef:String?
@@ -881,7 +918,7 @@ extension ViewControllerQuip: UIImagePickerControllerDelegate, UINavigationContr
     }
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         setUpImageView()
-        
+        addCancelImageButton(isGif: false)
         if mediaView?.isHidden == false || imageView?.isHidden == false {
              isNewImage = false
         }
@@ -905,7 +942,7 @@ extension ViewControllerQuip: UIImagePickerControllerDelegate, UINavigationContr
             adjustStackViewHeigt(height: 210)
             isNewImage = false
         }
-        
+          self.stackView.layoutIfNeeded()
         dismiss(animated: true, completion: nil)
 
     }
@@ -918,7 +955,7 @@ extension ViewControllerQuip: GiphyDelegate {
    func didSelectMedia(giphyViewController: GiphyViewController, media: GPHMedia)   {
    
     setUpGiphyView()
-    
+    addCancelImageButton(isGif: true)
     if mediaView?.isHidden == false || imageView?.isHidden == false {
          isNewImage = false
     }
@@ -955,7 +992,7 @@ extension ViewControllerQuip: GiphyDelegate {
     adjustStackViewHeigt(height: 210)
         isNewImage = false
     }
-        
+    self.stackView.layoutIfNeeded()
         // your user tapped a GIF!
         giphyViewController.dismiss(animated: true, completion: nil)
    

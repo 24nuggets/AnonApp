@@ -9,11 +9,12 @@
 import UIKit
 
 
-class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableViewDelegate, MyCellDelegate3 {
+class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
   
     
     //IBOutlets
-    @IBOutlet weak var channelTable: UITableView!
+   
+    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var upcomingBtn: UIButton!
     @IBOutlet weak var activeBtn: UIButton!
     @IBOutlet weak var pastBtn: UIButton!
@@ -26,9 +27,9 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
     
     
     //Declare Variables
-    private var upcomingChannels:[Channel] = []
-    private var activeChannels:[Channel] = []
-    private var pastChannels:[Channel] = []
+   
+   
+    
     var uid:String?
     private var seenUpcoming:Bool = false
     private var seenActive:Bool = false
@@ -45,8 +46,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        channelTable.delegate=self
-        channelTable.dataSource=self
+       
         getIfUserFavCategory()
         //notification when user presses home button, detachlisteners is called
        // NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.detachlisteners), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
@@ -65,7 +65,8 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         setUpButtons()
        
         
-        
+        collectionView.delegate = self
+        collectionView.dataSource = self
         
         // Do any additional setup after loading the view.
         
@@ -75,10 +76,8 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let selectedIndexPath = channelTable.indexPathForSelectedRow {
-            channelTable.deselectRow(at: selectedIndexPath, animated: animated)
-        }
-        onLoad()
+       
+       
     }
    
     
@@ -102,22 +101,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
        }
    
     
-    //called on initial load and when this view controller is first one shown when app goes from background to foreground
-     func onLoad(){
-         
-               //if activebtn is the current one selected and have not seen it yet
-               if activeBtn.isSelected && !seenActive{
-                   getActive()
-                   seenActive=true
-                   
-               }
-             //if upcoming is selected and have not seen it yet
-               else if upcomingBtn.isSelected && !seenUpcoming{
-                  
-                   seenUpcoming=true
-                   
-               }
-     }
+ 
     
     // MARK: - NotificationCenter Functions
        
@@ -127,7 +111,7 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         if self.viewIfLoaded?.window != nil {
             // viewController is visible
             
-            onLoad()
+            
         }
     }
     
@@ -194,45 +178,10 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
         
     }
     
-    func getActive(){
-        
-        self.activeChannels=[]
-        
-        if let aGenCat = bigCategory{
-            if let aCatName = myCategory?.categoryName{
-                FirestoreService.sharedInstance.getActive(aGenCat: aGenCat, aCatName: aCatName) { (activeChannels) in
-                    self.activeChannels = activeChannels
-                      self.channelTable.reloadData()
-                }
-        }
-        }
-        
-    }
-    func getUpcoming(){
-        self.upcomingChannels=[]
-        if let aGenCat = bigCategory{
-                   if let aCatName = myCategory?.categoryName{
-                    FirestoreService.sharedInstance.getUpcoming(aGenCat: aGenCat, aCatName: aCatName) { (upcomingChannels) in
-                        self.upcomingChannels = upcomingChannels
-                        self.channelTable.reloadData()
-
-                    }
-               }
-               }
-        
-    }
    
-    func getPast(){
-        self.pastChannels=[]
-               if let aGenCat = bigCategory{
-                          if let aCatName = myCategory?.categoryName{
-                            FirestoreService.sharedInstance.getPast(aGenCat: aGenCat, aCatName: aCatName) { (pastChannels) in
-                                self.pastChannels = pastChannels
-                            }
-                      }
-                      }
-        
-    }
+   
+   
+    
   
     
     
@@ -274,14 +223,10 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
 //event when active button is clicked
     @IBAction func activeClicked(_ sender: UIButton) {
         //change buttons state
-        upcomingBtn.isSelected = false
-             activeBtn.isSelected = true
-             pastBtn.isSelected = false
-        bottomBarLeadingConstraint.constant = 0
-        getActive()
-        UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                                      self.menuView.layoutIfNeeded()
-                                  }, completion: nil)
+        selectLive()
+        
+       scrollToItemAtIndexPath(index: 0)
+       
         
         
         
@@ -290,126 +235,146 @@ class ViewControllerDiscover: UIViewController, UITableViewDataSource, UITableVi
     }
     //event when past is clicked
     @IBAction func pastClicked(_ sender: UIButton) {
-        upcomingBtn.isSelected = false
-        activeBtn.isSelected = false
-        pastBtn.isSelected = true
-        bottomBarLeadingConstraint.constant = activeBtn.frame.width
-        getPast()
-        UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                                      self.menuView.layoutIfNeeded()
-                                  }, completion: nil)
+       selectPast()
+        
+        scrollToItemAtIndexPath(index: 1)
+      
     }
     
     //event when upcoming is clicked
     @IBAction func upcomingClicked(_ sender: UIButton) {
         //change state of buttons
-        upcomingBtn.isSelected = true
-        activeBtn.isSelected = false
-        pastBtn.isSelected = false
-        bottomBarLeadingConstraint.constant = activeBtn.frame.width + pastBtn.frame.width
-        
-        getUpcoming()
+        selectUpcoming()
+       
+        scrollToItemAtIndexPath(index: 2)
+       
       
-        UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                                      self.menuView.layoutIfNeeded()
-                                  }, completion: nil)
+    
      
 
     }
+    func scrollToItemAtIndexPath(index: Int){
+           let indexPath = IndexPath(item: index, section: 0)
+           collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+       }
     
-    func arrowTap(cell: ChannelCells){
-        self.channelTable.selectRow(at: self.channelTable.indexPath(for: cell), animated: true, scrollPosition: .middle)
+    func selectLive(){
+        upcomingBtn.isSelected = false
+        activeBtn.isSelected = true
+        pastBtn.isSelected = false
+    }
+    func selectPast(){
+        upcomingBtn.isSelected = false
+               activeBtn.isSelected = false
+               pastBtn.isSelected = true
+    }
+    func selectUpcoming(){
+        upcomingBtn.isSelected = true
+        activeBtn.isSelected = false
+        pastBtn.isSelected = false
     }
     
-  
+   
     
-     // MARK: - TableView Functions
-    
-    
-    //gets number of sections for tableview
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    //returns how many cells are in table
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if upcomingBtn.isSelected {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+         return 3
+     }
+     
+     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+         if indexPath.row == 0{
+             if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "liveCell", for: indexPath) as? CollectionViewCellChannelLive{
+                cell.bigCategory = bigCategory
+                cell.categoryName = myCategory?.categoryName
+                cell.getActive()
+              return cell
+             }
              
-             return upcomingChannels.count
-           
-        } else if activeBtn.isSelected {
-            
-            return activeChannels.count
-            
-        }else if pastBtn.isSelected{
-            return pastChannels.count
-        }
-       return 0
-        
+         }else if indexPath.row == 1{
+             if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "pastCell", for: indexPath) as? CollectionViewCellChannelPast{
+             cell.bigCategory = bigCategory
+                            cell.categoryName = myCategory?.categoryName
+                cell.getPast()
+              return cell
+             }
+             
+         }else if indexPath.row == 2{
+             if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "upcomingCell", for: indexPath) as? CollectionViewCellChannelUpcoming{
+                    cell.bigCategory = bigCategory
+                    cell.categoryName = myCategory?.categoryName
+                cell.getUpcoming()
+             return cell
+             }
+         }
+       
+         
+         return UICollectionViewCell()
+     }
+     
+     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+     }
+     
+     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+         let index = targetContentOffset.pointee.x / view.frame.width
+         if index == 0 {
+            selectLive()
+         }else if index == 1{
+             selectPast()
+         }else if index == 2{
+             selectUpcoming()
+         }
+         
+     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        bottomBarLeadingConstraint.constant = scrollView.contentOffset.x / 3
     }
     
-    
-    //populate cells in table view
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-              
-        if upcomingBtn.isSelected {
-            let cell = channelTable.dequeueReusableCell(withIdentifier: "upcomingChannelCell", for: indexPath) as! UpcomingChannelCells
-            if upcomingChannels.count > 0 {
-                cell.channelName?.text = self.upcomingChannels[indexPath.row].channelName
-                cell.startDate?.text = "Start: Date"
-                cell.selectionStyle = .none
-            }
-            return cell
-        }
-        else{
-            let cell = channelTable.dequeueReusableCell(withIdentifier: "channelCell", for: indexPath) as! ChannelCells
-        if activeBtn.isSelected {
-            if activeChannels.count > 0 {
-                cell.channelName?.text = self.activeChannels[indexPath.row].channelName
-                cell.delegate = self
-            }
-            return cell
-            
-        }else if pastBtn.isSelected{
-            if pastChannels.count > 0{
-                 cell.channelName?.text = self.pastChannels[indexPath.row].channelName
-                cell.delegate = self
-            }
-            return cell
-        }
-        }
-          return UITableViewCell()
-    }
   
+    
+   
 
     
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    
+   
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
-        if let index = channelTable.indexPathForSelectedRow?.row {
-            if activeBtn.isSelected{
-                passedChannel = activeChannels[index]
-            }else if pastBtn.isSelected{
-                passedChannel = pastChannels[index]
+        if activeBtn.isSelected {
+        let indexPath = IndexPath(item: 0, section: 0)
+        let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellChannelLive
+        if let index = cell?.channelTable.indexPathForSelectedRow?.row{
+                               
+            passedChannel = cell?.activeChannels[index]
+            let myIndexPath = IndexPath(item: index, section: 0)
+                                        cell?.channelTable.deselectRow(at: myIndexPath, animated: true)
             }
             
-            feedVC = segue.destination as? ViewControllerFeed
-            feedVC?.myChannel = passedChannel
-           
-            feedVC?.uid=self.uid
-            
-            
         }
-       
-        
-        
-        
+        else if pastBtn.isSelected{
+             let indexPath = IndexPath(item: 1, section: 0)
+                    let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellChannelPast
+                    if let index = cell?.channelTable.indexPathForSelectedRow?.row{
+                                           
+                        passedChannel = cell?.pastChannels[index]
+                        let myIndexPath = IndexPath(item: index, section: 0)
+                                                    cell?.channelTable.deselectRow(at: myIndexPath, animated: true)
+                        }
+             
+        }
+            if let feedVC = segue.destination as? ViewControllerFeed{
+            feedVC.myChannel = passedChannel
+           
+            feedVC.uid=self.uid
+            }
+            
     }
+      
+        
+        
+    
     
 
 }//end of class

@@ -392,13 +392,16 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
    
     
     func loadMoreRecent(){
-           moreRecentQuipsFirebase=false
+           moreRecentQuipsFirestore=false
         
         if let myChannelKey = myChannel?.key{
+            if moreRecentQuipsFirebase==true{
+                moreRecentQuipsFirebase=false
             FirebaseService.sharedInstance.getMoreNewScoresFeed(myChannelKey: myChannelKey) { (myScores, moreRecentQuipsFirebase) in
                 self.myScores = self.myScores.merging(myScores, uniquingKeysWith: { (_, new) -> Any in
                     new
                 })
+                
                 //need to make sure firebase is always ahead of firestore
                 if self.moreRecentQuipsFirestore{
                     if let myChannelName = self.myChannel?.channelName{
@@ -418,6 +421,18 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                     self.moreRecentQuipsFirebase = moreRecentQuipsFirebase
                 }
                 
+            }
+            }else{
+                if let myChannelName = self.myChannel?.channelName{
+                    FirestoreService.sharedInstance.loadMoreNewQuipsFeed(myChannelKey: myChannelKey, channelName: myChannelName) { (newQuips, moreRecentQuipsFirestore) in
+                    self.firestoreQuips = self.firestoreQuips + newQuips
+                    self.mergeFirestoreFirebaseNewQuips()
+                    self.feedTable.reloadData()
+                                            //have to reload table before setting these to true
+                    
+                    self.moreRecentQuipsFirestore = moreRecentQuipsFirestore
+                }
+                }
             }
         }
         
@@ -685,7 +700,7 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                        switch newHot.selectedSegmentIndex
                               {
                               case 0:
-                               if moreRecentQuipsFirebase {
+                               if moreRecentQuipsFirestore {
                                   loadMoreRecent()
                                }
                                

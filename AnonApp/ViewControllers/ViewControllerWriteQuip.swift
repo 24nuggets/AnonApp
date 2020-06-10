@@ -20,7 +20,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     private var feedVC:ViewControllerFeed?
     var uid:String?
     private var childUpdates:[String:Any]=[:]
-    
+    var deleteBtn:UIButton?
     var mediaView:GPHMediaView?
     var giphyBottomSpaceConstraint:NSLayoutConstraint?
     var giphyTrailingSpace:NSLayoutConstraint?
@@ -30,6 +30,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
   
     @IBOutlet weak var Quipit: UINavigationItem!
     
+    @IBOutlet weak var deleteImageBtn: UIButton!
     
     @IBOutlet weak var toolBar: UIToolbar!
     
@@ -54,7 +55,8 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
         
         Quipit.rightBarButtonItem = UIBarButtonItem(title: "Post", style: .plain, target: self, action: #selector(self.postClicked))
         Quipit.rightBarButtonItem?.tintColor = .black
-        
+        deleteImageBtn.clipsToBounds = true
+        deleteImageBtn.layer.cornerRadius = deleteImageBtn.bounds.width/2
         imageView.layer.cornerRadius = 8.0
         hideKeyboardWhenTappedAround()
         // Do any additional setup after loading the view.
@@ -101,6 +103,14 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
         g.delegate = self
         present(g, animated: true, completion: nil)
     }
+    
+    @IBAction func deleteImageBtnClick(_ sender: Any) {
+        deleteImageBtn.isHidden = true
+        deleteImageBtn.isEnabled = false
+        imageView.image = nil
+        imageView.isHidden = true
+    }
+    
     
      // -MARK: TextViewFunctions
     
@@ -306,6 +316,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     
     func setUpGiphyView(){
         mediaView?.removeFromSuperview()
+        deleteBtn?.removeFromSuperview()
         mediaView = GPHMediaView()
         view.addSubview(mediaView!)
         mediaView?.translatesAutoresizingMaskIntoConstraints = false
@@ -313,20 +324,45 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
       giphyBottomSpaceConstraint = NSLayoutConstraint(item: self.view!, attribute: .bottom, relatedBy: .equal, toItem: mediaView!, attribute: .bottom, multiplier: 1, constant: 40)
         giphyTrailingSpace = NSLayoutConstraint(item: self.view!, attribute: .trailing, relatedBy: .equal, toItem: mediaView!, attribute: .trailing, multiplier: 1, constant: 40)
         let topSpace = NSLayoutConstraint(item: mediaView!, attribute: .top, relatedBy: .equal, toItem: textView, attribute: .bottom, multiplier: 1, constant: 10)
-       resetGiphyView()
+       
         self.view.addConstraints([leadingSpace,topSpace, giphyTrailingSpace!, giphyBottomSpaceConstraint!])
         
         mediaView?.isHidden=true
         mediaView?.contentMode = UIView.ContentMode.scaleAspectFit
        
         
-    }
-    
-    func resetGiphyView(){
        
-               self.view.addConstraints([giphyTrailingSpace!,giphyBottomSpaceConstraint!])
         
     }
+    
+    func addCancelImageButton(){
+        let width:CGFloat = 20
+        deleteBtn = UIButton()
+        self.view.addSubview(deleteBtn!)
+        deleteBtn?.setImage(UIImage(named: "multiply")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        deleteBtn?.tintColor = .white
+        deleteBtn?.backgroundColor = .black
+        deleteBtn?.translatesAutoresizingMaskIntoConstraints = false
+        deleteBtn?.widthAnchor.constraint(equalToConstant: width).isActive=true
+        deleteBtn?.heightAnchor.constraint(equalToConstant:  width ).isActive = true
+        let mybuttonTopConstraint = NSLayoutConstraint(item: deleteBtn!, attribute: .top, relatedBy: .equal, toItem: mediaView, attribute: .top, multiplier: 1, constant: 10)
+        let mybuttonSideConstraint = NSLayoutConstraint(item: deleteBtn!, attribute: .trailing, relatedBy: .equal, toItem: mediaView, attribute: .trailing, multiplier: 1, constant: -10)
+        self.view.addConstraints([mybuttonTopConstraint,mybuttonSideConstraint])
+        deleteBtn?.addTarget(self, action: #selector(self.deleteImage), for: .touchUpInside)
+        deleteBtn?.layer.cornerRadius = width / 2
+        deleteBtn?.clipsToBounds = true
+        
+        self.view.bringSubviewToFront(deleteBtn!)
+       
+    }
+    
+    @objc func deleteImage(){
+        mediaView?.removeFromSuperview()
+        deleteBtn?.removeFromSuperview()
+             
+    }
+    
+ 
     
   
 
@@ -352,6 +388,8 @@ extension ViewControllerWriteQuip: UIImagePickerControllerDelegate, UINavigation
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         mediaView?.isHidden=true
         imageView.isHidden=false
+        deleteImageBtn.isEnabled = true
+        deleteImageBtn.isHidden = false
         if let myImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
             imageView.translatesAutoresizingMaskIntoConstraints=false
              let newImage = resizeImage(image: myImage, targetSize: CGSize(width: imageView.frame.width, height: imageView.frame.width * 2 ))
@@ -371,6 +409,7 @@ extension ViewControllerWriteQuip: GiphyDelegate {
    func didSelectMedia(giphyViewController: GiphyViewController, media: GPHMedia)   {
    // let giphyID = media.id
     setUpGiphyView()
+    addCancelImageButton()
     mediaView?.isHidden = false
     imageView.isHidden = true
     
@@ -384,12 +423,14 @@ extension ViewControllerWriteQuip: GiphyDelegate {
     mediaView?.widthAnchor.constraint(equalTo: mediaView!.heightAnchor, multiplier: media.aspectRatio).isActive = true
     
     mediaView?.layer.cornerRadius = 8.0
-    mediaView?.clipsToBounds = true 
+    mediaView?.clipsToBounds = true
     
+     self.view.layoutIfNeeded()
  //   mediaView?.frame.size = resizeGIF(image: media, targetSize: CGSize(width: (mediaView?.frame.width)!, height: (mediaView?.frame.width)! * 2))
         
         // your user tapped a GIF!
         giphyViewController.dismiss(animated: true, completion: nil)
+    
    }
    
    func didDismiss(controller: GiphyViewController?) {

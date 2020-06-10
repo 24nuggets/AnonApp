@@ -18,6 +18,7 @@ class FirestoreService: NSObject {
     
     private var lastRecentDocFeed:DocumentSnapshot?
     private var lastHotDocumentFeed:DocumentSnapshot?
+    private var lastHotDocUser:DocumentSnapshot?
     private var myLastRecentDocUser:DocumentSnapshot?
     private var hotQuipAdds:[String] = []
     private var myNewHotQuipData:[String:Any] = [:]
@@ -173,28 +174,31 @@ class FirestoreService: NSObject {
                   else{
                     if let querySnapshot = querySnapshot{
                       let length = querySnapshot.documents.count
-                       mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
+                       
                      if length == 0 {
                                                   
                         self.createHotQuipsDoc(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: false, aChannelKey: myChannelKey) { (myData, aHotQuips, more) in
                             completion(myData, aHotQuips, more)
                         }
                                                    
-                    }
-                    else if self.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
-                        self.lastHotDocumentFeed = querySnapshot.documents[0]
-                        self.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: false) { (myData, aHotQuips, more) in
-                            completion(myData, aHotQuips, more)
-                        }
-                            
-                                   
-                    }else{
-                        
-                        self.lastHotDocumentFeed = querySnapshot.documents[0]
-                        completion(mydata, hotQuips, false)
+                     }else{
+                        mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
+                        if self.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                            self.lastHotDocumentFeed = querySnapshot.documents[0]
+                            self.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: false) { (myData, aHotQuips, more) in
+                                completion(myData, aHotQuips, more)
+                            }
                                 
+                                       
+                        }else{
+                            
+                            self.lastHotDocumentFeed = querySnapshot.documents[0]
+                            completion(mydata, hotQuips, false)
                                     
+                                        
+                        }
                     }
+                    
                    
                     }
                     
@@ -249,6 +253,51 @@ class FirestoreService: NSObject {
                       }
         }
     }
+    
+    func getHotQuipsUser(myUid:String, aHotIDs:[String], hotQuips:[Quip], completion: @escaping ([String:Any],[Quip], Bool)->()){
+           var mydata:[String:Any] = [:]
+           let channelRef = db.collection("Users/\(myUid)/HotQuips")
+               channelRef.order(by: "t", descending: false).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+                     if let err = err {
+                                     print("Error getting documents: \(err)")
+                     }
+                     else{
+                       if let querySnapshot = querySnapshot{
+                         let length = querySnapshot.documents.count
+                          
+                        if length == 0 {
+                                                     
+                           self.createHotQuipsDocUser(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: false, aUid: myUid) { (myData, aHotQuips, more) in
+                               completion(myData, aHotQuips, more)
+                           }
+                                                      
+                        }else{
+                           mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
+                           if self.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                               self.lastHotDocUser = querySnapshot.documents[0]
+                               self.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: false) { (myData, aHotQuips, more) in
+                                   completion(myData, aHotQuips, more)
+                               }
+                                   
+                                          
+                           }else{
+                               
+                               self.lastHotDocUser = querySnapshot.documents[0]
+                               completion(mydata, hotQuips, false)
+                                       
+                                           
+                           }
+                       }
+                       
+                      
+                       }
+                       
+                        
+                     }
+                   
+                    
+                 }
+       }
     
     func compareHotQuips(myData:[String:Any], aHotIDs:[String])->Bool{
         hotQuipAdds = []
@@ -326,7 +375,35 @@ class FirestoreService: NSObject {
          
       }
       }
-    
+    func createHotQuipsDocUser(aHotIDs:[String], aHotQuips:[Quip], more:Bool, aUid:String, completion: @escaping ([String:Any],[Quip], Bool)->()){
+             var i:Int = 0
+             var myData:[String:Any] = [:]
+             for aHotId in aHotIDs{
+                self.db.collection("Quips").document(aHotId).getDocument { (document, error) in
+                    if let document = document, document.exists {
+                     let data = document.data(with: ServerTimestampBehavior.estimate)
+                     myData[aHotId] = data
+                     i += 1
+                    }
+                 if i == aHotIDs.count{
+                 myData["t"] = FieldValue.serverTimestamp()
+                     
+               let docRef=self.db.collection("Users/\(aUid)/HotQuips").addDocument(data: myData)
+                   //   sleep(1)
+                    
+                     docRef.getDocument { (document, error) in
+                     if let document = document, document.exists {
+                         self.lastHotDocUser = document
+                      
+                         }
+                         }
+                  completion(myData, aHotQuips, more)
+                }
+                
+             }
+            
+         }
+         }
     func updateLikesDislikes(myNewLikesDislikesMap:[String:Int], aChannelOrUserKey:String, myMap:[String:String], aUID:String, parentChannelKey:String?, parentChannelMap:[String:String]?){
         let batch = self.db.batch()
         
@@ -837,8 +914,8 @@ class FirestoreService: NSObject {
                                    aQuipScore = myQuipNumbers["s"]
                                    aReplies = myQuipNumbers["r"]
                                } else {
-                                   aQuipScore = myInfo["s"] as? Int
-                                  aReplies = myInfo["r"] as? Int
+                                   aQuipScore = 0
+                                  aReplies = 0
                                    
                                }
                                  let myImageRef = myInfo["i"] as? String
@@ -866,6 +943,51 @@ class FirestoreService: NSObject {
                            
             }
                        
+        }
+    }
+    
+    func loadMoreHotUser(auid:String, aHotIDs:[String], hotQuips:[Quip], completion: @escaping ([String:Any],[Quip], Bool)->()){
+        var mydata:[String:Any] = [:]
+        let channelRef = db.collection("Users/\(auid)/HotQuips")
+        if let lastdoc = lastHotDocUser{
+               channelRef.order(by: "t", descending: false).start(afterDocument: lastdoc).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+                          if let err = err {
+                                          print("Error getting documents: \(err)")
+                          }
+                          else{
+                              if let querySnapshot = querySnapshot{
+                                let length = querySnapshot.documents.count
+                                mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
+                                if length == 0 {
+                                                                        
+                                    self.createHotQuipsDocUser(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: true, aUid:auid) { (myData, aHotQuips, more) in
+                                            completion(myData, aHotQuips, more)
+                                        }
+                                                                                
+                                    }
+                                else if self.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                                    self.lastHotDocumentFeed = querySnapshot.documents[0]
+                                    self.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: true) { (myData, aHotQuips, more) in
+                                            completion(myData, aHotQuips, more)
+                                    }
+                                                         
+                                                                
+                                }else{
+                                                    
+                                    self.lastHotDocumentFeed = querySnapshot.documents[0]
+                                        completion(mydata, hotQuips, true)
+                                                             
+                                                                 
+                                }
+                                                
+                            }
+                           
+                            
+                           
+                              
+                          }
+                          
+                      }
         }
     }
     
