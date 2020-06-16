@@ -13,7 +13,7 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
     
    
     var myLiveEvents:[Channel]=[]
-   var categoryController:ViewControllerCategories?
+   weak var categoryController:ViewControllerCategories?
     var isFiltered = false
     
     
@@ -28,9 +28,9 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
   }
     func getLive(){
           self.myLiveEvents=[]
-          FirestoreService.sharedInstance.getLiveEvents { (myLiveEvents) in
-              self.myLiveEvents = myLiveEvents
-              self.categoriesTable.reloadData()
+          FirestoreService.sharedInstance.getLiveEvents {[weak self] (myLiveEvents) in
+            self?.myLiveEvents = myLiveEvents
+            self?.categoriesTable.reloadData()
           }
              
          }
@@ -74,7 +74,7 @@ class collectionCellSportsCategories:UICollectionViewCell, UITableViewDelegate, 
        private var allSports:[Category]=[]
     var filteredCats:[Category]=[]
     var isFiltered:Bool = false
-    var categoryController:ViewControllerCategories?
+    weak var categoryController:ViewControllerCategories?
     
     @IBOutlet weak var categoriesTable: UITableView!
     
@@ -90,10 +90,10 @@ class collectionCellSportsCategories:UICollectionViewCell, UITableViewDelegate, 
     func getSports(){
         self.allSports = []
         self.mySports = []
-        FirestoreService.sharedInstance.getSports { (mySports, allSports) in
-            self.mySports = mySports
-            self.allSports = allSports
-            self.categoriesTable.reloadData()
+        FirestoreService.sharedInstance.getSports {[weak self] (mySports, allSports) in
+            self?.mySports = mySports
+            self?.allSports = allSports
+            self?.categoriesTable.reloadData()
         }
         
     }
@@ -145,7 +145,7 @@ class collectionCellEntertainmentCategories:UICollectionViewCell, UITableViewDel
     var myEntertainment:[Category]=[]
    var filteredCats:[Category]=[]
     var isFiltered:Bool = false
-    var categoryController:ViewControllerCategories?
+    weak var categoryController:ViewControllerCategories?
     
     @IBOutlet weak var categoriesTable: UITableView!
     

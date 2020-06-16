@@ -35,31 +35,32 @@ class CustomImageView:UIImageView{
         }
         else{
          let downloadRef = storageRef.child(myQuipImageRef)
-         let downloadTask = downloadRef.getData(maxSize: 1 * 1024 * 1024) { (data, error) in
+         let downloadTask = downloadRef.getData(maxSize: 1 * 1024 * 1024) {[weak self] (data, error) in
                 if let error = error {
                             print("error: \(error.localizedDescription)")
                             return
                 }
                 else{
                     DispatchQueue.main.async {
-                        if self.myImageRef == myQuipImageRef{
+                        if self?.myImageRef == myQuipImageRef{
                            
                                      
                             if let myImage = UIImage(data: data!) {
-                                
-                                let width = self.frame.size.width
+                                if let aself = self{
+                                 let width = aself.frame.size.width
                                 let newImage = resizeImage(image: myImage, targetSize: CGSize(width: width, height: width * 2 ))
                                 imageCache.setObject(newImage, forKey: myQuipImageRef as NSString)
-                                let heightConstraint = self.heightAnchor.constraint(equalToConstant: newImage.size.height)
-                                self.addConstraint(heightConstraint)
+                                let heightConstraint = aself.heightAnchor.constraint(equalToConstant: newImage.size.height)
+                                aself.addConstraint(heightConstraint)
                                         feedTable.beginUpdates()
                                         feedTable.endUpdates()
-                                self.layer.cornerRadius = 8.0
-                                       self.clipsToBounds = true
+                                aself.layer.cornerRadius = 8.0
+                                aself.clipsToBounds = true
                                
                                                  
-                                          self.image = newImage
-                                runningRequestsImageViews.removeValue(forKey: self)
+                                          aself.image = newImage
+                                runningRequestsImageViews.removeValue(forKey: aself)
+                                }
                                 }
                             
                                           
@@ -106,7 +107,7 @@ extension GPHMediaView{
             self.media = media
         }
         else {
-           let task = GiphyCore.shared.gifByID(gifID) { (response, error) in
+           let task = GiphyCore.shared.gifByID(gifID) {[weak self] (response, error) in
                       if let media = response?.data {
                           DispatchQueue.main.async {
                               
@@ -114,15 +115,15 @@ extension GPHMediaView{
                                
                             imageCache.setObject(media, forKey: gifID as NSString)
                             
-                                                                
-                            self.widthAnchor.constraint(equalTo: self.heightAnchor, multiplier: media.aspectRatio).isActive = true
+                            if let aself = self{
+                            aself.widthAnchor.constraint(equalTo: aself.heightAnchor, multiplier: media.aspectRatio).isActive = true
                             feedTable.beginUpdates()
                             feedTable.endUpdates()
-                            self.layer.cornerRadius = 8.0
-                            self.clipsToBounds = true
-                            self.media = media
-                            runningRequestsGifViews.removeValue(forKey: self)
-                              
+                            aself.layer.cornerRadius = 8.0
+                            aself.clipsToBounds = true
+                            aself.media = media
+                            runningRequestsGifViews.removeValue(forKey: aself)
+                            }
                               
                           }
                             

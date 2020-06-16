@@ -31,9 +31,9 @@ class CollectionViewCellChannelLive: UICollectionViewCell, MyCellDelegate3, UITa
            
            if let aGenCat = bigCategory{
                if let aCatName = categoryName{
-                   FirestoreService.sharedInstance.getActive(aGenCat: aGenCat, aCatName: aCatName) { (activeChannels) in
-                       self.activeChannels = activeChannels
-                         self.channelTable.reloadData()
+                   FirestoreService.sharedInstance.getActive(aGenCat: aGenCat, aCatName: aCatName) { [weak self](activeChannels) in
+                    self?.activeChannels = activeChannels
+                    self?.channelTable.reloadData()
                    }
            }
            }
@@ -98,8 +98,8 @@ class CollectionViewCellChannelPast: UICollectionViewCell, MyCellDelegate3, UITa
         self.pastChannels=[]
                if let aGenCat = bigCategory{
                           if let aCatName = categoryName{
-                            FirestoreService.sharedInstance.getPast(aGenCat: aGenCat, aCatName: aCatName) { (pastChannels) in
-                                self.pastChannels = pastChannels
+                            FirestoreService.sharedInstance.getPast(aGenCat: aGenCat, aCatName: aCatName) { [weak self](pastChannels) in
+                                self?.pastChannels = pastChannels
                             }
                       }
                       }
@@ -164,9 +164,9 @@ class CollectionViewCellChannelUpcoming: UICollectionViewCell, UITableViewDelega
            self.upcomingChannels=[]
            if let aGenCat = bigCategory{
                       if let aCatName = categoryName{
-                       FirestoreService.sharedInstance.getUpcoming(aGenCat: aGenCat, aCatName: aCatName) { (upcomingChannels) in
-                           self.upcomingChannels = upcomingChannels
-                           self.channelTable.reloadData()
+                       FirestoreService.sharedInstance.getUpcoming(aGenCat: aGenCat, aCatName: aCatName) {[weak self] (upcomingChannels) in
+                        self?.upcomingChannels = upcomingChannels
+                        self?.channelTable.reloadData()
 
                        }
                   }

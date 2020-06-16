@@ -1,14 +1,14 @@
 //
-//  NavigationControllerFavorites.swift
+//  ViewControllerAddFavsTwo.swift
 //  AnonApp
 //
-//  Created by Matthew Capriotti on 5/21/20.
+//  Created by Matthew Capriotti on 6/13/20.
 //  Copyright © 2020 Matthew Capriotti. All rights reserved.
 //
 
 import UIKit
 
-class NavigationControllerFavorites: UINavigationController {
+class ViewControllerAddFavsTwo: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

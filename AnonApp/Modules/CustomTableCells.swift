@@ -152,6 +152,7 @@ class QuipCells:UITableViewCell{
         myGifView.cancelLoad()
         myImageView.cancelLoad()
         
+        
     }
     
    

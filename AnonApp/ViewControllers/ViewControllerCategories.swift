@@ -41,11 +41,11 @@ class ViewControllerCategories: UIViewController, UISearchBarDelegate, UICollect
     
     
    
-    private var discoverVC:ViewControllerDiscover?
+    private weak var discoverVC:ViewControllerDiscover?
     private var uid:String?
     private var category:[String:String]=[:]
-    var selectedCategory:Category?
-    var selectedChannel:Channel?
+    weak var selectedCategory:Category?
+   weak  var selectedChannel:Channel?
    
    
     

@@ -20,8 +20,8 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
        private var index:Int?
     private var didReorder:Bool = false
        var uid:String?
-       private var feedVC:ViewControllerFeed?
-       private var passedChannel:Channel?
+       private weak var feedVC:ViewControllerFeed?
+       private weak var passedChannel:Channel?
     private var myFavCats:[Category] = []
     lazy var MenuLauncher:addFavsMenu = {
         let launcher = addFavsMenu()
@@ -127,8 +127,20 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
     }
     
     func showAddViewController(menuItem: MenuItem){
-        let nextViewController = UIViewController()
-               navigationController?.pushViewController(nextViewController, animated: true)
+        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "addFavsOne") as! ViewControllerAddFavsOne
+        nextViewController.uid = uid
+        nextViewController.parentVC = self
+        let catNames = myFavCats.map { (cat:Category) -> String in
+            (cat.categoryName ?? "N/A")
+        }
+        nextViewController.currentFavs=Dictionary(uniqueKeysWithValues: zip(catNames, 1...catNames.count))
+        
+        if menuItem.name == "Add Teams And Leagues"{
+            nextViewController.isAddSports = true
+            
+        }
+        navigationController?.showDetailViewController(nextViewController, sender: nil)
           
     }
     
@@ -139,9 +151,9 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
         self.myFavCats = []
         
           if let aUid = uid{
-            FirestoreService.sharedInstance.getUserFavCategories(aUid: aUid) { (myFavCats) in
-                self.myFavCats = myFavCats
-                self.favCategoriesTable.reloadData()
+            FirestoreService.sharedInstance.getUserFavCategories(aUid: aUid) {[weak self] (myFavCats) in
+                self?.myFavCats = myFavCats
+                self?.favCategoriesTable.reloadData()
             }
                     
                         

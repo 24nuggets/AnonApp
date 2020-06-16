@@ -187,7 +187,7 @@ class Menu: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UICo
 
 class addFavsMenu:Menu{
     
-    var favController: ViewControllerFavorites?
+    weak var favController: ViewControllerFavorites?
     
     override func nextController(menuItem:MenuItem){
         self.favController?.showAddViewController(menuItem: menuItem)
@@ -198,7 +198,7 @@ class addFavsMenu:Menu{
 
    
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"Add Team", imageName: "plus.circle"), MenuItem(name: "Add League", imageName: "plus.circle"), MenuItem(name:"Add Entertainment", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        menuItems = [MenuItem(name:"Add Teams And Leagues", imageName: "plus.circle"), MenuItem(name:"Add Entertainment", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
            
        }
   
@@ -207,7 +207,7 @@ class addFavsMenu:Menu{
 class ellipsesMenuFeed:Menu{
     
    
-    var feedController: ViewControllerFeed?
+   weak var feedController: ViewControllerFeed?
     
     
     override func nextController(menuItem:MenuItem){
@@ -223,7 +223,7 @@ class ellipsesMenuFeed:Menu{
 
 class ellipsesMenuUser:Menu{
 
-    var userController: ViewControllerUser?
+    weak var userController: ViewControllerUser?
     
     override func nextController(menuItem:MenuItem){
        
@@ -238,7 +238,7 @@ class ellipsesMenuUser:Menu{
 
 class ellipsesMenuQuip:Menu{
     
-     var quipController: ViewControllerQuip?
+    weak var quipController: ViewControllerQuip?
     
     override func nextController(menuItem:MenuItem){
        
@@ -252,7 +252,7 @@ class ellipsesMenuQuip:Menu{
 
 class SettingsMenuQuip:Menu{
     
-     var userController: ViewControllerUser?
+    weak var userController: ViewControllerUser?
     
     override func nextController(menuItem:MenuItem){
        

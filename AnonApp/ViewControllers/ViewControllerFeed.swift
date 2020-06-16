@@ -19,16 +19,16 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
     
     
 
-    var myChannel:Channel?
+    weak var myChannel:Channel?
     private var timesDownloaded:Int=0
     private var newQuips:[Quip?] = []
     private var hotQuips:[Quip?] = []
     private var firestoreQuips:[Quip?] = []
     private var currentTime:Double?
-    private var writeQuip:ViewControllerWriteQuip?
+    private weak var writeQuip:ViewControllerWriteQuip?
     var uid:String?
-    private var passedQuip:Quip?
-    private var quipVC:ViewControllerQuip?
+    private weak var passedQuip:Quip?
+    private weak var quipVC:ViewControllerQuip?
     private var myScores:[String:Any]=[:]
     private var myHotIDs:[String]=[]
     private var hotQuipsInfo:[String:Any]=[:]
@@ -98,9 +98,7 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewWillDisappear(_ animated: Bool){
            super.viewWillDisappear(animated)
 
-         updateFirestoreLikesDislikes()
-        FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
-       resetVars()
+         
     }
     
     //resets all arrays haveing to do with new user likes/dislikes
@@ -225,10 +223,13 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                if let aQuipScore = aQuip.quipScore{
                 let diff = cell.upToDown(quipScore: aQuipScore, quip: aQuip)
                     if let aID = aQuip.quipID{
-                        updateVotesFirebase(diff: diff, quipID: aID)
+                        if let aAuthor = aQuip.user{
+                        
                         myNewLikesDislikesMap[aID] = -1
                         myLikesDislikesMap[aID] = -1
                         myUserMap[aID]=aQuip.user
+                            updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                        }
                     }
             }
         }
@@ -236,10 +237,13 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                if let aQuipScore = aQuip.quipScore{
                 let diff = cell.downToNone(quipScore: aQuipScore, quip: aQuip)
                     if let aID = aQuip.quipID{
-                        updateVotesFirebase(diff: diff, quipID: aID)
+                        if let aAuthor = aQuip.user{
+                        
                         myNewLikesDislikesMap[aID]=0
                         myLikesDislikesMap[aID]=0
                         myUserMap[aID]=aQuip.user
+                            updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                        }
                     }
                 
             }
@@ -248,10 +252,13 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
              if let aQuipScore = aQuip.quipScore{
                 let diff = cell.noneToDown(quipScore: aQuipScore, quip:aQuip)
                 if let aID = aQuip.quipID{
-                    updateVotesFirebase(diff: diff, quipID: aID)
+                    if let aAuthor = aQuip.user{
+                    
                     myNewLikesDislikesMap[aID] = -1
                     myLikesDislikesMap[aID] = -1
                     myUserMap[aID]=aQuip.user
+                        updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                    }
                 }
             }
             
@@ -263,10 +270,13 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
             if let aQuipScore = aQuip.quipScore{
                 let diff = cell.upToNone(quipScore: aQuipScore, quip:aQuip)
                 if let aID = aQuip.quipID{
-                    updateVotesFirebase(diff: diff, quipID: aID)
+                    if let aAuthor = aQuip.user{
+                    
                     myNewLikesDislikesMap[aID]=0
                     myLikesDislikesMap[aID]=0
                     myUserMap[aID]=aQuip.user
+                        updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                    }
                     }
                     
             }
@@ -275,10 +285,13 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                 if let aQuipScore = aQuip.quipScore{
                     let diff = cell.downToUp(quipScore: aQuipScore, quip:aQuip)
                         if let aID = aQuip.quipID{
-                            updateVotesFirebase(diff: diff, quipID: aID)
+                            if let aAuthor = aQuip.user{
+                            
                             myNewLikesDislikesMap[aID] = 1
                             myLikesDislikesMap[aID] = 1
                             myUserMap[aID]=aQuip.user
+                                updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                            }
                         }
                     }
                 }
@@ -286,10 +299,13 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
                 if let aQuipScore = aQuip.quipScore{
                     let diff = cell.noneToUp(quipScore: aQuipScore, quip:aQuip)
                     if let aID = aQuip.quipID{
-                        updateVotesFirebase(diff: diff, quipID: aID)
+                        if let aAuthor = aQuip.user{
+                        
                         myNewLikesDislikesMap[aID] = 1
                         myLikesDislikesMap[aID] = 1
                         myUserMap[aID]=aQuip.user
+                        updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                        }
                     }
                 }
              }
@@ -298,7 +314,7 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
     
      // MARK: - putVotesToDatabase
     
-    func updateVotesFirebase(diff:Int, quipID:String){
+    func updateVotesFirebase(diff:Int, quipID:String, aUID:String){
         //increment value has to be double or long or it wont work properly
         let myDiff2 = Double(diff)
         let myDiff = NSNumber(value: myDiff2)
@@ -308,10 +324,13 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
         if let aParentChannelKey = myChannel?.parentKey {
             myVotes["A/\(aParentChannelKey)/Q/\(quipID)/s"] = ServerValue.increment(myDiff)
         }
-        if let aUID = uid {
+       
         myVotes["M/\(aUID)/q/\(quipID)/s"] = ServerValue.increment(myDiff)
-            
-        }
+        
+            updateFirestoreLikesDislikes()
+             FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
+            resetVars()
+        
     }
     
     func updateFirestoreLikesDislikes(){
@@ -362,20 +381,20 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
         self.myScores = [:]
         self.moreRecentQuipsFirebase = false
         if let myChannelKey = myChannel?.key{
-            FirebaseService.sharedInstance.getNewScoresFeed(myChannelKey: myChannelKey) { (myScores, currentTime,  moreRecentQuipsFirebase) in
-                self.myScores = myScores
-                self.currentTime = currentTime
-                self.moreRecentQuipsFirebase = moreRecentQuipsFirebase
-                if let myChannelName = self.myChannel?.channelName{
-                    FirestoreService.sharedInstance.getNewQuipsFeed(myChannelKey: myChannelKey, myChannelName: myChannelName) { (newQuips, moreRecentQuipsFirestore) in
-                        self.firestoreQuips = newQuips
-                        self.mergeFirestoreFirebaseNewQuips()
-                        self.moreRecentQuipsFirestore = moreRecentQuipsFirestore
-                        if let aUid = self.uid {
-                            FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { (myLikesDislikesMap) in
-                                self.myLikesDislikesMap = myLikesDislikesMap
-                                self.feedTable.reloadData()
-                                self.refreshControl.endRefreshing()
+            FirebaseService.sharedInstance.getNewScoresFeed(myChannelKey: myChannelKey) { [weak self](myScores, currentTime,  moreRecentQuipsFirebase) in
+                self?.myScores = myScores
+                self?.currentTime = currentTime
+                self?.moreRecentQuipsFirebase = moreRecentQuipsFirebase
+                if let myChannelName = self?.myChannel?.channelName{
+                    FirestoreService.sharedInstance.getNewQuipsFeed(myChannelKey: myChannelKey, myChannelName: myChannelName) { [weak self](newQuips, moreRecentQuipsFirestore) in
+                        self?.firestoreQuips = newQuips
+                        self?.mergeFirestoreFirebaseNewQuips()
+                        self?.moreRecentQuipsFirestore = moreRecentQuipsFirestore
+                        if let aUid = self?.uid {
+                            FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { [weak self](myLikesDislikesMap) in
+                                self?.myLikesDislikesMap = myLikesDislikesMap
+                                self?.feedTable.reloadData()
+                                self?.refreshControl.endRefreshing()
                             }
                         }
                     }
@@ -397,40 +416,46 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
         if let myChannelKey = myChannel?.key{
             if moreRecentQuipsFirebase==true{
                 moreRecentQuipsFirebase=false
-            FirebaseService.sharedInstance.getMoreNewScoresFeed(myChannelKey: myChannelKey) { (myScores, moreRecentQuipsFirebase) in
-                self.myScores = self.myScores.merging(myScores, uniquingKeysWith: { (_, new) -> Any in
+            FirebaseService.sharedInstance.getMoreNewScoresFeed(myChannelKey: myChannelKey) {[weak self] (myScores, moreRecentQuipsFirebase) in
+                if let aself = self{
+                self?.myScores = aself.myScores.merging(myScores, uniquingKeysWith: { (_, new) -> Any in
                     new
                 })
+                }
                 
                 //need to make sure firebase is always ahead of firestore
-                if self.moreRecentQuipsFirestore{
-                    if let myChannelName = self.myChannel?.channelName{
-                        FirestoreService.sharedInstance.loadMoreNewQuipsFeed(myChannelKey: myChannelKey, channelName: myChannelName) { (newQuips, moreRecentQuipsFirestore) in
-                            self.firestoreQuips = self.firestoreQuips + newQuips
-                            self.mergeFirestoreFirebaseNewQuips()
-                            self.feedTable.reloadData()
+                if self?.moreRecentQuipsFirestore ?? false{
+                    if let myChannelName = self?.myChannel?.channelName{
+                        FirestoreService.sharedInstance.loadMoreNewQuipsFeed(myChannelKey: myChannelKey, channelName: myChannelName) { [weak self](newQuips, moreRecentQuipsFirestore) in
+                            if let aself = self{
+                            self?.firestoreQuips = aself.firestoreQuips + newQuips
+                            self?.mergeFirestoreFirebaseNewQuips()
+                            self?.feedTable.reloadData()
                              //have to reload table before setting these to true
-                            self.moreRecentQuipsFirebase = moreRecentQuipsFirebase
-                            self.moreRecentQuipsFirestore = moreRecentQuipsFirestore
+                            self?.moreRecentQuipsFirebase = moreRecentQuipsFirebase
+                            self?.moreRecentQuipsFirestore = moreRecentQuipsFirestore
+                            }
                         }
                         
                     }
                 }else{
-                    self.mergeFirestoreFirebaseNewQuips()
-                    self.feedTable.reloadData()
-                    self.moreRecentQuipsFirebase = moreRecentQuipsFirebase
+                    self?.mergeFirestoreFirebaseNewQuips()
+                    self?.feedTable.reloadData()
+                    self?.moreRecentQuipsFirebase = moreRecentQuipsFirebase
                 }
                 
             }
             }else{
                 if let myChannelName = self.myChannel?.channelName{
-                    FirestoreService.sharedInstance.loadMoreNewQuipsFeed(myChannelKey: myChannelKey, channelName: myChannelName) { (newQuips, moreRecentQuipsFirestore) in
-                    self.firestoreQuips = self.firestoreQuips + newQuips
-                    self.mergeFirestoreFirebaseNewQuips()
-                    self.feedTable.reloadData()
+                    FirestoreService.sharedInstance.loadMoreNewQuipsFeed(myChannelKey: myChannelKey, channelName: myChannelName) {[weak self] (newQuips, moreRecentQuipsFirestore) in
+                        if let aself = self{
+                        self?.firestoreQuips = aself.firestoreQuips + newQuips
+                        self?.mergeFirestoreFirebaseNewQuips()
+                        self?.feedTable.reloadData()
+                        }
                                             //have to reload table before setting these to true
                     
-                    self.moreRecentQuipsFirestore = moreRecentQuipsFirestore
+                        self?.moreRecentQuipsFirestore = moreRecentQuipsFirestore
                 }
                 }
             }
@@ -463,14 +488,14 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
         moreHotQuipsFirebase = false
         if let myChannelKey = myChannel?.key{
             
-            FirebaseService.sharedInstance.getHotFeed(myChannelKey: myChannelKey) { (myHotQuips, myHotQuipIDs, moreHotQuipsFirebase, currentTime)  in
-                self.hotQuips = myHotQuips
-                self.myHotIDs = myHotQuipIDs
-                self.currentTime = currentTime
-                FirestoreService.sharedInstance.getHotQuipsFeed(myChannelKey: myChannelKey, aHotIDs: myHotQuipIDs, hotQuips: myHotQuips) { (myData, aHotQuips, more) in
-                    self.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
-                    self.moreHotQuipsFirebase = moreHotQuipsFirebase
-                    self.refreshControl.endRefreshing()
+            FirebaseService.sharedInstance.getHotFeed(myChannelKey: myChannelKey) {[weak self] (myHotQuips, myHotQuipIDs, moreHotQuipsFirebase, currentTime)  in
+                self?.hotQuips = myHotQuips
+                self?.myHotIDs = myHotQuipIDs
+                self?.currentTime = currentTime
+                FirestoreService.sharedInstance.getHotQuipsFeed(myChannelKey: myChannelKey, aHotIDs: myHotQuipIDs, hotQuips: myHotQuips) {[weak self] (myData, aHotQuips, more) in
+                    self?.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
+                    self?.moreHotQuipsFirebase = moreHotQuipsFirebase
+                    self?.refreshControl.endRefreshing()
                 }
             }
             
@@ -514,11 +539,11 @@ class ViewControllerFeed: UIViewController, UITableViewDataSource, UITableViewDe
     func loadMoreHotQuips(){
         moreHotQuipsFirebase = false
         if let myChannelKey = myChannel?.key{
-            FirebaseService.sharedInstance.loadMoreHotFeed(myChannelKey: myChannelKey) { (aHotQuips, aHotIDs, moreHotQuipsFirebase) in
-                FirestoreService.sharedInstance.loadMoreHotFeed(myChannelKey: myChannelKey, aHotIDs: aHotIDs, hotQuips: aHotQuips) { (myData, aHotQuips, more) in
-                    self.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
-                    self.moreHotQuipsFirebase = moreHotQuipsFirebase
-                    self.refreshControl.endRefreshing()
+            FirebaseService.sharedInstance.loadMoreHotFeed(myChannelKey: myChannelKey) {[weak self] (aHotQuips, aHotIDs, moreHotQuipsFirebase) in
+                FirestoreService.sharedInstance.loadMoreHotFeed(myChannelKey: myChannelKey, aHotIDs: aHotIDs, hotQuips: aHotQuips) {[weak self] (myData, aHotQuips, more) in
+                    self?.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
+                    self?.moreHotQuipsFirebase = moreHotQuipsFirebase
+                    self?.refreshControl.endRefreshing()
                 }
                 
                 

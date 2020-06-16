@@ -30,7 +30,7 @@ class FirestoreService: NSObject {
         
         var newQuips:[Quip] = []
                //gets 2 most recent documents that have quips
-               channelRef.order(by: "t", descending: true).limit(to: 2).getDocuments(){ (querySnapshot, err) in
+               channelRef.order(by: "t", descending: true).limit(to: 2).getDocuments(){[weak self] (querySnapshot, err) in
                    if let err = err {
                                    print("Error getting documents: \(err)")
                    }
@@ -48,7 +48,7 @@ class FirestoreService: NSObject {
                            let document = querySnapshot!.documents[i]
                        
                            if i == 2{
-                            self.lastRecentDocFeed = document
+                            self?.lastRecentDocFeed = document
                                moreRecentQuipsFirestore = true
                            }
                            
@@ -94,7 +94,7 @@ class FirestoreService: NSObject {
         let docRef = db.collection("/Users/\(aUid)/LikesDislikes").document(aKey)
                          
                      
-                         docRef.getDocument{ (document, error) in
+                         docRef.getDocument{(document, error) in
                              if let document = document, document.exists {
                                if let myMap = document.data() as? [String:Int]{
                                    myLikesDislikesMap=myMap
@@ -113,7 +113,7 @@ class FirestoreService: NSObject {
         var newQuips:[Quip] = []
         let channelRef = db.collection("Channels/\(myChannelKey)/RecentQuips")
         if let myLastDoc = lastRecentDocFeed{
-            channelRef.order(by: "t", descending: true).start(afterDocument: myLastDoc).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+            channelRef.order(by: "t", descending: true).start(afterDocument: myLastDoc).limit(to: 1).getDocuments(){ [weak self](querySnapshot, err) in
                             if let err = err {
                                             print("Error getting documents: \(err)")
                             }
@@ -129,7 +129,7 @@ class FirestoreService: NSObject {
                                     
                                     let document = querySnapshot!.documents[0]
                                  
-                                          self.lastRecentDocFeed = document
+                                self?.lastRecentDocFeed = document
                                           moreRecentQuipsFirestore = true
                                   
                                     
@@ -167,7 +167,7 @@ class FirestoreService: NSObject {
     func getHotQuipsFeed(myChannelKey:String, aHotIDs:[String], hotQuips:[Quip], completion: @escaping ([String:Any],[Quip], Bool)->()){
         var mydata:[String:Any] = [:]
         let channelRef = db.collection("Channels/\(myChannelKey)/HotQuips")
-            channelRef.order(by: "t", descending: false).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+            channelRef.order(by: "t", descending: false).limit(to: 1).getDocuments(){[weak self] (querySnapshot, err) in
                   if let err = err {
                                   print("Error getting documents: \(err)")
                   }
@@ -177,22 +177,22 @@ class FirestoreService: NSObject {
                        
                      if length == 0 {
                                                   
-                        self.createHotQuipsDoc(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: false, aChannelKey: myChannelKey) { (myData, aHotQuips, more) in
+                        self?.createHotQuipsDoc(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: false, aChannelKey: myChannelKey) { (myData, aHotQuips, more) in
                             completion(myData, aHotQuips, more)
                         }
                                                    
                      }else{
                         mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
-                        if self.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
-                            self.lastHotDocumentFeed = querySnapshot.documents[0]
-                            self.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: false) { (myData, aHotQuips, more) in
+                        if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                            self?.lastHotDocumentFeed = querySnapshot.documents[0]
+                            self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: false) { (myData, aHotQuips, more) in
                                 completion(myData, aHotQuips, more)
                             }
                                 
                                        
                         }else{
                             
-                            self.lastHotDocumentFeed = querySnapshot.documents[0]
+                            self?.lastHotDocumentFeed = querySnapshot.documents[0]
                             completion(mydata, hotQuips, false)
                                     
                                         
@@ -213,7 +213,7 @@ class FirestoreService: NSObject {
         var mydata:[String:Any] = [:]
         let channelRef = db.collection("Channels/\(myChannelKey)/HotQuips")
         if let lastdoc = lastHotDocumentFeed{
-               channelRef.order(by: "t", descending: false).start(afterDocument: lastdoc).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+               channelRef.order(by: "t", descending: false).start(afterDocument: lastdoc).limit(to: 1).getDocuments(){ [weak self](querySnapshot, err) in
                           if let err = err {
                                           print("Error getting documents: \(err)")
                           }
@@ -223,21 +223,21 @@ class FirestoreService: NSObject {
                                 mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
                                 if length == 0 {
                                                                         
-                                    self.createHotQuipsDoc(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: true, aChannelKey: myChannelKey) { (myData, aHotQuips, more) in
+                                    self?.createHotQuipsDoc(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: true, aChannelKey: myChannelKey) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)
                                         }
                                                                                 
                                     }
-                                else if self.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
-                                    self.lastHotDocumentFeed = querySnapshot.documents[0]
-                                    self.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: true) { (myData, aHotQuips, more) in
+                                else if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                                    self?.lastHotDocumentFeed = querySnapshot.documents[0]
+                                    self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: true) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)
                                     }
                                                          
                                                                 
                                 }else{
                                                     
-                                    self.lastHotDocumentFeed = querySnapshot.documents[0]
+                                    self?.lastHotDocumentFeed = querySnapshot.documents[0]
                                         completion(mydata, hotQuips, true)
                                                              
                                                                  
@@ -257,7 +257,7 @@ class FirestoreService: NSObject {
     func getHotQuipsUser(myUid:String, aHotIDs:[String], hotQuips:[Quip], completion: @escaping ([String:Any],[Quip], Bool)->()){
            var mydata:[String:Any] = [:]
            let channelRef = db.collection("Users/\(myUid)/HotQuips")
-               channelRef.order(by: "t", descending: false).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+               channelRef.order(by: "t", descending: false).limit(to: 1).getDocuments(){[weak self] (querySnapshot, err) in
                      if let err = err {
                                      print("Error getting documents: \(err)")
                      }
@@ -267,22 +267,22 @@ class FirestoreService: NSObject {
                           
                         if length == 0 {
                                                      
-                           self.createHotQuipsDocUser(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: false, aUid: myUid) { (myData, aHotQuips, more) in
+                            self?.createHotQuipsDocUser(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: false, aUid: myUid) { (myData, aHotQuips, more) in
                                completion(myData, aHotQuips, more)
                            }
                                                       
                         }else{
                            mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
-                           if self.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
-                               self.lastHotDocUser = querySnapshot.documents[0]
-                               self.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: false) { (myData, aHotQuips, more) in
+                            if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                                self?.lastHotDocUser = querySnapshot.documents[0]
+                                self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: false) { (myData, aHotQuips, more) in
                                    completion(myData, aHotQuips, more)
                                }
                                    
                                           
                            }else{
                                
-                               self.lastHotDocUser = querySnapshot.documents[0]
+                                self?.lastHotDocUser = querySnapshot.documents[0]
                                completion(mydata, hotQuips, false)
                                        
                                            
@@ -560,12 +560,12 @@ class FirestoreService: NSObject {
         
         let recentQuipsRef = self.db.collection("Channels/\(myChannelKey)/RecentQuips")
                   
-        recentQuipsRef.order(by: "t", descending: true).limit(to: 2).getDocuments(){ (querySnapshot, err) in
+        recentQuipsRef.order(by: "t", descending: true).limit(to: 2).getDocuments(){[weak self] (querySnapshot, err) in
                        if err != nil {
                            return
                        }
                        
-            self.db.runTransaction({ (transaction, errorPointer) -> Any? in
+            self?.db.runTransaction({[weak self] (transaction, errorPointer) -> Any? in
                         let sfDocument: DocumentSnapshot
                   do {
                        try sfDocument = transaction.getDocument((querySnapshot?.documents[0].reference)!)
@@ -578,7 +578,7 @@ class FirestoreService: NSObject {
                                if querySnapshot?.isEmpty ?? true ||
                                    querySnapshot?.documents[1].data()["n"] as! Double >= 20{
                                
-                                   self.createNewDocForRecentChannel(data: data, key: key, transaction: transaction, channelKey: myChannelKey)
+                                self?.createNewDocForRecentChannel(data: data, key: key, transaction: transaction, channelKey: myChannelKey)
                            
                                 
                                     let mydata2=["n":FieldValue.increment(Int64(1))]
@@ -626,22 +626,22 @@ class FirestoreService: NSObject {
     func addQuipToRecentUserQuips(auid:String, data:[String:Any], key:String){
         let recentQuipsRef = self.db.collection("Users/\(auid)/RecentQuips")
                     
-            recentQuipsRef.order(by: "t", descending: true).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+            recentQuipsRef.order(by: "t", descending: true).limit(to: 1).getDocuments(){[weak self] (querySnapshot, err) in
                         if let err = err {
                                    print("Error getting documents: \(err)")
                         }else{
                           
                             if querySnapshot?.isEmpty ?? true ||
                                 querySnapshot?.documents[0].data()["n"] as! Double >= 20{
-                                self.createNewDocForRecentUser(data: data, key: key, auid: auid)
+                                self?.createNewDocForRecentUser(data: data, key: key, auid: auid)
                         
                             }
                             else{
                                 let mydata2=["n":FieldValue.increment(Int64(1))]
-                                let batch = self.db.batch()
-                                batch.updateData(mydata2, forDocument: (querySnapshot?.documents[0].reference)!)
-                                batch.updateData(["quips.\(key)" : data], forDocument: (querySnapshot?.documents[0].reference)!)
-                                batch.commit()
+                                let batch = self?.db.batch()
+                                batch?.updateData(mydata2, forDocument: (querySnapshot?.documents[0].reference)!)
+                                batch?.updateData(["quips.\(key)" : data], forDocument: (querySnapshot?.documents[0].reference)!)
+                                batch?.commit()
                                 
                                }
                            
@@ -823,7 +823,7 @@ class FirestoreService: NSObject {
         var moreRecentQuips = false
         let userRecentRef = db.collection("Users/\(uid)/RecentQuips")
            
-           userRecentRef.order(by: "t", descending: true).limit(to: 2).getDocuments(){ (querySnapshot, err) in
+           userRecentRef.order(by: "t", descending: true).limit(to: 2).getDocuments(){[weak self] (querySnapshot, err) in
                if let err = err {
                                print("Error getting documents: \(err)")
                }
@@ -846,7 +846,7 @@ class FirestoreService: NSObject {
                         let myChannelKey = myInfo["k"] as? String
                     let myChannelParentKey = myInfo["pk"] as? String
                     let isReply = myInfo["reply"] as? Bool
-                    
+                    let quipParent = myInfo["p"] as? String
                        
                     var aQuipScore:Int?
                     var aReplies:Int?
@@ -860,7 +860,8 @@ class FirestoreService: NSObject {
                     
                       let myImageRef = myInfo["i"] as? String
                       let myGifRef = myInfo["g"] as? String
-                    let myQuip = Quip(text: aQuipText ?? "", bowl: myChannel ?? "Other", time: atimePosted ?? Timestamp(), score: aQuipScore ?? 0, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply)
+                    let myQuip = Quip(text: aQuipText ?? "", bowl: myChannel ?? "Other", time: atimePosted ?? Timestamp(), score: aQuipScore ?? 0, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent: quipParent)
+                    
                        newUserQuips.append(myQuip)
                     
                     j += 1
@@ -869,7 +870,7 @@ class FirestoreService: NSObject {
                     if i == 1 {
                     
                            if j == 20  {
-                                    self.myLastRecentDocUser = document
+                            self?.myLastRecentDocUser = document
                                     moreRecentQuips = true
                             }
                     }
@@ -886,7 +887,7 @@ class FirestoreService: NSObject {
         var moreRecentQuipsUser = false
         let userRecentRef = db.collection("Users/\(uid)/RecentQuips")
         if let myLastDoc = self.myLastRecentDocUser{
-        userRecentRef.order(by: "t", descending: true).start(afterDocument: myLastDoc).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+        userRecentRef.order(by: "t", descending: true).start(afterDocument: myLastDoc).limit(to: 1).getDocuments(){ [weak self](querySnapshot, err) in
                              var i = 0
                           if let err = err {
                                 print("Error getting documents: \(err)")
@@ -907,7 +908,7 @@ class FirestoreService: NSObject {
                                   let atimePosted = myInfo["d"] as? Timestamp
                                   let aQuipText = myInfo["t"] as? String
                                   let myChannel = myInfo["c"] as? String
-                                  
+                                  let quipParent = myInfo["p"] as? String
                                var aQuipScore:Int?
                                var aReplies:Int?
                                if let myQuipNumbers = myScores[aQuipID] as? [String:Int]{
@@ -923,7 +924,7 @@ class FirestoreService: NSObject {
                                 let myChannelKey = myInfo["k"] as? String
                                 let myChannelParentKey = myInfo["pk"] as? String
                                 let isReply = myInfo["reply"] as? Bool
-                               let myQuip = Quip(text: aQuipText!, bowl: myChannel ?? "Other", time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, replies: aReplies!,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply)
+                               let myQuip = Quip(text: aQuipText!, bowl: myChannel ?? "Other", time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, replies: aReplies!,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent:quipParent )
                                   newUserQuips.append(myQuip)
                                 
                                 i += 1
@@ -934,7 +935,7 @@ class FirestoreService: NSObject {
                             
                             
                                     if i == 20 {
-                                        self.myLastRecentDocUser = document
+                                        self?.myLastRecentDocUser = document
                                         moreRecentQuipsUser = true
                                     }
                             completion(newUserQuips, moreRecentQuipsUser)
@@ -950,7 +951,7 @@ class FirestoreService: NSObject {
         var mydata:[String:Any] = [:]
         let channelRef = db.collection("Users/\(auid)/HotQuips")
         if let lastdoc = lastHotDocUser{
-               channelRef.order(by: "t", descending: false).start(afterDocument: lastdoc).limit(to: 1).getDocuments(){ (querySnapshot, err) in
+               channelRef.order(by: "t", descending: false).start(afterDocument: lastdoc).limit(to: 1).getDocuments(){ [weak self](querySnapshot, err) in
                           if let err = err {
                                           print("Error getting documents: \(err)")
                           }
@@ -960,21 +961,21 @@ class FirestoreService: NSObject {
                                 mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
                                 if length == 0 {
                                                                         
-                                    self.createHotQuipsDocUser(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: true, aUid:auid) { (myData, aHotQuips, more) in
+                                    self?.createHotQuipsDocUser(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: true, aUid:auid) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)
                                         }
                                                                                 
                                     }
-                                else if self.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
-                                    self.lastHotDocumentFeed = querySnapshot.documents[0]
-                                    self.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: true) { (myData, aHotQuips, more) in
+                                else if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                                    self?.lastHotDocumentFeed = querySnapshot.documents[0]
+                                    self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: true) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)
                                     }
                                                          
                                                                 
                                 }else{
                                                     
-                                    self.lastHotDocumentFeed = querySnapshot.documents[0]
+                                    self?.lastHotDocumentFeed = querySnapshot.documents[0]
                                         completion(mydata, hotQuips, true)
                                                              
                                                                  
@@ -991,11 +992,31 @@ class FirestoreService: NSObject {
         }
     }
     
+    func getQuip(quipID:String,completion: @escaping (Quip)->()){
+       let quipRef = db.collection("/Quips").document(quipID)
+        quipRef.getDocument { (snapshot, error) in
+            if let error = error{
+               print(error)
+            }else{
+                if let mydata = snapshot?.data(){
+                let author = mydata["a"] as? String
+                let channelkey = mydata["k"] as? String
+                let parentchannelKey = mydata["pk"] as? String
+                let atimePosted = mydata["d"] as? Timestamp
+                let text = mydata["t"] as? String
+                    let aQuip = Quip(myQuipID: quipID, auser: author, parentchannelKey: parentchannelKey, achannelkey: channelkey, atimePosted: atimePosted, text:text)
+                    
+                completion(aQuip)
+                }
+            }
+        }
+    }
+    
     func getReplies(quipID:String, replyScores:[String:Int], completion: @escaping ([Quip])->()){
         var aReplies:[Quip] = []
         let repliesRef = db.collection("/Quips/\(quipID)/Replies")
             
-            repliesRef.getDocuments() {(querySnapshot, err) in
+            repliesRef.getDocuments() {[weak self](querySnapshot, err) in
             if let err = err {
                     print("Error getting documents: \(err)")
             }

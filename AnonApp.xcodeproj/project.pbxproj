@@ -14,6 +14,8 @@
 		C73AA0CB2453BC66000C27B9 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CA2453BC66000C27B9 /* Category.swift */; };
 		C73AA0CD2454B451000C27B9 /* ViewControllerUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CC2454B451000C27B9 /* ViewControllerUser.swift */; };
 		C73AA0CF2454CB43000C27B9 /* ViewControllerQuip.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CE2454CB43000C27B9 /* ViewControllerQuip.swift */; };
+		C756A1242495581B0066208D /* ViewControllerAddFavsOne.swift in Sources */ = {isa = PBXBuildFile; fileRef = C756A1232495581B0066208D /* ViewControllerAddFavsOne.swift */; };
+		C756A1262495584A0066208D /* ViewControllerAddFavsTwo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C756A1252495584A0066208D /* ViewControllerAddFavsTwo.swift */; };
 		C75942C0247CA46300ED8223 /* ViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75942BF247CA46300ED8223 /* ViewControllerExtensions.swift */; };
 		C75942C2247CA49F00ED8223 /* UIButtonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75942C1247CA49F00ED8223 /* UIButtonExtensions.swift */; };
 		C75942C4247CA52B00ED8223 /* CustomTableCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75942C3247CA52B00ED8223 /* CustomTableCells.swift */; };
@@ -73,6 +75,8 @@
 		C73AA0CA2453BC66000C27B9 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		C73AA0CC2454B451000C27B9 /* ViewControllerUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerUser.swift; sourceTree = "<group>"; };
 		C73AA0CE2454CB43000C27B9 /* ViewControllerQuip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerQuip.swift; sourceTree = "<group>"; };
+		C756A1232495581B0066208D /* ViewControllerAddFavsOne.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerAddFavsOne.swift; sourceTree = "<group>"; };
+		C756A1252495584A0066208D /* ViewControllerAddFavsTwo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerAddFavsTwo.swift; sourceTree = "<group>"; };
 		C75942BF247CA46300ED8223 /* ViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerExtensions.swift; sourceTree = "<group>"; };
 		C75942C1247CA49F00ED8223 /* UIButtonExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonExtensions.swift; sourceTree = "<group>"; };
 		C75942C3247CA52B00ED8223 /* CustomTableCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableCells.swift; sourceTree = "<group>"; };
@@ -238,6 +242,8 @@
 				C73AA0C82453ACEF000C27B9 /* ViewControllerCategories.swift */,
 				C73AA0CC2454B451000C27B9 /* ViewControllerUser.swift */,
 				C73AA0CE2454CB43000C27B9 /* ViewControllerQuip.swift */,
+				C756A1232495581B0066208D /* ViewControllerAddFavsOne.swift */,
+				C756A1252495584A0066208D /* ViewControllerAddFavsTwo.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -582,10 +588,12 @@
 				C7CC6D5C2442056F0038FA7A /* ViewControllerDiscover.swift in Sources */,
 				C7E7B1DC244CA2E500D7847C /* Quip.swift in Sources */,
 				C7A6DF9B2481DC91003DA05B /* FirestoreService.swift in Sources */,
+				C756A1242495581B0066208D /* ViewControllerAddFavsOne.swift in Sources */,
 				C7A6DFA124887C38003DA05B /* CollectionViewCellChannel.swift in Sources */,
 				C7A6DF92247F43C1003DA05B /* Menu.swift in Sources */,
 				C75942C2247CA49F00ED8223 /* UIButtonExtensions.swift in Sources */,
 				C7E7B1E42451205700D7847C /* ViewControllerFavorites.swift in Sources */,
+				C756A1262495584A0066208D /* ViewControllerAddFavsTwo.swift in Sources */,
 				C75942C0247CA46300ED8223 /* ViewControllerExtensions.swift in Sources */,
 				C7EC25B42442A98B00827719 /* ImageFunctions.swift in Sources */,
 				C7E7B1E724512C6F00D7847C /* BaseTabBarController.swift in Sources */,

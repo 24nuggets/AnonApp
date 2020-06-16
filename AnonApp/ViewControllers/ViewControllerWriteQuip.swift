@@ -16,8 +16,8 @@ import Firebase
 class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     
     
-    var myChannel:Channel?
-    private var feedVC:ViewControllerFeed?
+    weak var myChannel:Channel?
+    private weak var feedVC:ViewControllerFeed?
     var uid:String?
     private var childUpdates:[String:Any]=[:]
     var deleteBtn:UIButton?

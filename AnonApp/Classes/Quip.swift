@@ -14,21 +14,21 @@ import GiphyCoreSDK
 class Quip{
     
     //attributes of single quip
-    var quipText:String?
-    var channel:String?
+   var quipText:String?
+   var channel:String?
     var quipScore:Int?
     var timePosted:Timestamp?
     var user:String?
-    var quipID:String?
-    var channelKey:String?
-    var parentKey:String?
-    var quipReplies:Int?
-    var imageRef:String?
-    var gifID:String?
-    var seen:Bool = false
-    var tempScore:Int?
+   var quipID:String?
+   var channelKey:String?
+   var parentKey:String?
+   var quipReplies:Int?
+   var imageRef:String?
+   var gifID:String?
+  var seen:Bool = false
+   var tempScore:Int?
     var isReply = false
-    var quipParent:String?
+ var quipParent:String?
  
     
     
@@ -36,7 +36,7 @@ class Quip{
   
     
     //loading quip to user page
-    init(text:String, bowl:String, time:Timestamp, score:Int, myQuipID:String, replies:Int, myImageRef:String?, myGifID:String?, myChannelKey:String?, myParentChannelKey:String?, isReply:Bool?){
+    init(text:String, bowl:String, time:Timestamp, score:Int, myQuipID:String, replies:Int, myImageRef:String?, myGifID:String?, myChannelKey:String?, myParentChannelKey:String?, isReply:Bool?, aquipParent:String?){
         quipText = text
         channel = bowl
         timePosted = time
@@ -50,6 +50,7 @@ class Quip{
         parentKey=myParentChannelKey
         if let aReply = isReply{
         self.isReply=aReply
+        quipParent=aquipParent
         }
     }
     
@@ -87,13 +88,25 @@ class Quip{
         quipReplies=replies
     }
     
+    init(myQuipID:String, auser:String?, parentchannelKey:String?, achannelkey:String?, atimePosted:Timestamp?, text:String?){
+        parentKey=parentchannelKey
+        channelKey=achannelkey
+        quipID = myQuipID
+        user = auser
+        timePosted=atimePosted
+        quipText=text
+    }
+    
+    
     func setScore(aScore:Int){
         quipScore = aScore
         tempScore = aScore
     }
     
    
-    
+    deinit{
+        
+    }
  
    
     

@@ -28,6 +28,8 @@ class Channel{
         priority=apriority  
     }
     
-    
+    deinit{
+        
+    }
     
 }

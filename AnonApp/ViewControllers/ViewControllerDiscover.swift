@@ -33,11 +33,11 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
     var uid:String?
     private var seenUpcoming:Bool = false
     private var seenActive:Bool = false
-    private var feedVC:ViewControllerFeed?
-    private var passedChannel:Channel?
+    private weak var feedVC:ViewControllerFeed?
+    private weak var passedChannel:Channel?
   
     
-    var myCategory:Category?
+    weak var myCategory:Category?
     var bigCategory:String?
     private var isfav:Bool?
     private var myFavs:[Category] = []
@@ -125,9 +125,9 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
     func getIfUserFavCategory(){
         self.myFavs = []
         if let aUid = uid{
-            FirestoreService.sharedInstance.getUserFavCategories(aUid: aUid) { (myFavs) in
-                self.myFavs = myFavs
-                self.updateFavButton()
+            FirestoreService.sharedInstance.getUserFavCategories(aUid: aUid) {[weak self] (myFavs) in
+                self?.myFavs = myFavs
+                self?.updateFavButton()
             }
                   
                  

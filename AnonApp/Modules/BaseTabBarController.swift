@@ -13,7 +13,7 @@ class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
     
     private var DatabaseUrl:String="https://quippet-2213.firebaseio.com/"
     var userID:String?
-    private var discoverVC:ViewControllerDiscover?
+    private weak var discoverVC:ViewControllerDiscover?
 
     override func viewDidLoad() {
         super.viewDidLoad()
