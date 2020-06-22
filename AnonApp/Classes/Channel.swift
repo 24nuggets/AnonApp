@@ -12,16 +12,18 @@ import Foundation
 class Channel{
     
     var channelName:String?
-    var startDate:String?
+    var startDate:Date?
+    var endDate:Date?
     var key:String?
     var parent:String?
     var parentKey:String?
     var priority:Int?
     
     
-    init(name:String, start:String?, akey:String, aparent:String?, aparentkey:String?, apriority:Int?){
+    init(name:String, akey:String, aparent:String?, aparentkey:String?, apriority:Int?, astartDate:Date?, aendDate:Date?){
         channelName = name
-        startDate = start
+        startDate = astartDate
+        endDate = aendDate
         key=akey
         parent=aparent
         parentKey=aparentkey

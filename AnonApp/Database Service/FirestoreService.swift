@@ -445,12 +445,25 @@ class FirestoreService: NSObject {
                                 if let name = myInfo["name"] as? String{
                                 let parent = myInfo["parent"] as? String
                                 let parentkey = myInfo["parentkey"] as? String
-                                    let myChannel = Channel(name: name, start: nil, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority)
+                                let astart = myInfo["start"] as? Timestamp
+                                let aend = myInfo["end"] as? Timestamp
+                                    let myChannel = Channel(name: name, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority, astartDate: astart?.dateValue(), aendDate:aend?.dateValue())
                                 activeChannels.append(myChannel)
                                 }
                             }
                             
                         }
+                    activeChannels.sort { (event1, event2) -> Bool in
+                        if event1.priority != nil && event2.priority == nil{
+                            return true
+                        }else if event1.priority == nil && event2.priority != nil{
+                            return false
+                        }else if event1.priority != nil && event2.priority != nil{
+                            return event1.priority! < event2.priority!
+                        }else{
+                            return event1.endDate! < event2.endDate!
+                        }
+                    }
                     completion(activeChannels)
                        
                     }
@@ -481,12 +494,25 @@ class FirestoreService: NSObject {
                                                  if let name = myInfo["name"] as? String{
                                                  let parent = myInfo["parent"] as? String
                                                  let parentkey = myInfo["parentkey"] as? String
-                                                     let myChannel = Channel(name: name, start: nil, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority)
+                                                    let astart = myInfo["start"] as? Timestamp
+                                                    let aend = myInfo["end"] as? Timestamp
+                                                    let myChannel = Channel(name: name, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority,astartDate: astart?.dateValue(), aendDate:aend?.dateValue())
                                                  upcomingChannels.append(myChannel)
                                                  }
                                              }
                                              
                                          }
+                        upcomingChannels.sort { (event1, event2) -> Bool in
+                            if event1.priority != nil && event2.priority == nil{
+                                return true
+                            }else if event1.priority == nil && event2.priority != nil{
+                                return false
+                            }else if event1.priority != nil && event2.priority != nil{
+                                return event1.priority! < event2.priority!
+                            }else{
+                                return event1.startDate! < event2.startDate!
+                            }
+                        }
                                 completion(upcomingChannels)
                                      }
                                             
@@ -516,12 +542,25 @@ class FirestoreService: NSObject {
                                                         if let name = myInfo["name"] as? String{
                                                         let parent = myInfo["parent"] as? String
                                                         let parentkey = myInfo["parentkey"] as? String
-                                                            let myChannel = Channel(name: name, start: nil, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority)
+                                                        let astart = myInfo["start"] as? Timestamp
+                                                        let aend = myInfo["end"] as? Timestamp
+                                                            let myChannel = Channel(name: name, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority, astartDate: astart?.dateValue(), aendDate:aend?.dateValue())
                                                        pastChannels.append(myChannel)
                                                         }
                                                     }
                                                     
                                                 }
+                                            pastChannels.sort { (event1, event2) -> Bool in
+                                                if event1.priority != nil && event2.priority == nil{
+                                                    return true
+                                                }else if event1.priority == nil && event2.priority != nil{
+                                                    return false
+                                                }else if event1.priority != nil && event2.priority != nil{
+                                                    return event1.priority! < event2.priority!
+                                                }else{
+                                                    return event1.endDate! < event2.endDate!
+                                                }
+                                            }
                                             completion(pastChannels)
                                                 
                                             }
@@ -732,7 +771,9 @@ class FirestoreService: NSObject {
                            if let eventInfo = myLiveEvents[aEvent] as? [String:Any]{
                                if let eventName = eventInfo["name"] as? String{
                                    let priority = eventInfo["priority"] as? Int
-                                   let myEvent = Channel(name: eventName, start: nil, akey: eventID, aparent: nil, aparentkey: nil, apriority: priority)
+                                let astart = eventInfo["start"] as? Timestamp
+                                let aend = eventInfo["end"] as? Timestamp
+                                let myEvent = Channel(name: eventName, akey: eventID, aparent: nil, aparentkey: nil, apriority: priority, astartDate: astart?.dateValue(), aendDate: aend?.dateValue())
                                    aLiveEvents.append(myEvent)
                                }
                            }
@@ -748,6 +789,17 @@ class FirestoreService: NSObject {
                    } else {
                        print("Document does not exist")
                    }
+                aLiveEvents.sort{ (event1, event2) -> Bool in
+                    if event1.priority != nil && event2.priority == nil{
+                        return true
+                    }else if event1.priority == nil && event2.priority != nil{
+                        return false
+                    }else if event1.priority != nil && event2.priority != nil{
+                        return event1.priority! < event2.priority!
+                    }else{
+                        return event1.endDate! < event2.endDate!
+                    }
+                }
                 completion(aLiveEvents)
                }
                
@@ -783,6 +835,8 @@ class FirestoreService: NSObject {
                       } else {
                           print("Document does not exist")
                       }
+                    aSports.sort(by: { $0.priority! < $1.priority! })
+                    
                     completion(aSports,allSports)
                   }
     }
@@ -813,6 +867,7 @@ class FirestoreService: NSObject {
         } else {
             print("Document does not exist")
         }
+        aEntertainments.sort(by: { $0.priority! < $1.priority! })
         completion(aEntertainments, allEntertainment)
     }
     }
