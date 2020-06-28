@@ -165,13 +165,14 @@ class QuipCells:UITableViewCell{
                       self.upButton.tintColor = UIColor.lightGray
                       self.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
                      
-                      let originalScore = Int(self.score.text!)!
-                          let newScore = originalScore-2
+                    let originalScore = Int(self.score.text!)!
+                        
+                          let newScore = originalScore - 2
                           self.score.text = String(newScore)
       
         quip?.tempScore=newScore
                
-       return newScore - quipScore
+       return -2
            
        }
        
@@ -184,7 +185,7 @@ class QuipCells:UITableViewCell{
         if let aquip = quip {
                    aquip.tempScore=newScore
                }
-         return  newScore - quipScore
+         return  -1
            
        }
        
@@ -197,7 +198,7 @@ class QuipCells:UITableViewCell{
         if let aquip = quip {
                    aquip.tempScore=newScore
                }
-        return newScore - quipScore
+        return 1
            
        }
        
@@ -212,7 +213,7 @@ class QuipCells:UITableViewCell{
                      if let aquip = quip {
                                 aquip.tempScore=newScore
                             }
-                       return newScore - quipScore
+                       return 2
            
        }
     func noneToUp(quipScore:Int, quip:Quip?)->Int{
@@ -224,7 +225,7 @@ class QuipCells:UITableViewCell{
             aquip.tempScore=newScore
         }
              self.score.text = String(newScore)
-         return newScore - quipScore
+         return 1
            
        }
     func upToNone(quipScore:Int, quip:Quip?)->Int{
@@ -236,7 +237,7 @@ class QuipCells:UITableViewCell{
         if let aquip = quip {
                    aquip.tempScore=newScore
                }
-          return newScore - quipScore
+          return -1
            
        }
    

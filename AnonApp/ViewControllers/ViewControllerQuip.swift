@@ -19,6 +19,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
 
     
     var myQuip:Quip?
+    var passedReply:Quip?
     weak var myChannel:Channel?
     var uid:String?
     var mediaView:GPHMediaView?
@@ -42,6 +43,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
     private var myLikesDislikesMap:[String:Int] = [:]
     private var myNewLikesDislikesMap:[String:Int] = [:]
     var myUserMap:[String:String] = [:]
+    var parentIsNew:Bool?
     private var refreshControl = UIRefreshControl()
     lazy var MenuLauncher:ellipsesMenuQuip = {
               let launcher = ellipsesMenuQuip()
@@ -336,6 +338,9 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
         if cell.upButton.isSelected {
             if let aQuipScore = aReply.quipScore{
                 let diff = cell.upToDown(quipScore: aQuipScore, quip: aReply)
+                if passedReply?.quipID == aReply.quipID{
+                    passedQuipCell?.upToDown(quipScore: aQuipScore, quip: aReply)
+                }
                 if let aID = aReply.quipID{
                     if let auid = aReply.user{
                                
@@ -343,6 +348,19 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                     myLikesDislikesMap[aID] = -1
                     myUserMap[aID]=aReply.user
                         updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                 if let myParent = parentViewUser{
+                                                                              
+                                myParent.myNewLikesDislikesMap[aID] = -1
+                            myParent.myLikesDislikesMap[aID] = -1
+                                                                               
+                            if let aparentIsNew = parentIsNew{
+                                if aparentIsNew{
+                                    myParent.checkHotQuips(myQuipID: aID, isUp: false)
+                                }else{
+                                    myParent.checkNewQuips(myQuipID: aID, isUp: false)
+                                    }
+                            }
+                    }
                     }
                            }
                    }
@@ -350,6 +368,9 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                else if cell.downButton.isSelected {
             if let aQuipScore = aReply.quipScore{
                            let diff = cell.downToNone(quipScore: aQuipScore,quip: aReply)
+                if passedReply?.quipID == aReply.quipID{
+                    passedQuipCell?.downToNone(quipScore: aQuipScore, quip: aReply)
+                }
                 if let aID = aReply.quipID{
                               if let auid = aReply.user{
                                
@@ -357,6 +378,19 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                                 myLikesDislikesMap[aID]=0
                               myUserMap[aID]=aReply.user
                                 updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                                if let myParent = parentViewUser{
+                                                                                                             
+                                                               myParent.myNewLikesDislikesMap[aID] = 0
+                                                           myParent.myLikesDislikesMap[aID] = 0
+                                                                                                              
+                                                           if let aparentIsNew = parentIsNew{
+                                                               if aparentIsNew{
+                                                                   myParent.checkHotQuips(myQuipID: aID, isUp: false)
+                                                               }else{
+                                                                   myParent.checkNewQuips(myQuipID: aID, isUp: false)
+                                                                   }
+                                                           }
+                                                   }
                     }
                            }
                        
@@ -365,6 +399,9 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                else{
             if let aQuipScore = aReply.quipScore{
                        let diff = cell.noneToDown(quipScore: aQuipScore,quip:  aReply)
+                if passedReply?.quipID == aReply.quipID{
+                    passedQuipCell?.noneToDown(quipScore: aQuipScore, quip: aReply)
+                }
                 if let aID = aReply.quipID{
                            if let auid = aReply.user{
                           
@@ -372,6 +409,19 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                      myLikesDislikesMap[aID] = -1
                            myUserMap[aID]=aReply.user
                              updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                            if let myParent = parentViewUser{
+                                                                                                         
+                                                           myParent.myNewLikesDislikesMap[aID] = -1
+                                                       myParent.myLikesDislikesMap[aID] = -1
+                                                                                                          
+                                                       if let aparentIsNew = parentIsNew{
+                                                           if aparentIsNew{
+                                                               myParent.checkHotQuips(myQuipID: aID, isUp: false)
+                                                           }else{
+                                                               myParent.checkNewQuips(myQuipID: aID, isUp: false)
+                                                               }
+                                                       }
+                                               }
                     }
                        }
                    }
@@ -380,10 +430,16 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                
         
     }
+    
+    
+    
     func upButtonPressedReply(aReply:Quip, cell:QuipCells){
         if cell.upButton.isSelected {
             if let aQuipScore = aReply.quipScore{
                        let diff = cell.upToNone(quipScore: aQuipScore,quip:  aReply)
+                if passedReply?.quipID == aReply.quipID{
+                    passedQuipCell?.upToNone(quipScore: aQuipScore, quip: aReply)
+                }
                 if let aID = aReply.quipID{
                           if let auid = aReply.user{
                            
@@ -391,6 +447,19 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                             myLikesDislikesMap[aID]=0
                           myUserMap[aID]=aReply.user
                             updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                            if let myParent = parentViewUser{
+                               
+                                myParent.myNewLikesDislikesMap[aID]=0
+                                myParent.myLikesDislikesMap[aID]=0
+                                
+                                if let aparentIsNew = parentIsNew{
+                                if aparentIsNew{
+                                    myParent.checkHotQuips(myQuipID: aID, isUp: true)
+                                }else{
+                                    myParent.checkNewQuips(myQuipID: aID, isUp: true)
+                                }
+                                }
+                            }
                     }
                            }
                            
@@ -399,6 +468,9 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                     else if cell.downButton.isSelected {
             if let aQuipScore = aReply.quipScore{
                                let diff = cell.downToUp(quipScore: aQuipScore,quip:  aReply)
+                if passedReply?.quipID == aReply.quipID{
+                                   passedQuipCell?.downToUp(quipScore: aQuipScore, quip: aReply)
+                               }
                 if let aID = aReply.quipID{
                                    if let auid = aReply.user{
                                    
@@ -406,6 +478,19 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                                     myLikesDislikesMap[aID] = 1
                                   myUserMap[aID]=aReply.user
                                     updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                                    if let myParent = parentViewUser{
+                                                                  
+                                                                   myParent.myNewLikesDislikesMap[aID]=1
+                                                                   myParent.myLikesDislikesMap[aID]=1
+                                                                   
+                                                                   if let aparentIsNew = parentIsNew{
+                                                                   if aparentIsNew{
+                                                                       myParent.checkHotQuips(myQuipID: aID, isUp: true)
+                                                                   }else{
+                                                                       myParent.checkNewQuips(myQuipID: aID, isUp: true)
+                                                                   }
+                                                                   }
+                                                               }
                     }
                                }
                            }
@@ -413,6 +498,9 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                     else{
             if let aQuipScore = aReply.quipScore{
                        let diff = cell.noneToUp(quipScore: aQuipScore,quip:  aReply)
+                if passedReply?.quipID == aReply.quipID{
+                    passedQuipCell?.noneToUp(quipScore: aQuipScore, quip: aReply)
+                }
                 if let aID = aReply.quipID{
                               if let auid = aReply.user{
                                
@@ -420,6 +508,19 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                                 myLikesDislikesMap[aID] = 1
                               myUserMap[aID]=aReply.user
                                 updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                                if let myParent = parentViewUser{
+                                                              
+                                                               myParent.myNewLikesDislikesMap[aID]=1
+                                                               myParent.myLikesDislikesMap[aID]=1
+                                                               
+                                                               if let aparentIsNew = parentIsNew{
+                                                               if aparentIsNew{
+                                                                   myParent.checkHotQuips(myQuipID: aID, isUp: true)
+                                                               }else{
+                                                                   myParent.checkNewQuips(myQuipID: aID, isUp: true)
+                                                               }
+                                                               }
+                                                           }
                     }
                            }
                        }
@@ -454,6 +555,24 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
         }
        }
     
+    func loadParentQuip(aquipId:String){
+        FirestoreService.sharedInstance.getQuip(quipID: aquipId) { [weak self](myQuip) in
+        FirebaseService.sharedInstance.getQuipScore(aQuip: myQuip) {[weak self] (aQuip) in
+        FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: (self?.uid)!, aKey: aQuip.user!) {[weak self] (myLikes) in
+            if myLikes[aQuip.quipID!] == 1 {
+                self?.quipLikeStatus=true
+            }else if myLikes[aQuip.quipID!] == -1{
+                self?.quipLikeStatus=false
+            }
+                self?.myQuip = aQuip
+                self?.refreshData()
+                                          
+                                      }
+                                     
+                                  }
+                              }
+    }
+    
     func getUserLikesDislikesForQuip(){
           // let myRef = "Users/\(uid ?? "Other")/LikesDislikes"
         if let aUID = uid, let aQuipKey = myQuip?.quipID {
@@ -482,6 +601,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                      myParent.myLikesDislikesMap[aID] = -1
                     myParent.myUserMap[aID] = aQuip.user
                         myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                        if let aparentIsNew = parentIsNew{
+                        if aparentIsNew{
+                            myParent.checkHotQuips(myQuipID: aID, isUp: false)
+                        }else{
+                            myParent.checkNewQuips(myQuipID: aID, isUp: false)
+                        }
+                        }
                     }
                 }else if let myParent = parentViewUser{
                    
@@ -490,6 +616,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                     myParent.myChannelsMap[aID] = aQuip.channelKey
                     myParent.myParentChannelsMap[aID] = aQuip.parentKey
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
+                    if let aparentIsNew = parentIsNew{
+                    if aparentIsNew{
+                        myParent.checkHotQuips(myQuipID: aID, isUp: false)
+                    }else{
+                        myParent.checkNewQuips(myQuipID: aID, isUp: false)
+                    }
+                    }
                     
                 }
             }
@@ -512,6 +645,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                      myParent.myLikesDislikesMap[aID]=0
                      myParent.myUserMap[aID] = aQuip.user
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                    if let aparentIsNew = parentIsNew{
+                    if aparentIsNew{
+                        myParent.checkHotQuips(myQuipID: aID, isUp: false)
+                    }else{
+                        myParent.checkNewQuips(myQuipID: aID, isUp: false)
+                    }
+                    }
                     }
                 }
                 else if let myParent = parentViewUser{
@@ -521,6 +661,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                     myParent.myChannelsMap[aID] = aQuip.channelKey
                     myParent.myParentChannelsMap[aID] = aQuip.parentKey
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
+                    if let aparentIsNew = parentIsNew{
+                    if aparentIsNew{
+                        myParent.checkHotQuips(myQuipID: aID, isUp: false)
+                    }else{
+                        myParent.checkNewQuips(myQuipID: aID, isUp: false)
+                    }
+                    }
                 }
             }
            }
@@ -540,6 +687,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                      myParent.myLikesDislikesMap[aID] = -1
                      myParent.myUserMap[aID] = aQuip.user
                     myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                    if let aparentIsNew = parentIsNew{
+                    if aparentIsNew{
+                        myParent.checkHotQuips(myQuipID: aID, isUp: false)
+                    }else{
+                        myParent.checkNewQuips(myQuipID: aID, isUp: false)
+                    }
+                    }
                     }
                 }
                 else if let myParent = parentViewUser{
@@ -549,6 +703,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                     myParent.myChannelsMap[aID] = aQuip.channelKey
                                        myParent.myParentChannelsMap[aID] = aQuip.parentKey
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
+                    if let aparentIsNew = parentIsNew{
+                    if aparentIsNew{
+                        myParent.checkHotQuips(myQuipID: aID, isUp: false)
+                    }else{
+                        myParent.checkNewQuips(myQuipID: aID, isUp: false)
+                    }
+                    }
                 }
             }
            }
@@ -572,6 +733,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                     myParent.myLikesDislikesMap[aID]=0
                      myParent.myUserMap[aID] = aQuip.user
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                    if let aparentIsNew = parentIsNew{
+                    if aparentIsNew{
+                        myParent.checkHotQuips(myQuipID: aID, isUp: true)
+                    }else{
+                        myParent.checkNewQuips(myQuipID: aID, isUp: true)
+                    }
+                    }
                     }
                 }else if let myParent = parentViewUser{
                    
@@ -580,6 +748,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                     myParent.myChannelsMap[aID] = aQuip.channelKey
                                        myParent.myParentChannelsMap[aID] = aQuip.parentKey
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
+                    if let aparentIsNew = parentIsNew{
+                    if aparentIsNew{
+                        myParent.checkHotQuips(myQuipID: aID, isUp: true)
+                    }else{
+                        myParent.checkNewQuips(myQuipID: aID, isUp: true)
+                    }
+                    }
                 }
             }
            }
@@ -600,6 +775,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                          myParent.myLikesDislikesMap[aID] = 1
                         myParent.myUserMap[aID] = aQuip.user
                              myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                            if let aparentIsNew = parentIsNew{
+                                              if aparentIsNew{
+                                                  myParent.checkHotQuips(myQuipID: aID, isUp: true)
+                                              }else{
+                                                  myParent.checkNewQuips(myQuipID: aID, isUp: true)
+                                              }
+                                              }
                         }
                     }else if let myParent = parentViewUser{
                        
@@ -608,6 +790,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                         myParent.myChannelsMap[aID] = aQuip.channelKey
                                            myParent.myParentChannelsMap[aID] = aQuip.parentKey
                          myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
+                        if let aparentIsNew = parentIsNew{
+                        if aparentIsNew{
+                            myParent.checkHotQuips(myQuipID: aID, isUp: true)
+                        }else{
+                            myParent.checkNewQuips(myQuipID: aID, isUp: true)
+                        }
+                        }
                     }
                 }
             }
@@ -627,6 +816,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                             myParent.myLikesDislikesMap[aID] = 1
                                 myParent.myUserMap[aID] = aQuip.user
                                  myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                                if let aparentIsNew = parentIsNew{
+                                                  if aparentIsNew{
+                                                      myParent.checkHotQuips(myQuipID: aID, isUp: true)
+                                                  }else{
+                                                      myParent.checkNewQuips(myQuipID: aID, isUp: true)
+                                                  }
+                                                  }
                             }
                         }
                         else if let myParent = parentViewUser{
@@ -636,6 +832,13 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                             myParent.myChannelsMap[aID] = aQuip.channelKey
                                                myParent.myParentChannelsMap[aID] = aQuip.parentKey
                             myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
+                            if let aparentIsNew = parentIsNew{
+                            if aparentIsNew{
+                                myParent.checkHotQuips(myQuipID: aID, isUp: true)
+                            }else{
+                                myParent.checkNewQuips(myQuipID: aID, isUp: true)
+                            }
+                            }
                         }
                     }
             }
@@ -913,7 +1116,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
                          cell.timePosted.text = timeSincePost(timePosted: Double(milliTimePost), currentTime: currentTime)
                          }
                      }
-                     if let aID = aReply.quipText{
+                     if let aID = aReply.quipID{
                      if self.myLikesDislikesMap[aID] == 1{
                                      cell.upButton.isSelected=true
                             

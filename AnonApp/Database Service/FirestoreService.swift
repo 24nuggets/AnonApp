@@ -905,9 +905,9 @@ class FirestoreService: NSObject {
                        
                     var aQuipScore:Int?
                     var aReplies:Int?
-                    if let myQuipNumbers = myScores[aQuipID] as? [String:Int]{
-                        aQuipScore = myQuipNumbers["s"]
-                        aReplies = myQuipNumbers["r"]
+                    if let myQuipNumbers = myScores[aQuipID] as? [String:Any]{
+                        aQuipScore = myQuipNumbers["s"] as? Int
+                        aReplies = myQuipNumbers["r"] as? Int
                     } else {
                         aQuipScore = myInfo["s"] as? Int
                        aReplies = myInfo["r"] as? Int
@@ -966,9 +966,9 @@ class FirestoreService: NSObject {
                                   let quipParent = myInfo["p"] as? String
                                var aQuipScore:Int?
                                var aReplies:Int?
-                               if let myQuipNumbers = myScores[aQuipID] as? [String:Int]{
-                                   aQuipScore = myQuipNumbers["s"]
-                                   aReplies = myQuipNumbers["r"]
+                               if let myQuipNumbers = myScores[aQuipID] as? [String:Any]{
+                                   aQuipScore = myQuipNumbers["s"] as? Int
+                                   aReplies = myQuipNumbers["r"] as? Int
                                } else {
                                    aQuipScore = 0
                                   aReplies = 0

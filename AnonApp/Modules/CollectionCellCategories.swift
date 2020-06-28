@@ -15,7 +15,7 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
     var myLiveEvents:[Channel]=[]
    weak var categoryController:ViewControllerCategories?
     var isFiltered = false
-    
+    private var refreshControl=UIRefreshControl()
     
     @IBOutlet weak var categoriesTable: UITableView!
     
@@ -23,14 +23,20 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
      super.awakeFromNib()
      categoriesTable.delegate = self
      categoriesTable.dataSource = self
-   
+    refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+    categoriesTable.refreshControl = refreshControl
      getLive()
   }
+   @objc func refreshData(){
+        getLive()
+    }
     func getLive(){
+        refreshControl.beginRefreshing()
           self.myLiveEvents=[]
           FirestoreService.sharedInstance.getLiveEvents {[weak self] (myLiveEvents) in
             self?.myLiveEvents = myLiveEvents
             self?.categoriesTable.reloadData()
+            self?.refreshControl.endRefreshing()
           }
              
          }
@@ -69,7 +75,7 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
 class collectionCellSportsCategories:UICollectionViewCell, UITableViewDelegate, UITableViewDataSource, MyCellDelegate2{
    
     
-   
+   private var refreshControl = UIRefreshControl()
     var mySports:[Category]=[]
        private var allSports:[Category]=[]
     var filteredCats:[Category]=[]
@@ -82,18 +88,24 @@ class collectionCellSportsCategories:UICollectionViewCell, UITableViewDelegate, 
        super.awakeFromNib()
        categoriesTable.delegate = self
        categoriesTable.dataSource = self
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        categoriesTable.refreshControl = refreshControl
       getSports()
     }
     
-   
+   @objc func refreshData(){
+          getSports()
+      }
     
     func getSports(){
+        refreshControl.beginRefreshing()
         self.allSports = []
         self.mySports = []
         FirestoreService.sharedInstance.getSports {[weak self] (mySports, allSports) in
             self?.mySports = mySports
             self?.allSports = allSports
             self?.categoriesTable.reloadData()
+            self?.refreshControl.endRefreshing()
         }
         
     }
@@ -146,6 +158,7 @@ class collectionCellEntertainmentCategories:UICollectionViewCell, UITableViewDel
    var filteredCats:[Category]=[]
     var isFiltered:Bool = false
     weak var categoryController:ViewControllerCategories?
+    private var refreshControl = UIRefreshControl()
     
     @IBOutlet weak var categoriesTable: UITableView!
     
@@ -154,16 +167,24 @@ class collectionCellEntertainmentCategories:UICollectionViewCell, UITableViewDel
        super.awakeFromNib()
        categoriesTable.delegate = self
        categoriesTable.dataSource = self
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        categoriesTable.refreshControl = refreshControl
      getEntertainment()
+    }
+    
+    @objc func refreshData(){
+        getEntertainment()
     }
  
     func getEntertainment(){
+        refreshControl.beginRefreshing()
            allEntertainment = []
               self.myEntertainment=[]
-           FirestoreService.sharedInstance.getEntertainment { (myEntertainment, allEntertainment) in
-               self.myEntertainment = myEntertainment
-               self.allEntertainment = allEntertainment
-                self.categoriesTable.reloadData()
+           FirestoreService.sharedInstance.getEntertainment { [weak self] (myEntertainment, allEntertainment) in
+               self?.myEntertainment = myEntertainment
+               self?.allEntertainment = allEntertainment
+                self?.categoriesTable.reloadData()
+            self?.refreshControl.endRefreshing()
            }
               
           }

@@ -9,7 +9,7 @@
 import UIKit
 
 
-class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIGestureRecognizerDelegate{
   
     
     //IBOutlets
@@ -63,8 +63,12 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
        
        
         setUpButtons()
-       
+      
         
+       
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+              
         collectionView.delegate = self
         collectionView.dataSource = self
         
@@ -116,6 +120,13 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
     }
     
    
+    
+   func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    if gestureRecognizer.isEqual(navigationController?.interactivePopGestureRecognizer) {
+             navigationController?.popViewController(animated: true)
+         }
+         return false
+     }
   
     
  

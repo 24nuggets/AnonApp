@@ -17,16 +17,22 @@ class CollectionViewCellChannelLive: UICollectionViewCell, MyCellDelegate3, UITa
     var activeChannels:[Channel] = []
     var bigCategory:String?
     var categoryName:String?
+    private var refreshControl = UIRefreshControl()
     
     override func awakeFromNib() {
           super.awakeFromNib()
           channelTable.delegate = self
           channelTable.dataSource = self
-         
+         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+         channelTable.refreshControl = refreshControl
        }
     
+    @objc func refreshData(){
+        getActive()
+    }
+    
     func getActive(){
-           
+        refreshControl.beginRefreshing()
            self.activeChannels=[]
            
            if let aGenCat = bigCategory{
@@ -34,6 +40,7 @@ class CollectionViewCellChannelLive: UICollectionViewCell, MyCellDelegate3, UITa
                    FirestoreService.sharedInstance.getActive(aGenCat: aGenCat, aCatName: aCatName) { [weak self](activeChannels) in
                     self?.activeChannels = activeChannels
                     self?.channelTable.reloadData()
+                    self?.refreshControl.endRefreshing()
                    }
            }
            }
@@ -86,20 +93,29 @@ class CollectionViewCellChannelPast: UICollectionViewCell, MyCellDelegate3, UITa
     var pastChannels:[Channel] = []
     var bigCategory:String?
     var categoryName:String?
+    private var refreshControl = UIRefreshControl()
     
     override func awakeFromNib() {
            super.awakeFromNib()
            channelTable.delegate = self
            channelTable.dataSource = self
-         
+         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+         channelTable.refreshControl = refreshControl
         }
     
+    @objc func refreshData(){
+        getPast()
+    }
+    
     func getPast(){
+        refreshControl.beginRefreshing()
         self.pastChannels=[]
                if let aGenCat = bigCategory{
                           if let aCatName = categoryName{
                             FirestoreService.sharedInstance.getPast(aGenCat: aGenCat, aCatName: aCatName) { [weak self](pastChannels) in
                                 self?.pastChannels = pastChannels
+                                self?.channelTable.reloadData()
+                                self?.refreshControl.endRefreshing()
                             }
                       }
                       }
@@ -149,6 +165,7 @@ class CollectionViewCellChannelUpcoming: UICollectionViewCell, UITableViewDelega
     
     @IBOutlet weak var channelTable: UITableView!
     
+    private var refreshControl = UIRefreshControl()
      var upcomingChannels:[Channel] = []
     var bigCategory:String?
        var categoryName:String?
@@ -157,16 +174,23 @@ class CollectionViewCellChannelUpcoming: UICollectionViewCell, UITableViewDelega
            super.awakeFromNib()
            channelTable.delegate = self
            channelTable.dataSource = self
-          
+          refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+          channelTable.refreshControl = refreshControl
         }
     
+    @objc func refreshData(){
+        getUpcoming()
+    }
+    
     func getUpcoming(){
+        refreshControl.beginRefreshing()
            self.upcomingChannels=[]
            if let aGenCat = bigCategory{
                       if let aCatName = categoryName{
                        FirestoreService.sharedInstance.getUpcoming(aGenCat: aGenCat, aCatName: aCatName) {[weak self] (upcomingChannels) in
                         self?.upcomingChannels = upcomingChannels
                         self?.channelTable.reloadData()
+                        self?.refreshControl.endRefreshing()
 
                        }
                   }

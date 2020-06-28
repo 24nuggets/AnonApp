@@ -26,6 +26,9 @@
 		C772675C243ABE52000FC9C7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C772675A243ABE52000FC9C7 /* LaunchScreen.storyboard */; };
 		C7726767243ABE53000FC9C7 /* AnonAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7726766243ABE53000FC9C7 /* AnonAppTests.swift */; };
 		C7726772243ABE53000FC9C7 /* AnonAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7726771243ABE53000FC9C7 /* AnonAppUITests.swift */; };
+		C788018024A299570094BEC9 /* CollectionViewCellFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = C788017F24A299570094BEC9 /* CollectionViewCellFeed.swift */; };
+		C788018224A41D8B0094BEC9 /* CollectionViewCellUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C788018124A41D8B0094BEC9 /* CollectionViewCellUser.swift */; };
+		C788018424A826B70094BEC9 /* SwipeNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C788018324A826B70094BEC9 /* SwipeNavigationController.swift */; };
 		C7A6DF92247F43C1003DA05B /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A6DF91247F43C1003DA05B /* Menu.swift */; };
 		C7A6DF94247F547E003DA05B /* MenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A6DF93247F547E003DA05B /* MenuCell.swift */; };
 		C7A6DF9624804807003DA05B /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A6DF9524804807003DA05B /* UIViewExtension.swift */; };
@@ -93,6 +96,9 @@
 		C772676D243ABE53000FC9C7 /* AnonAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AnonAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7726771243ABE53000FC9C7 /* AnonAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnonAppUITests.swift; sourceTree = "<group>"; };
 		C7726773243ABE53000FC9C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C788017F24A299570094BEC9 /* CollectionViewCellFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCellFeed.swift; sourceTree = "<group>"; };
+		C788018124A41D8B0094BEC9 /* CollectionViewCellUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCellUser.swift; sourceTree = "<group>"; };
+		C788018324A826B70094BEC9 /* SwipeNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeNavigationController.swift; sourceTree = "<group>"; };
 		C7A6DF91247F43C1003DA05B /* Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 		C7A6DF93247F547E003DA05B /* MenuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCell.swift; sourceTree = "<group>"; };
 		C7A6DF9524804807003DA05B /* UIViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
@@ -159,6 +165,7 @@
 		C75942C5247CBC3000ED8223 /* Navigation Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				C788018324A826B70094BEC9 /* SwipeNavigationController.swift */,
 			);
 			path = "Navigation Controllers";
 			sourceTree = "<group>";
@@ -272,6 +279,8 @@
 				C7A6DF93247F547E003DA05B /* MenuCell.swift */,
 				C7A6DF9524804807003DA05B /* UIViewExtension.swift */,
 				C7A6DFA024887C38003DA05B /* CollectionViewCellChannel.swift */,
+				C788017F24A299570094BEC9 /* CollectionViewCellFeed.swift */,
+				C788018124A41D8B0094BEC9 /* CollectionViewCellUser.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -589,6 +598,7 @@
 				C7E7B1DC244CA2E500D7847C /* Quip.swift in Sources */,
 				C7A6DF9B2481DC91003DA05B /* FirestoreService.swift in Sources */,
 				C756A1242495581B0066208D /* ViewControllerAddFavsOne.swift in Sources */,
+				C788018224A41D8B0094BEC9 /* CollectionViewCellUser.swift in Sources */,
 				C7A6DFA124887C38003DA05B /* CollectionViewCellChannel.swift in Sources */,
 				C7A6DF92247F43C1003DA05B /* Menu.swift in Sources */,
 				C75942C2247CA49F00ED8223 /* UIButtonExtensions.swift in Sources */,
@@ -604,8 +614,10 @@
 				C7726754243ABE4F000FC9C7 /* ViewController.swift in Sources */,
 				C73AA0CB2453BC66000C27B9 /* Category.swift in Sources */,
 				C7E7B1E0244EE78A00D7847C /* Utilities.swift in Sources */,
+				C788018024A299570094BEC9 /* CollectionViewCellFeed.swift in Sources */,
 				C73AA0C92453ACEF000C27B9 /* ViewControllerCategories.swift in Sources */,
 				C7A6DF9624804807003DA05B /* UIViewExtension.swift in Sources */,
+				C788018424A826B70094BEC9 /* SwipeNavigationController.swift in Sources */,
 				C7726752243ABE4F000FC9C7 /* AppDelegate.swift in Sources */,
 				C75942C4247CA52B00ED8223 /* CustomTableCells.swift in Sources */,
 				C7A6DF9D2481E83F003DA05B /* FirebaseStorageService.swift in Sources */,
