@@ -19,6 +19,7 @@ class CollectionViewCellChannelLive: UICollectionViewCell, MyCellDelegate3, UITa
     var categoryName:String?
     private var refreshControl = UIRefreshControl()
     
+    
     override func awakeFromNib() {
           super.awakeFromNib()
           channelTable.delegate = self
@@ -32,6 +33,7 @@ class CollectionViewCellChannelLive: UICollectionViewCell, MyCellDelegate3, UITa
     }
     
     func getActive(){
+        
         refreshControl.beginRefreshing()
            self.activeChannels=[]
            

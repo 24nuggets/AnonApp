@@ -11,7 +11,7 @@ import Firebase
 import GiphyUISDK
 import GiphyCoreSDK
 
-class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, MyCellDelegate{
+class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, MyCellDelegate{
     
     
     
@@ -52,23 +52,11 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
           }()
 
     @IBOutlet weak var replyTable: UITableView!
-    
     @IBOutlet weak var stackView: UIStackView!
-    
     @IBOutlet weak var textView: UITextView!
-    
-  
     @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
-    
-   
-    
-   
     @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
-    
-    
     @IBOutlet weak var toolBar: UIToolbar!
-    
- 
     @IBOutlet weak var postReplyView: UIView!
     
     
@@ -76,6 +64,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        addGesture()
         replyTable.delegate=self
         replyTable.dataSource=self
         
@@ -1158,7 +1147,7 @@ class ViewControllerQuip: UIViewController, UITableViewDataSource, UITableViewDe
     
 
 }
-extension ViewControllerQuip: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+extension ViewControllerQuip: UIImagePickerControllerDelegate{
     func showImagePickerController(){
         let imagePickerController = UIImagePickerController()
            imagePickerController.delegate = self

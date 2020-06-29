@@ -134,8 +134,9 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
         let catNames = myFavCats.map { (cat:Category) -> String in
             (cat.categoryName ?? "N/A")
         }
+        if catNames.count > 0 {
         nextViewController.currentFavs=Dictionary(uniqueKeysWithValues: zip(catNames, 1...catNames.count))
-        
+        }
         if menuItem.name == "Add Teams And Leagues"{
             nextViewController.isAddSports = true
             

@@ -9,7 +9,7 @@
 import UIKit
 
 
-class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIGestureRecognizerDelegate{
+class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource{
   
     
     //IBOutlets
@@ -35,7 +35,7 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
     private var seenActive:Bool = false
     private weak var feedVC:ViewControllerFeed?
     private weak var passedChannel:Channel?
-  
+  private var lastContentOffset: CGFloat = 0
     
     weak var myCategory:Category?
     var bigCategory:String?
@@ -46,7 +46,7 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
     override func viewDidLoad() {
         super.viewDidLoad()
         
-       
+       addGesture()
         getIfUserFavCategory()
         //notification when user presses home button, detachlisteners is called
        // NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.detachlisteners), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
@@ -66,9 +66,8 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
       
         
        
-        navigationController?.interactivePopGestureRecognizer?.delegate = nil
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-              
+       
+        
         collectionView.delegate = self
         collectionView.dataSource = self
         
@@ -120,14 +119,14 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
     }
     
    
-    
+   /*
    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
     if gestureRecognizer.isEqual(navigationController?.interactivePopGestureRecognizer) {
              navigationController?.popViewController(animated: true)
          }
          return false
      }
-  
+  */
     
  
     
@@ -339,6 +338,17 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         bottomBarLeadingConstraint.constant = scrollView.contentOffset.x / 3
+        
+        if (self.lastContentOffset > scrollView.contentOffset.x) {
+                       // move left
+            if activeBtn.isSelected{
+                
+            }
+                   }
+                 
+
+                   // update the new position acquired
+                   self.lastContentOffset = scrollView.contentOffset.x
     }
     
   
@@ -383,8 +393,8 @@ class ViewControllerDiscover: UIViewController, UICollectionViewDelegate, UIColl
             
     }
       
-        
-        
+    
+  
     
     
 

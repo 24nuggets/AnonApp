@@ -9,7 +9,7 @@
 import UIKit
 import FirebaseAuth
 
-class ViewControllerCategories: UIViewController, UISearchBarDelegate, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
   
     
     

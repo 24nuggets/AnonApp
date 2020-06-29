@@ -377,7 +377,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     */
 
 }
-extension ViewControllerWriteQuip: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+extension ViewControllerWriteQuip: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func showImagePickerController(){
         let imagePickerController = UIImagePickerController()
            imagePickerController.delegate = self

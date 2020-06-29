@@ -27,6 +27,10 @@ class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
         
     }
     
+ 
+    
+   
+    
     //initializes database reference
     func refDatabaseFirebase()->DatabaseReference{
        

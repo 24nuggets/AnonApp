@@ -11,7 +11,7 @@ import Firebase
 import GiphyUISDK
 import GiphyCoreSDK
 
-class ViewControllerFeed: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
     
    
@@ -47,6 +47,7 @@ class ViewControllerFeed: UIViewController, UICollectionViewDelegate, UICollecti
         //gets rid of border between the two navigation bars on top
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.layoutIfNeeded()
+     
         
         self.title =  myChannel?.channelName
         
@@ -55,7 +56,7 @@ class ViewControllerFeed: UIViewController, UICollectionViewDelegate, UICollecti
          
        
        
-        
+        addGesture()
         collectionView.delegate = self
         collectionView.dataSource = self
        setUpButtons()
@@ -75,11 +76,12 @@ class ViewControllerFeed: UIViewController, UICollectionViewDelegate, UICollecti
              }
              
          }
+  
     
     override func viewDidAppear(_ animated: Bool){
               super.viewDidAppear(animated)
         
-        navigationController?.hidesBarsOnSwipe = true
+      
         
        
         
