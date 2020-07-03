@@ -66,9 +66,7 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
        changeTableToNormal()
-        if didReorder{
-            reorderFavs()
-        }
+        
     }
     
     func reorderFavs(){
@@ -104,7 +102,9 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
         if(favCategoriesTable.isEditing == true)
           {
               changeTableToNormal()
-            
+                if didReorder{
+                    reorderFavs()
+                }
           }
           else
           {

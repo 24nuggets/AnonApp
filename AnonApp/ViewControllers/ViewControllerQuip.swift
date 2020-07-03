@@ -50,6 +50,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            launcher.quipController = self
                return launcher
           }()
+    let placeHolderText = "Type Something"
 
     @IBOutlet weak var replyTable: UITableView!
     @IBOutlet weak var stackView: UIStackView!
@@ -81,9 +82,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         textView.translatesAutoresizingMaskIntoConstraints = true
       
         textView.isScrollEnabled = false
-        
+        textView.textContainer.maximumNumberOfLines = 10
+        textView.textContainer.lineBreakMode = .byClipping
        // hideKeyboardWhenTappedAround()
-        
+        hideKeyboardWhenTappedAround()
         resetVars()
         refreshData()
         
@@ -150,7 +152,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     @IBAction func gifBtnClicked(_ sender: Any) {
         let g = GiphyViewController()
-               g.theme = .automatic
+        g.theme = GPHTheme(type: .automatic)
                g.layout = .waterfall
                g.mediaTypeConfig = [.gifs, .recents]
                g.showConfirmationScreen = true
@@ -163,6 +165,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     
     @IBAction func postButtonClicked(_ sender: UIButton) {
+        refreshControl.beginRefreshing()
         saveReply()
     }
     
@@ -189,14 +192,20 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-         textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+         
+             DispatchQueue.main.async {
+               textView.selectedRange = NSMakeRange(0, 0);
+             
+         }
            textView.inputAccessoryView = toolBar
            return true
        }
+    
+    
        
        func textViewDidChange(_ textView: UITextView) {
            if textView.text.isEmpty {
-               textView.text = "Type something"
+               textView.text = placeHolderText
                textView.textColor = .gray
                self.adjustTextViewHeight()
            } else {
@@ -240,12 +249,12 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            if text.isEmpty {
                let updatedText = (textView.text as NSString).replacingCharacters(in: range, with: text)
                if updatedText.isEmpty {
-                   textView.text = "Type something"
+                   textView.text = placeHolderText
                    textView.textColor = .gray
                    textView.selectedRange = NSRange(location: 0, length: 0)
                }
            } else {
-               if textView.text == "Type something" {
+               if textView.text == placeHolderText{
                    textView.text = ""
                }
                
@@ -937,8 +946,12 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                    hasGif = true
                }
         guard let key = FirebaseService.sharedInstance.generatePostKey() else { return }
-             
-        var post2 = [   "t": textView.text ?? "",
+             var quipText = ""
+                    
+                    if textView.text != placeHolderText {
+                        quipText = textView.text
+                    }
+        var post2 = [   "t": quipText,
                         "a": uid ?? "Other",
                         "d": FieldValue.serverTimestamp(),
                         "r": true,
@@ -978,7 +991,9 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         var mydata = data
             mydata["reply"] = true
         if let auid = uid{
-        FirestoreService.sharedInstance.addQuipToRecentUserQuips(auid: auid, data: mydata, key: key)
+            FirestoreService.sharedInstance.addQuipToRecentUserQuips(auid: auid, data: mydata, key: key){
+                self.updateReplies()
+            }
         }
        }
     
@@ -1016,7 +1031,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             }
                    
         FirebaseService.sharedInstance.updateChildValues(myUpdates: childUpdates)
-        textView.text = "Type something"
+        textView.text = placeHolderText
         textView.resignFirstResponder()
         if imageView?.image != nil || mediaView?.media != nil{
             adjustStackViewHeigt(height: -210)

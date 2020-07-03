@@ -12,19 +12,17 @@ import Firebase
 class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
    
     
-   
- 
-
-    @IBOutlet weak var editProfileBtn: UIButton!
-    
-    @IBOutlet weak var imageView: UIImageView!
-    
+    @IBOutlet weak var nameTextView: UITextView!
+    @IBOutlet weak var bioTextView: UITextView!
+    @IBOutlet weak var levelLable: UILabel!
+    @IBOutlet weak var firstRangeLabel: UILabel!
+    @IBOutlet weak var progressBar: UIProgressView!
+    @IBOutlet weak var userScoreLabel: UILabel!
+    @IBOutlet weak var secondRangeLabel: UILabel!
+    @IBOutlet weak var viewLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionView: UICollectionView!
-    
     @IBOutlet weak var newBtn: UIButton!
-    
     @IBOutlet weak var topBtn: UIButton!
-    
     @IBOutlet weak var bottomBarLeadingConstraint: NSLayoutConstraint!
     
     
@@ -56,7 +54,16 @@ class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollecti
         
               let tabBar = tabBarController as! BaseTabBarController
               self.uid = tabBar.userID
-              
+        nameTextView.layer.cornerRadius = 10
+        nameTextView.clipsToBounds = true
+        bioTextView.layer.cornerRadius = 10
+        bioTextView.clipsToBounds = true
+        nameTextView.textContainer.maximumNumberOfLines = 2
+        nameTextView.textContainer.lineBreakMode = .byClipping
+        bioTextView.textContainer.maximumNumberOfLines = 5
+        bioTextView.textContainer.lineBreakMode = .byClipping
+        loadUserProfile()
+        
             collectionView.delegate = self
                    collectionView.dataSource = self
                   setUpButtons()
@@ -64,6 +71,8 @@ class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollecti
         
             
     }
+    
+   
     
     override func viewDidAppear(_ animated: Bool){
           super.viewDidAppear(animated)
@@ -78,6 +87,15 @@ class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollecti
           
              
            }
+    func loadUserProfile(){
+        if let auid = uid{
+        FirestoreService.sharedInstance.getUserProfile(uid: auid) { (name, bio) in
+            self.nameTextView.text = name
+            self.bioTextView.text = bio
+           
+        }
+        }
+    }
     
     func setUpButtons(){
                 newBtn.setTitleColor(.darkText, for: .selected  )
@@ -172,25 +190,61 @@ class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollecti
           myNewLikesDislikesMap=[:]
      
       }
-    func loadUserPage(){
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 0.5
-        imageView.layer.borderColor = UIColor.black.cgColor
-        imageView.layer.cornerRadius = imageView.bounds.width / 2
-        editProfileBtn.layer.borderColor = UIColor.black.cgColor
-        editProfileBtn.layer.borderWidth = 0.5
-        editProfileBtn.layer.masksToBounds = true
-        editProfileBtn.layer.cornerRadius = 8
-    }
-    
-    
-
-    
-    @IBAction func settingsBtnTapped(_ sender: UIBarButtonItem) {
+   
+    @IBAction func settingsBtnClicked(_ sender: Any) {
+       
         settingsMenuLauncher.makeViewFade()
         settingsMenuLauncher.addMenuFromSide()
     }
     
+    @IBAction func editBtnClicked(_ sender: Any) {
+        if nameTextView.isEditable {
+            changeToNormalMode()
+            saveChanges()
+        }else{
+            changeToEditMode()
+        }
+    }
+    
+    func changeToEditMode(){
+        nameTextView.isEditable = true
+        nameTextView.isSelectable = true
+        bioTextView.isSelectable = true
+        bioTextView.isEditable = true
+        nameTextView.backgroundColor = .white
+        bioTextView.backgroundColor = .white
+        self.navigationItem.leftBarButtonItem?.title = "Done"
+        self.navigationItem.title = "EDIT PROFILE"
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        
+    }
+   
+    func changeToNormalMode(){
+        nameTextView.isEditable = false
+        nameTextView.isSelectable = false
+        bioTextView.isSelectable = false
+        bioTextView.isEditable = false
+        if #available(iOS 13.0, *) {
+            nameTextView.backgroundColor = .secondarySystemBackground
+            bioTextView.backgroundColor = .secondarySystemBackground
+        } else {
+            // Fallback on earlier versions
+            nameTextView.backgroundColor = self.view.backgroundColor
+            bioTextView.backgroundColor = self.view.backgroundColor
+        }
+        
+        self.navigationItem.leftBarButtonItem?.title = "Edit"
+        self.navigationItem.title = "PROFILE"
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
+    }
+    func saveChanges(){
+        if let auid = uid{
+            FirestoreService.sharedInstance.saveUserProfile(uid: auid, name: nameTextView.text, bio: bioTextView.text)
+        }
+        
+    }
+    
+   
     
    
        

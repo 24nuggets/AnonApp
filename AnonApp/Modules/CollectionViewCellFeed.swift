@@ -38,21 +38,94 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
        }
     
     func btnSharedTapped(cell: QuipCells) {
-                      // text to share
-                            let myactivity1 = cell.quipText.text
-                             let myactivity2 = "quipit link"
                      
-                            // set up activity view controller
-                     let firstactivity = [myactivity1, myactivity2]
-                     let activityViewController = UIActivityViewController(activityItems: firstactivity as [Any], applicationActivities: nil)
-                    //        activityViewController.popoverPresentationController?.sourceView = self.view // so that iPads won't crash
-
-                            // exclude some activity types from the list (optional)
-                     activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.addToReadingList, UIActivity.ActivityType.assignToContact, UIActivity.ActivityType.markupAsPDF, UIActivity.ActivityType.openInIBooks, UIActivity.ActivityType.print]
-
-                            // present the view controller
-                   //         self.present(activityViewController, animated: true, completion: nil)
+                       
+    }
+    
+    func generateDynamicLink(aquip:Quip, cell: QuipCells){
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "anonapp.page.link"
+        components.path = "/quips"
+        let quipIDQueryItem = URLQueryItem(name: "quipid", value: aquip.quipID)
+        components.queryItems = [quipIDQueryItem]
+        guard let linkparam = components.url else {return}
+        print(linkparam)
+        let dynamicLinksDomainURIPrefix = "https://anonapp.page.link"
+        guard let sharelink = DynamicLinkComponents.init(link: linkparam, domainURIPrefix: dynamicLinksDomainURIPrefix) else {return}
+        if let bundleId = Bundle.main.bundleIdentifier {
+            sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
+        }
+        //change to app store id
+        sharelink.iOSParameters?.appStoreID = "962194608"
+        sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+        
+        sharelink.socialMetaTagParameters?.title = aquip.quipText
+        sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
+        if let myImage = aquip.imageRef {
+             FirebaseStorageService.sharedInstance.getDownloadURL(imageRef: myImage, completion: {[weak self] (url) in
+                print(url)
+                sharelink.socialMetaTagParameters?.imageURL = url
+                guard let longDynamicLink = sharelink.url else { return }
+                 sharelink.shorten {[weak self] (url, warnings, error) in
+                               if let error = error{
+                                   print(error)
+                                   return
+                               }
+                               if let warnings = warnings{
+                                   for warning in warnings{
+                                       print(warning)
+                                   }
+                               }
+                               guard let url = url else {return}
+                                
+                               self?.showShareViewController(url: url)
+                           }
+            })
+        }else{
+            if let myGif = aquip.gifID {
+            let gifURL = "api.giphy.com/v1/gifs/\(myGif)?api_key=2OFJFhBB22BPrYcLHLs2JtaMA5xSrQ2Y"
+            print(gifURL)
+            sharelink.socialMetaTagParameters?.imageURL = URL(string: gifURL)
+            
+            }
+        
+        guard let longDynamicLink = sharelink.url else { return }
+        print("The long URL is: \(longDynamicLink)")
+            sharelink.shorten {[weak self] (url, warnings, error) in
+                if let error = error{
+                    print(error)
+                    return
+                }
+                if let warnings = warnings{
+                    for warning in warnings{
+                        print(warning)
                     }
+                }
+                guard let url = url else {return}
+                print(url)
+                self?.showShareViewController(url: url)
+            }
+            
+        }
+    }
+    
+    func showShareViewController(url:URL){
+        let myactivity1 = "Check out this quip on Quipit!"
+        let myactivity2 = url
+                             
+                        
+                               // set up activity view controller
+        let firstactivity = [myactivity1, myactivity2] as [Any]
+                        let activityViewController = UIActivityViewController(activityItems: firstactivity, applicationActivities: nil)
+                              activityViewController.popoverPresentationController?.sourceView = myFeedController?.view // so that iPads won't crash
+
+                               // exclude some activity types from the list (optional)
+                        activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.addToReadingList, UIActivity.ActivityType.assignToContact, UIActivity.ActivityType.markupAsPDF, UIActivity.ActivityType.openInIBooks, UIActivity.ActivityType.print]
+
+                               // present the view controller
+                               myFeedController?.present(activityViewController, animated: true, completion: nil)
+    }
     
     // MARK: - Like/Dislike Logic
      
@@ -404,6 +477,8 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
         
     }
     
+    
+    
     override func btnUpTapped(cell: QuipCells) {
            //Get the indexpath of cell where button was tapped
            if let indexPath = self.feedTable.indexPath(for: cell){
@@ -417,6 +492,18 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                
            
            }
+       }
+    
+   override func btnSharedTapped(cell: QuipCells) {
+                        if let indexPath = self.feedTable.indexPath(for: cell){
+                                
+                                     if let myQuip = newQuips[indexPath.row]{
+                                    generateDynamicLink(aquip: myQuip, cell: cell)
+                                     }
+                                     
+                                 
+                                 }
+                          
        }
     
    
@@ -632,6 +719,18 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
             
         }
        }
+    
+    override func btnSharedTapped(cell: QuipCells) {
+                           if let indexPath = self.feedTable.indexPath(for: cell){
+                                   
+                                        if let myQuip = hotQuips[indexPath.row]{
+                                       generateDynamicLink(aquip: myQuip, cell: cell)
+                                        }
+                                        
+                                    
+                                    }
+                             
+          }
    
     
       func scrollViewDidScroll(_ scrollView: UIScrollView) {

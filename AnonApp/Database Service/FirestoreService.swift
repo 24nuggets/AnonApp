@@ -662,7 +662,7 @@ class FirestoreService: NSObject {
        }
     
     
-    func addQuipToRecentUserQuips(auid:String, data:[String:Any], key:String){
+    func addQuipToRecentUserQuips(auid:String, data:[String:Any], key:String, completion: @escaping ()->()){
         let recentQuipsRef = self.db.collection("Users/\(auid)/RecentQuips")
                     
             recentQuipsRef.order(by: "t", descending: true).limit(to: 1).getDocuments(){[weak self] (querySnapshot, err) in
@@ -683,6 +683,7 @@ class FirestoreService: NSObject {
                                 batch?.commit()
                                 
                                }
+                            completion()
                            
                        }
           
@@ -836,7 +837,7 @@ class FirestoreService: NSObject {
                           print("Document does not exist")
                       }
                     aSports.sort(by: { $0.priority! < $1.priority! })
-                    
+                    allSports.sort(by: {$0.categoryName! < $1.categoryName!})
                     completion(aSports,allSports)
                   }
     }
@@ -868,6 +869,7 @@ class FirestoreService: NSObject {
             print("Document does not exist")
         }
         aEntertainments.sort(by: { $0.priority! < $1.priority! })
+        allEntertainment.sort(by: {$0.categoryName! < $1.categoryName!})
         completion(aEntertainments, allEntertainment)
     }
     }
@@ -1119,5 +1121,35 @@ class FirestoreService: NSObject {
                                    batch.commit()
         completion()
                                    
+    }
+    func getUserProfile(uid:String, completion: @escaping (String, String)->()){
+        let userRef = db.collection("/Users").document(uid)
+        var name = "Anonymous"
+        var bio = "Insert Bio"
+        userRef.getDocument { (snapshot, error) in
+            if let error = error{
+                print(error)
+                return
+            }
+            if let myData = snapshot?.data(){
+               if let aname = myData["name"] as? String{
+                    name = aname
+                }
+                if let abio = myData["bio"] as? String{
+                    bio = abio
+                }
+                
+            }
+            completion(name, bio)
+        }
+    }
+    
+    func saveUserProfile(uid:String, name:String, bio:String){
+        let userRef = db.collection("/Users").document(uid)
+
+        let batch = self.db.batch()
+        batch.setData(["name" : name,
+                       "bio" : bio], forDocument: userRef, merge: true)
+                       batch.commit()
     }
 }

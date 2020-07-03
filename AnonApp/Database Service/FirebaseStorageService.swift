@@ -20,5 +20,18 @@ class FirebaseStorageService: NSObject {
         
         uploadref.putData(imageData)
     }
+    
+    func getDownloadURL(imageRef:String, completion: @escaping (URL)->()){
+        storageRef.child(imageRef).downloadURL { (url, error) in
+            if let error = error{
+                print(error)
+                return
+            }
+            if let aurl = url{
+                completion(aurl)
+            }
+            
+        }
+    }
 
 }

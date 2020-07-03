@@ -36,6 +36,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     @IBOutlet weak var newBtn: UIButton!
     
+    @IBOutlet weak var bottomBar: UIView!
     @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
@@ -54,7 +55,8 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         //notification when app will enter foreground
         NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
          
-       
+        bottomBar.layer.cornerRadius = 10
+        bottomBar.clipsToBounds = true
        
         addGesture()
         collectionView.delegate = self
@@ -366,7 +368,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         
         
         writeQuip.myChannel = self.myChannel
-        
+            writeQuip.feedVC = self
         writeQuip.uid=self.uid
         //select new quips tab before leaving
             

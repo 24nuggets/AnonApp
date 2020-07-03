@@ -75,6 +75,11 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
         }    
         self.searchBar.layoutIfNeeded()
         self.searchBar.delegate=self
+        if #available(iOS 13.0, *) {
+            searchBar.searchTextField.font = .systemFont(ofSize: 16)
+        } else {
+            // Fallback on earlier versions
+        }
        hideKeyboardWhenTappedAround()
     }
     

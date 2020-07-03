@@ -33,9 +33,11 @@ class myUIViewController: UIViewController{
         switch panGesture.state {
             
         case .began:
-            navigationController?.delegate = self
-            _ = navigationController?.popViewController(animated: true)
+            if navigationController != nil{
+                self.navigationController?.delegate = self
             
+            _ = navigationController?.popViewController(animated: true)
+            }
         case .changed:
             if let percentDrivenInteractiveTransition = percentDrivenInteractiveTransition {
                 percentDrivenInteractiveTransition.update(percent)
@@ -52,8 +54,9 @@ class myUIViewController: UIViewController{
             }
             
         case .cancelled, .failed:
+            if let percentDrivenInteractiveTransition = percentDrivenInteractiveTransition {
             percentDrivenInteractiveTransition.cancel()
-            
+            }
         default:
             break
         }
@@ -107,33 +110,5 @@ extension UIViewController{
 }
 
 
-extension UIScrollView: UIGestureRecognizerDelegate{
-    
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-       if let _ = self as? UITableView {
-        return false
-       }else{
-        if self.contentOffset.x == 0{
-        return true
-        }else{
-            return false
-        }
-        }
-    }
-    /*
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-       if self.contentOffset.x == 0{
-        
-        if otherGestureRecognizer == panGestureRecognizer{
-                       return true
-                   }
-                   return false
-       }else{
-        
-        }
-    }
-     */
- 
-    
-}
+
 

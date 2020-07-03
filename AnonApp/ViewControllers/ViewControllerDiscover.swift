@@ -43,6 +43,8 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
     private var myFavs:[Category] = []
     private var isFavourited:Bool = false
     
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -55,9 +57,9 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
         NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification
         , object: nil)
         
-        
+       
         catName.text = myCategory?.categoryName
-        
+       
         
         activeBtn.isSelected=true
        

@@ -17,13 +17,15 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     
     
     weak var myChannel:Channel?
-    private weak var feedVC:ViewControllerFeed?
+    weak var feedVC: ViewControllerFeed?
+    
     var uid:String?
     private var childUpdates:[String:Any]=[:]
     var deleteBtn:UIButton?
     var mediaView:GPHMediaView?
     var giphyBottomSpaceConstraint:NSLayoutConstraint?
     var giphyTrailingSpace:NSLayoutConstraint?
+    let placeholderText = "Type something"
     
     @IBOutlet weak var textView: UITextView!
     
@@ -49,7 +51,8 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
         textView.textColor = UIColor.lightGray
         textView.translatesAutoresizingMaskIntoConstraints = true
         textView.isScrollEnabled = false
-        
+        textView.textContainer.maximumNumberOfLines = 10
+        textView.textContainer.lineBreakMode = .byClipping
         Quipit.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.cancelClicked))
         Quipit.leftBarButtonItem?.tintColor = .black
         
@@ -75,6 +78,19 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     // -MARK: ActionFunctions
     
     @objc func postClicked(){
+        Quipit.leftBarButtonItem?.isEnabled = false
+        Quipit.rightBarButtonItem?.isEnabled = false
+        var activityIndicator:UIActivityIndicatorView?
+        if #available(iOS 13.0, *) {
+            activityIndicator = UIActivityIndicatorView(style: .large)
+        } else {
+            // Fallback on earlier versions
+        }
+        activityIndicator?.center = self.view.center
+        activityIndicator?.startAnimating()
+        if let myActivityIndicator = activityIndicator{
+        self.view.addSubview(myActivityIndicator)
+        }
         saveQuip()
     }
   
@@ -95,7 +111,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     
     @IBAction func gifClicked(_ sender: Any) {
         let g = GiphyViewController()
-        g.theme = .automatic
+        g.theme = GPHTheme(type: .automatic)
         g.layout = .waterfall
         g.mediaTypeConfig = [.gifs, .recents]
         g.showConfirmationScreen = true
@@ -121,7 +137,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     
     func textViewDidChange(_ textView: UITextView) {
         if textView.text.isEmpty {
-            textView.text = "Type something"
+            textView.text = placeholderText
             textView.textColor = .gray
             self.adjustTextViewHeight()
         } else {
@@ -141,12 +157,12 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
         if text.isEmpty {
             let updatedText = (textView.text as NSString).replacingCharacters(in: range, with: text)
             if updatedText.isEmpty {
-                textView.text = "Type something"
+                textView.text = placeholderText
                 textView.textColor = .gray
                 textView.selectedRange = NSRange(location: 0, length: 0)
             }
         } else {
-            if textView.text == "Type something" {
+            if textView.text == placeholderText {
                 textView.text = ""
             }
             
@@ -198,12 +214,16 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
         
         let post1 = ["s": 0,
                           "r":0] as [String : Any]
+        var quipText = ""
         
+        if textView.text != placeholderText {
+            quipText = textView.text
+        }
        
         if let auid = uid{
             
             post3 = ["a": auid,
-                    "t": textView.text ?? "",
+                    "t": quipText,
                     "d": FieldValue.serverTimestamp()]
         
         if let myChannelKey = myChannel?.key{
@@ -212,7 +232,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
        
             if let myParentChannelKey = myChannel?.parentKey {
                 if let myParentChannelName = myChannel?.parent{
-                post2 = [   "t": textView.text ?? "",
+                post2 = [   "t": quipText,
                              "k": myChannelKey,
                              "c": myChannelName,
                              "pk": myParentChannelKey,
@@ -221,7 +241,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
                               "d": FieldValue.serverTimestamp()]
                 
                 post4 = ["c": myChannel?.channelName ?? "Other",
-                                "t": textView.text ?? "",
+                                "t": quipText,
                                "d": FieldValue.serverTimestamp(),
                                "k": myChannelKey,
                                "pk":myParentChannelKey]
@@ -233,14 +253,14 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
                 }
             }
             else{
-                post2 = [        "t": textView.text ?? "",
+                post2 = [        "t": quipText,
                                   "c": myChannelName,
                                   "k": myChannelKey,
                                   "a": auid,
                                   "d": FieldValue.serverTimestamp()]
                 
                     post4 = ["c": myChannelName,
-                     "t": textView.text ?? "",
+                     "t": quipText,
                     "d": FieldValue.serverTimestamp(),
                     "k": myChannelKey]
               
@@ -280,7 +300,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
             FirestoreService.sharedInstance.addQuipToRecentChannelTransaction(myChannelKey: myChannelKey, data: data, key: key) {
                 self.addQuipToFirebase()
                  self.textView.resignFirstResponder()
-                self.dismiss(animated: true, completion: nil)
+                
                 self.runTransactionForRecentUser(data: post4, key: key)
                 self.addQuipDocToFirestore(data: post2, key: key)
             }
@@ -298,7 +318,13 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     
     func runTransactionForRecentUser(data:[String:Any], key: String){
         if let auid = uid{
-            FirestoreService.sharedInstance.addQuipToRecentUserQuips(auid: auid, data: data, key: key)
+            FirestoreService.sharedInstance.addQuipToRecentUserQuips(auid: auid, data: data, key: key){
+             
+                if let feedVC = self.feedVC as? ViewControllerFeed{
+                    feedVC.collectionView.reloadData()
+                }
+            self.dismiss(animated: true, completion: nil)
+            }
         }
     }
    
