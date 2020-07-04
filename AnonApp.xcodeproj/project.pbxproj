@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		5505DCCE3CDFB1360BD15B66 /* Pods_AnonAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C273AD7537F3E0FD82C0659 /* Pods_AnonAppTests.framework */; };
 		92524B2EE2428C52BBE9BB05 /* Pods_AnonApp_AnonAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A50C788305201A5142B72859 /* Pods_AnonApp_AnonAppUITests.framework */; };
-		97791C6D953EF16D73091FAD /* Pods_AnonApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9FDC6946DC51196655AA647 /* Pods_AnonApp.framework */; };
 		C73AA0C92453ACEF000C27B9 /* ViewControllerCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0C82453ACEF000C27B9 /* ViewControllerCategories.swift */; };
 		C73AA0CB2453BC66000C27B9 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CA2453BC66000C27B9 /* Category.swift */; };
 		C73AA0CD2454B451000C27B9 /* ViewControllerUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CC2454B451000C27B9 /* ViewControllerUser.swift */; };
@@ -26,6 +25,8 @@
 		C772675C243ABE52000FC9C7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C772675A243ABE52000FC9C7 /* LaunchScreen.storyboard */; };
 		C7726767243ABE53000FC9C7 /* AnonAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7726766243ABE53000FC9C7 /* AnonAppTests.swift */; };
 		C7726772243ABE53000FC9C7 /* AnonAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7726771243ABE53000FC9C7 /* AnonAppUITests.swift */; };
+		C775988B24AFA6280038BB28 /* cloudFunctionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C775988A24AFA6280038BB28 /* cloudFunctionManager.swift */; };
+		C775988C24B0DE6B0038BB28 /* Pods_AnonApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9FDC6946DC51196655AA647 /* Pods_AnonApp.framework */; };
 		C788018024A299570094BEC9 /* CollectionViewCellFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = C788017F24A299570094BEC9 /* CollectionViewCellFeed.swift */; };
 		C788018224A41D8B0094BEC9 /* CollectionViewCellUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C788018124A41D8B0094BEC9 /* CollectionViewCellUser.swift */; };
 		C788018424A826B70094BEC9 /* SwipeNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C788018324A826B70094BEC9 /* SwipeNavigationController.swift */; };
@@ -98,6 +99,7 @@
 		C772676D243ABE53000FC9C7 /* AnonAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AnonAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7726771243ABE53000FC9C7 /* AnonAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnonAppUITests.swift; sourceTree = "<group>"; };
 		C7726773243ABE53000FC9C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C775988A24AFA6280038BB28 /* cloudFunctionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cloudFunctionManager.swift; sourceTree = "<group>"; };
 		C788017F24A299570094BEC9 /* CollectionViewCellFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCellFeed.swift; sourceTree = "<group>"; };
 		C788018124A41D8B0094BEC9 /* CollectionViewCellUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCellUser.swift; sourceTree = "<group>"; };
 		C788018324A826B70094BEC9 /* SwipeNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeNavigationController.swift; sourceTree = "<group>"; };
@@ -130,7 +132,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				97791C6D953EF16D73091FAD /* Pods_AnonApp.framework in Frameworks */,
+				C775988C24B0DE6B0038BB28 /* Pods_AnonApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +241,7 @@
 				C7A6DF982481C1B1003DA05B /* FirebaseService.swift */,
 				C7A6DF9A2481DC91003DA05B /* FirestoreService.swift */,
 				C7A6DF9C2481E83F003DA05B /* FirebaseStorageService.swift */,
+				C775988A24AFA6280038BB28 /* cloudFunctionManager.swift */,
 			);
 			path = "Database Service";
 			sourceTree = "<group>";
@@ -625,6 +628,7 @@
 				C788018024A299570094BEC9 /* CollectionViewCellFeed.swift in Sources */,
 				C73AA0C92453ACEF000C27B9 /* ViewControllerCategories.swift in Sources */,
 				C7A6DF9624804807003DA05B /* UIViewExtension.swift in Sources */,
+				C775988B24AFA6280038BB28 /* cloudFunctionManager.swift in Sources */,
 				C788018424A826B70094BEC9 /* SwipeNavigationController.swift in Sources */,
 				C7726752243ABE4F000FC9C7 /* AppDelegate.swift in Sources */,
 				C75942C4247CA52B00ED8223 /* CustomTableCells.swift in Sources */,

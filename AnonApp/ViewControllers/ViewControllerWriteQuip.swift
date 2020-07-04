@@ -183,114 +183,130 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
         var gifID:String?
         var hasGif:Bool=false
         if imageView.image != nil  && imageView.isHidden==false{
-            if true { //send to google sensor api
-                hasImage=true
-                let randomID = UUID.init().uuidString
-                if let auid = uid{
-                imageRef = "\(auid)/\(randomID)"
-                    if let myimageRef = imageRef{
-                guard let imageData = imageView.image?.jpegData(compressionQuality: 0.75) else {print("error getting image")
-                    return
-                }
-                FirebaseStorageService.sharedInstance.uploadImage(imageRef: myimageRef, imageData: imageData)
-                }
-                }
-            }
-            else{
-                return
-            }
+           checkIfImageIsClean()
+            return
         }
         else if mediaView?.media != nil && mediaView?.isHidden == false{
             gifID = mediaView?.media?.id
             hasGif = true
         }
+       generatePost(hasImage: hasImage, hasGif: hasGif, imageRef: imageRef, gifID: gifID)
+        
+       
+        
+          
+        
+        
+    }
+    
+    func checkIfImageIsClean(){
+        
+       
+                       let hasImage=true
+                       let randomID = UUID.init().uuidString
+                       if let auid = self.uid{
+                       let imageRef = "\(auid)/\(randomID)"
+                           
+                           guard let imageData = self.imageView.image?.jpegData(compressionQuality: 0.75) else {print("error getting image")
+                           return
+                        }
+                        FirebaseStorageService.sharedInstance.uploadImage(imageRef: imageRef, imageData: imageData) { (isClean) in
+                            if isClean{
+                               self.generatePost(hasImage: hasImage, hasGif: false, imageRef: imageRef, gifID: nil)
+                            }else{
+                                self.displayMsgBox()
+                            }
+                        }
+        }
+        
+    }
+    
+    func displayMsgBox(){
+        
+    }
+    
+    func generatePost(hasImage:Bool, hasGif:Bool, imageRef:String?, gifID:String?){
         guard let key = FirebaseService.sharedInstance.generatePostKey() else { return }
+                     
+              var post2:[String:Any]=[:]
+                var post3:[String:Any]=[:]
+                var post4:[String:Any]=[:]
+                 
               
-       var post2:[String:Any]=[:]
-         var post3:[String:Any]=[:]
-         var post4:[String:Any]=[:]
-          
-       
-        
-        let post1 = ["s": 0,
-                          "r":0] as [String : Any]
-        var quipText = ""
-        
-        if textView.text != placeholderText {
-            quipText = textView.text
-        }
-       
-        if let auid = uid{
-            
-            post3 = ["a": auid,
-                    "t": quipText,
-                    "d": FieldValue.serverTimestamp()]
-        
-        if let myChannelKey = myChannel?.key{
-            if let myChannelName = myChannel?.channelName{
-                
-       
-            if let myParentChannelKey = myChannel?.parentKey {
-                if let myParentChannelName = myChannel?.parent{
-                post2 = [   "t": quipText,
-                             "k": myChannelKey,
-                             "c": myChannelName,
-                             "pk": myParentChannelKey,
-                             "p": myParentChannelName,
-                              "a": auid,
-                              "d": FieldValue.serverTimestamp()]
-                
-                post4 = ["c": myChannel?.channelName ?? "Other",
-                                "t": quipText,
-                               "d": FieldValue.serverTimestamp(),
-                               "k": myChannelKey,
-                               "pk":myParentChannelKey]
-                
-            
-                    childUpdates = ["/A/\(myChannelKey)/Q/\(key)":post1,
-                    "/M/\(auid)/q/\(key)":post1,
-                    "/A/\(myParentChannelKey)/Q/\(key)":post1  ] as [String : Any]
-                }
-            }
-            else{
-                post2 = [        "t": quipText,
-                                  "c": myChannelName,
-                                  "k": myChannelKey,
-                                  "a": auid,
-                                  "d": FieldValue.serverTimestamp()]
-                
-                    post4 = ["c": myChannelName,
-                     "t": quipText,
-                    "d": FieldValue.serverTimestamp(),
-                    "k": myChannelKey]
+               
+               let post1 = ["s": 0,
+                                 "r":0] as [String : Any]
+               var quipText = ""
+               
+               if textView.text != placeholderText {
+                   quipText = textView.text
+               }
               
-                childUpdates = ["/A/\(myChannelKey)/Q/\(key)":post1,
-                                    "/M/\(auid)/q/\(key)":post1] as [String : Any]
-                
-             
-                }
-                
-            }
-        }
-        }
-        if hasImage {
-            post3["i"]=imageRef
-            post4["i"]=imageRef
-            post2["i"]=imageRef
-        }
-        else if hasGif{
-            post3["g"]=gifID
-            post4["g"]=gifID
-            post2["g"]=gifID
-        }
-        
-        queryRecentChannelQuips(data: post3, key: key,post4: post4, post2: post2)
-        
-       
-        
-          
-        
-        
+               if let auid = uid{
+                   
+                   post3 = ["a": auid,
+                           "t": quipText,
+                           "d": FieldValue.serverTimestamp()]
+               
+               if let myChannelKey = myChannel?.key{
+                   if let myChannelName = myChannel?.channelName{
+                       
+              
+                   if let myParentChannelKey = myChannel?.parentKey {
+                       if let myParentChannelName = myChannel?.parent{
+                       post2 = [   "t": quipText,
+                                    "k": myChannelKey,
+                                    "c": myChannelName,
+                                    "pk": myParentChannelKey,
+                                    "p": myParentChannelName,
+                                     "a": auid,
+                                     "d": FieldValue.serverTimestamp()]
+                       
+                       post4 = ["c": myChannel?.channelName ?? "Other",
+                                       "t": quipText,
+                                      "d": FieldValue.serverTimestamp(),
+                                      "k": myChannelKey,
+                                      "pk":myParentChannelKey]
+                       
+                   
+                           childUpdates = ["/A/\(myChannelKey)/Q/\(key)":post1,
+                           "/M/\(auid)/q/\(key)":post1,
+                           "/A/\(myParentChannelKey)/Q/\(key)":post1  ] as [String : Any]
+                       }
+                   }
+                   else{
+                       post2 = [        "t": quipText,
+                                         "c": myChannelName,
+                                         "k": myChannelKey,
+                                         "a": auid,
+                                         "d": FieldValue.serverTimestamp()]
+                       
+                           post4 = ["c": myChannelName,
+                            "t": quipText,
+                           "d": FieldValue.serverTimestamp(),
+                           "k": myChannelKey]
+                     
+                       childUpdates = ["/A/\(myChannelKey)/Q/\(key)":post1,
+                                           "/M/\(auid)/q/\(key)":post1] as [String : Any]
+                       
+                    
+                       }
+                       
+                   }
+               }
+               }
+               if hasImage {
+                   post3["i"]=imageRef
+                   post4["i"]=imageRef
+                   post2["i"]=imageRef
+               }
+               else if hasGif{
+                   post3["g"]=gifID
+                   post4["g"]=gifID
+                   post2["g"]=gifID
+               }
+               
+               queryRecentChannelQuips(data: post3, key: key,post4: post4, post2: post2)
     }
     
     //add quips to recentChannelDoc

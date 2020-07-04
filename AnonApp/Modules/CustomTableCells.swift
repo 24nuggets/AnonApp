@@ -77,6 +77,12 @@ class QuipCells:UITableViewCell{
     
     weak var delegate: MyCellDelegate?
     
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        self.contentView.autoresizingMask = .flexibleHeight
+    }
+    
     var aQuip:Quip? {
         didSet{
             if let myQuip = aQuip{
@@ -106,7 +112,7 @@ class QuipCells:UITableViewCell{
     }
     
     @IBAction func btnUpTapped(_ sender: Any) {
-        
+       
         delegate?.btnUpTapped(cell: self)
     }
     
@@ -127,9 +133,11 @@ class QuipCells:UITableViewCell{
     
     let myImageView : CustomImageView = {
     let imgView = CustomImageView()
+        
    
     return imgView
     }()
+    
     
     let myGifView : GPHMediaView = {
      let gifView = GPHMediaView()
@@ -249,7 +257,7 @@ class QuipCells:UITableViewCell{
           self.contentView.addSubview(self.myGifView)
           self.myGifView.translatesAutoresizingMaskIntoConstraints = false
                      
-          let bottomConstraint = NSLayoutConstraint(item: self.contentView, attribute: .bottom, relatedBy: .equal, toItem: self.myGifView, attribute: .bottom, multiplier: 1, constant: 40)
+        let bottomConstraint = NSLayoutConstraint(item: self.contentView, attribute: .bottom, relatedBy: .equal, toItem: self.myGifView, attribute: .bottom, multiplier: 1, constant: 40)
           let leadingContraint = NSLayoutConstraint(item: self.myGifView, attribute: .leading, relatedBy: .equal, toItem: self.contentView, attribute: .leading, multiplier: 1, constant: 10)
           let trailingConstraint = NSLayoutConstraint(item: self.contentView, attribute: .trailing, relatedBy: .equal, toItem: self.myGifView, attribute: .trailing, multiplier: 1, constant: 77)
           let topConstraint = NSLayoutConstraint(item: self.myGifView, attribute: .top, relatedBy: .equal, toItem: self.quipText, attribute: .bottom, multiplier: 1, constant: 4)
@@ -257,20 +265,26 @@ class QuipCells:UITableViewCell{
           self.contentView.addConstraints([bottomConstraint,leadingContraint,trailingConstraint, topConstraint])
                       
       }
+  
+    
     func addImageViewToTableCell(){
-          
-          self.contentView.addSubview(self.myImageView)
-          self.myImageView.translatesAutoresizingMaskIntoConstraints = false
-                            
-          let bottomConstraint = NSLayoutConstraint(item: self.contentView, attribute: .bottom, relatedBy: .equal, toItem: self.myImageView, attribute: .bottom, multiplier: 1, constant: 40)
-          let leadingContraint = NSLayoutConstraint(item: self.myImageView, attribute: .leading, relatedBy: .equal, toItem: self.contentView, attribute: .leading, multiplier: 1, constant: 10)
-          let trailingConstraint = NSLayoutConstraint(item: self.contentView, attribute: .trailing, relatedBy: .equal, toItem: self.myImageView, attribute: .trailing, multiplier: 1, constant: 77)
-          let topConstraint = NSLayoutConstraint(item: self.myImageView, attribute: .top, relatedBy: .equal, toItem: self.quipText, attribute: .bottom, multiplier: 1, constant: 4)
-                             
-          self.contentView.addConstraints([bottomConstraint,leadingContraint,trailingConstraint, topConstraint])
-          
-      }
+             
+             self.contentView.addSubview(self.myImageView)
+             self.myImageView.translatesAutoresizingMaskIntoConstraints = false
+                               
+             let bottomConstraint = NSLayoutConstraint(item: self.contentView, attribute: .bottom, relatedBy: .equal, toItem: self.myImageView, attribute: .bottom, multiplier: 1, constant: 40)
+             let leadingContraint = NSLayoutConstraint(item: self.myImageView, attribute: .leading, relatedBy: .equal, toItem: self.contentView, attribute: .leading, multiplier: 1, constant: 10)
+             let trailingConstraint = NSLayoutConstraint(item: self.contentView, attribute: .trailing, relatedBy: .equal, toItem: self.myImageView, attribute: .trailing, multiplier: 1, constant: 77)
+             let topConstraint = NSLayoutConstraint(item: self.myImageView, attribute: .top, relatedBy: .equal, toItem: self.quipText, attribute: .bottom, multiplier: 1, constant: 4)
+         self.myImageView.heightAnchor.constraint(equalToConstant: 250).isActive = true
+        
+             self.contentView.addConstraints([bottomConstraint,leadingContraint,trailingConstraint, topConstraint])
+        self.myImageView.addActivityIndicator()
+           
+         }
     
     
     
 }
+
+

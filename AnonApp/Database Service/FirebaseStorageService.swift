@@ -15,10 +15,38 @@ class FirebaseStorageService: NSObject {
      let storageRef = Storage.storage().reference()
      static let sharedInstance = FirebaseStorageService()
     
-    func uploadImage(imageRef:String, imageData: Data){
+    func uploadImage(imageRef:String, imageData: Data, completion: @escaping (Bool)->()){
         let uploadref = storageRef.child(imageRef)
         
-        uploadref.putData(imageData)
+        uploadref.putData(imageData, metadata: nil) { (metaData, error) in
+            if let error = error{
+                print(error)
+                return
+            }
+            cloudFunctionManager.sharedInstance.functions.httpsCallable("filterOffensiveImages").call(["imageRef": imageRef]) { (result, error) in
+                     if let error = error as NSError? {
+                       if error.domain == FunctionsErrorDomain {
+                         let code = FunctionsErrorCode(rawValue: error.code)
+                         let message = error.localizedDescription
+                         let details = error.userInfo[FunctionsErrorDetailsKey]
+                       }
+                       // ...
+                     }
+                     if let isClean = result?.data as? Bool {
+                        if isClean{
+                            completion(true)
+                        }else{
+                            self.deleteImage(imageRef: imageRef)
+                            completion(false)
+                        }
+                     }
+                   }
+        }
+       
+    }
+    
+    func deleteImage(imageRef:String){
+        
     }
     
     func getDownloadURL(imageRef:String, completion: @escaping (URL)->()){

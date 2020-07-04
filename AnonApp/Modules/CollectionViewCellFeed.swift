@@ -284,7 +284,8 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
        super.awakeFromNib()
        feedTable.delegate = self
        feedTable.dataSource = self
-     
+        self.feedTable.rowHeight = UITableView.automaticDimension
+        self.feedTable.estimatedRowHeight = 500.0
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         
         feedTable.refreshControl = refreshControl
@@ -411,19 +412,25 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
        }
        
        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            if let cell = feedTable.dequeueReusableCell(withIdentifier: "feedCell", for: indexPath) as? QuipCells {
+       
+        
+            
+          let cell = feedTable.dequeueReusableCell(withIdentifier: "feedCell", for: indexPath) as? QuipCells
+                
+          
                 if newQuips.count > 0 {
                 
                     if let myQuip = self.newQuips[indexPath.row]{
-                        cell.aQuip = myQuip
-                            if let myImageRef = myQuip.imageRef  {
-                                cell.addImageViewToTableCell()
-                                cell.myImageView.getImage(myQuipImageRef: myImageRef,  feedTable: self.feedTable)
-                                                               }
-                                                                                                                                                  
-                            else if let myGifID = myQuip.gifID  {
-                                cell.addGifViewToTableCell()
-                                cell.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.feedTable)
+                        cell?.aQuip = myQuip
+                           if let myImageRef = myQuip.imageRef  {
+                               
+                               cell?.addImageViewToTableCell()
+                             cell?.myImageView.getImage(myQuipImageRef: myImageRef,  feedTable: self.feedTable)
+                                                       //        }
+                        }
+                         else if let myGifID = myQuip.gifID  {
+                                cell?.addGifViewToTableCell()
+                                cell?.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.feedTable)
                                                                     
                                                                }
                             
@@ -431,32 +438,32 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                 if let dateVal = myQuip.timePosted?.seconds{
                     let milliTimePost = dateVal * 1000
                 if let aCurrentTime = self.currentTime{
-                        cell.timePosted.text = timeSincePost(timePosted: Double(milliTimePost), currentTime: aCurrentTime)
+                        cell?.timePosted.text = timeSincePost(timePosted: Double(milliTimePost), currentTime: aCurrentTime)
                                                }
                                            }
                 if let aID = myQuip.quipID{
                 if self.myFeedController?.myLikesDislikesMap[aID] == 1{
-                    cell.upButton.isSelected=true
+                    cell?.upButton.isSelected=true
                                         
-                                                       cell.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                                       cell?.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
                                                }
                                                else if self.myFeedController?.myLikesDislikesMap[aID] == -1{
-                                                       cell.downButton.isSelected=true
+                                                       cell?.downButton.isSelected=true
                                                       
-                                                       cell.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                                       cell?.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
                                                                                                              
                                                }
                                            }
                 }
-                }
-                else{
-                    return cell
-                }
-                cell.downButton.changeButtonWeight()
-                     cell.upButton.changeButtonWeight()
-                     cell.delegate = self
                 
-                 return cell
+                else{
+                    return UITableViewCell()
+                }
+                cell?.downButton.changeButtonWeight()
+                     cell?.upButton.changeButtonWeight()
+                     cell?.delegate = self
+                   
+                 return cell!
         }
         return UITableViewCell()
        }
@@ -541,7 +548,8 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
          super.awakeFromNib()
          feedTable.delegate = self
          feedTable.dataSource = self
-       
+       self.feedTable.rowHeight = UITableView.automaticDimension
+             self.feedTable.estimatedRowHeight = 500.0
          refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         feedTable.refreshControl = refreshControl
       }

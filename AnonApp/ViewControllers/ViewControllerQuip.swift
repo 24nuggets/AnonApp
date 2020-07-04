@@ -923,56 +923,69 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                var gifID:String?
                var hasGif:Bool=false
         if imageView?.image != nil  && imageView?.isHidden==false{
-                   if true { //send to google sensor api
-                       hasImage=true
-                       let randomID = UUID.init().uuidString
-                    if let auid = uid{
-                        imageRef = "\(auid)/\(randomID)"
-                            if let myimageRef = imageRef{
-                       guard let imageData = imageView?.image?.jpegData(compressionQuality: 0.75) else {print("error getting image")
-                           return
-                       }
-                        FirebaseStorageService.sharedInstance.uploadImage(imageRef: myimageRef, imageData: imageData)
-                        }
-                        
-                    }
-                   }
-                   else{
-                       return
-                   }
+                   checkIfImageIsClean()
                }
                else if mediaView?.media != nil && mediaView?.isHidden == false{
                    gifID = mediaView?.media?.id
                    hasGif = true
                }
-        guard let key = FirebaseService.sharedInstance.generatePostKey() else { return }
-             var quipText = ""
-                    
-                    if textView.text != placeHolderText {
-                        quipText = textView.text
-                    }
-        var post2 = [   "t": quipText,
-                        "a": uid ?? "Other",
-                        "d": FieldValue.serverTimestamp(),
-                        "r": true,
-                        "p": myQuip?.quipID] as [String : Any]
-                   
-               if hasImage {
-                   
-                   post2["i"]=imageRef
-               }
-               else if hasGif{
-                  
-                   post2["g"]=gifID
-               }
-                   
-        
-         addReplyToFirestore(key: key, data: post2)
+            generatePost(hasImage: hasImage, hasGif: hasGif, imageRef: imageRef, gifID: gifID)
         
         
          
         
      }
+    func checkIfImageIsClean(){
+           
+          
+                          let hasImage=true
+                          let randomID = UUID.init().uuidString
+                          if let auid = self.uid{
+                          let imageRef = "\(auid)/\(randomID)"
+                              
+                            guard let imageData = self.imageView?.image?.jpegData(compressionQuality: 0.75) else {print("error getting image")
+                              return
+                           }
+                           FirebaseStorageService.sharedInstance.uploadImage(imageRef: imageRef, imageData: imageData) { (isClean) in
+                               if isClean{
+                                  self.generatePost(hasImage: hasImage, hasGif: false, imageRef: imageRef, gifID: nil)
+                               }else{
+                                   self.displayMsgBox()
+                               }
+                           }
+           }
+           
+       }
+       
+       func displayMsgBox(){
+           
+       }
+    
+    func generatePost(hasImage:Bool, hasGif:Bool, imageRef:String?, gifID:String?){
+        guard let key = FirebaseService.sharedInstance.generatePostKey() else { return }
+                    var quipText = ""
+                           
+                           if textView.text != placeHolderText {
+                               quipText = textView.text
+                           }
+               var post2 = [   "t": quipText,
+                               "a": uid ?? "Other",
+                               "d": FieldValue.serverTimestamp(),
+                               "r": true,
+                               "p": myQuip?.quipID] as [String : Any]
+                          
+                      if hasImage {
+                          
+                          post2["i"]=imageRef
+                      }
+                      else if hasGif{
+                         
+                          post2["g"]=gifID
+                      }
+                          
+               
+                addReplyToFirestore(key: key, data: post2)
+    }
     
     func addReplyToFirestore(key:String, data:[String:Any]){
         
@@ -1098,7 +1111,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                if myReplies.count > 0 {
                  if let aReply = self.myReplies[indexPath.row - 1] {
                      if let myImageRef = aReply.imageRef {
-                                                  cell.addImageViewToTableCell()
+                                                cell.addImageViewToTableCell()
                          cell.myImageView.getImage(myQuipImageRef: myImageRef,  feedTable: self.replyTable)
                          
                                                                                      

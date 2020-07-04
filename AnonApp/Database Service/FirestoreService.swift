@@ -30,7 +30,7 @@ class FirestoreService: NSObject {
         
         var newQuips:[Quip] = []
                //gets 2 most recent documents that have quips
-               channelRef.order(by: "t", descending: true).limit(to: 2).getDocuments(){[weak self] (querySnapshot, err) in
+        channelRef.order(by: "t", descending: true).whereField("a", isEqualTo: true).limit(to: 2).getDocuments(){[weak self] (querySnapshot, err) in
                    if let err = err {
                                    print("Error getting documents: \(err)")
                    }
@@ -41,13 +41,11 @@ class FirestoreService: NSObject {
                        }
                        
                        for i in 0...length-1{
-                           if i == 0 {
-                               continue
-                           }
+                          
                            
                            let document = querySnapshot!.documents[i]
                        
-                           if i == 2{
+                           if i == 1{
                             self?.lastRecentDocFeed = document
                                moreRecentQuipsFirestore = true
                            }
@@ -620,7 +618,8 @@ class FirestoreService: NSObject {
                                 self?.createNewDocForRecentChannel(data: data, key: key, transaction: transaction, channelKey: myChannelKey)
                            
                                 
-                                    let mydata2=["n":FieldValue.increment(Int64(1))]
+                                    let mydata2=["n":FieldValue.increment(Int64(1)),
+                                                 "a": true] as [String : Any]
                                     
                                 transaction.updateData(mydata2, forDocument: sfDocument.reference)
                                 transaction.updateData(["quips.\(key)" : data], forDocument: sfDocument.reference)
@@ -628,7 +627,8 @@ class FirestoreService: NSObject {
                                     
                                }
                                else{
-                                   let mydata2=["n":FieldValue.increment(Int64(1))]
+                                   let mydata2=["n":FieldValue.increment(Int64(1)),
+                                                "a": true] as [String : Any]
                                   
                                    transaction.updateData(mydata2, forDocument: (querySnapshot?.documents[1].reference)!)
                                    transaction.updateData(["quips.\(key)" : data], forDocument: (querySnapshot?.documents[1].reference)!)
@@ -653,7 +653,8 @@ class FirestoreService: NSObject {
            
            var mydata2:[String:Any] = [:]
            mydata2 = ["n": 0,
-                      "t": FieldValue.serverTimestamp()]
+                      "t": FieldValue.serverTimestamp(),
+                      "a": false]
            
            
         let recentQuipRef = self.db.collection("Channels/\(channelKey)/RecentQuips").document()
@@ -880,7 +881,7 @@ class FirestoreService: NSObject {
         var moreRecentQuips = false
         let userRecentRef = db.collection("Users/\(uid)/RecentQuips")
            
-           userRecentRef.order(by: "t", descending: true).limit(to: 2).getDocuments(){[weak self] (querySnapshot, err) in
+        userRecentRef.order(by: "t", descending: true).limit(to: 2).getDocuments(){[weak self] (querySnapshot, err) in
                if let err = err {
                                print("Error getting documents: \(err)")
                }

@@ -18,20 +18,53 @@ private var runningRequestsImageViews:[CustomImageView:StorageDownloadTask]=[:]
 private var runningRequestsGifViews:[GPHMediaView:Operation]=[:]
 
 class CustomImageView:UIImageView{
-     let storageRef = Storage.storage().reference()
+    let storageRef = Storage.storage().reference()
     var myImageRef:String?
+    var activityIndicator:UIActivityIndicatorView?
+    
+    func addActivityIndicator(){
+        activityIndicator = UIActivityIndicatorView()
+        if let myactivityIndicator = activityIndicator{
+        myactivityIndicator.hidesWhenStopped = true
+            if #available(iOS 13.0, *) {
+                myactivityIndicator.style = .gray
+            } else {
+                // Fallback on earlier versions
+                myactivityIndicator.style = .gray
+            }
+            
+        myactivityIndicator.center = self.center
+        
+        self.addSubview(myactivityIndicator)
+            myactivityIndicator.translatesAutoresizingMaskIntoConstraints = false
+            placeAtTheCenterWithView(view: myactivityIndicator)
+        myactivityIndicator.startAnimating()
+        }
+    }
+    
+    func placeAtTheCenterWithView(view: UIView) {
+
+        self.addConstraint(NSLayoutConstraint(item: view, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1.0, constant: 0))
+
+        self.addConstraint(NSLayoutConstraint(item: view, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1.0, constant: 0))
+    }
+   
     
     func getImage(myQuipImageRef:String, feedTable:UITableView){
         myImageRef = myQuipImageRef
         
         if let cacheImage = imageCache.object(forKey: myQuipImageRef as NSString){
+            DispatchQueue.main.async {
+             //   self.superview?.heightAnchor.constraint(greaterThanOrEqualToConstant: cacheImage.size.height).isActive = true
             let heightConstraint = self.heightAnchor.constraint(equalToConstant: cacheImage.size.height)
             self.addConstraint(heightConstraint)
                     feedTable.beginUpdates()
                     feedTable.endUpdates()
+                self.activityIndicator?.stopAnimating()
             self.layer.cornerRadius = 8.0
                    self.clipsToBounds = true
             self.image = cacheImage as? UIImage
+            }
         }
         else{
          let downloadRef = storageRef.child(myQuipImageRef)
@@ -50,10 +83,12 @@ class CustomImageView:UIImageView{
                                  let width = aself.frame.size.width
                                 let newImage = resizeImage(image: myImage, targetSize: CGSize(width: width, height: width * 2 ))
                                 imageCache.setObject(newImage, forKey: myQuipImageRef as NSString)
+                              //      self?.superview?.heightAnchor.constraint(greaterThanOrEqualToConstant: newImage.size.height).isActive = true
                                 let heightConstraint = aself.heightAnchor.constraint(equalToConstant: newImage.size.height)
                                 aself.addConstraint(heightConstraint)
                                         feedTable.beginUpdates()
                                         feedTable.endUpdates()
+                                    aself.activityIndicator?.stopAnimating()
                                 aself.layer.cornerRadius = 8.0
                                 aself.clipsToBounds = true
                                
@@ -99,12 +134,14 @@ extension GPHMediaView{
         
         if let cacheGif = imageCache.object(forKey: gifID as NSString){
             let media = cacheGif as? GPHMedia
+             DispatchQueue.main.async {
             self.widthAnchor.constraint(equalTo: self.heightAnchor, multiplier: media!.aspectRatio).isActive = true
             feedTable.beginUpdates()
             feedTable.endUpdates()
             self.layer.cornerRadius = 8.0
             self.clipsToBounds = true
             self.media = media
+            }
         }
         else {
            let task = GiphyCore.shared.gifByID(gifID) {[weak self] (response, error) in
