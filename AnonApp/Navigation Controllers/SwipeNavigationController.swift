@@ -91,7 +91,7 @@ extension SwipeNavigationController: UIGestureRecognizerDelegate {
         if (self.visibleViewController?.isKind(of: ViewControllerFavorites.self))! {
                return false
              }
-        let mybool = viewControllers.count > 1 && duringPushAnimation == false
+        
         return viewControllers.count > 1 && duringPushAnimation == false
     }
     

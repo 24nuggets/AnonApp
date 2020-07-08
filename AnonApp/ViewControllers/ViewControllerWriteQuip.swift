@@ -26,6 +26,8 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     var giphyBottomSpaceConstraint:NSLayoutConstraint?
     var giphyTrailingSpace:NSLayoutConstraint?
     let placeholderText = "Type something"
+    var activityIndicator:UIActivityIndicatorView?
+    let blackView = UIView()
     
     @IBOutlet weak var textView: UITextView!
     
@@ -80,9 +82,9 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     @objc func postClicked(){
         Quipit.leftBarButtonItem?.isEnabled = false
         Quipit.rightBarButtonItem?.isEnabled = false
-        var activityIndicator:UIActivityIndicatorView?
+        
         if #available(iOS 13.0, *) {
-            activityIndicator = UIActivityIndicatorView(style: .large)
+            activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         } else {
             // Fallback on earlier versions
         }
@@ -91,8 +93,22 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
         if let myActivityIndicator = activityIndicator{
         self.view.addSubview(myActivityIndicator)
         }
+        makeViewFade()
         saveQuip()
     }
+    
+    func makeViewFade(){
+            if let window = UIApplication.shared.keyWindow{
+                   
+                     
+                       blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+                   window.addSubview(blackView)
+                   blackView.frame = window.frame
+                       blackView.alpha = 1
+                       
+                       
+                   }
+        }
   
     
     
@@ -175,11 +191,12 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
         return true
     }
     
+    
+    
      // -MARK: SaveQuip
     
     func saveQuip(){
-        var imageRef:String?
-        var hasImage:Bool=false
+        
         var gifID:String?
         var hasGif:Bool=false
         if imageView.image != nil  && imageView.isHidden==false{
@@ -190,7 +207,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
             gifID = mediaView?.media?.id
             hasGif = true
         }
-       generatePost(hasImage: hasImage, hasGif: hasGif, imageRef: imageRef, gifID: gifID)
+       generatePost(hasImage: false, hasGif: hasGif, imageRef: nil, gifID: gifID)
         
        
         
@@ -222,7 +239,30 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     }
     
     func displayMsgBox(){
-        
+        let title = "Inappropriate Image"
+        let message = "We could not post your image becuase we have identified it has having inappropriate content.  If you want more information on this please email us at quipitinc@gmail.com"
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+              switch action.style{
+              case .default:
+                    print("default")
+
+              case .cancel:
+                    print("cancel")
+
+              case .destructive:
+                    print("destructive")
+
+
+              @unknown default:
+                print("unknown action")
+            }}))
+        self.present(alert, animated: true, completion: nil)
+        Quipit.leftBarButtonItem?.isEnabled = true
+        Quipit.rightBarButtonItem?.isEnabled = true
+        activityIndicator?.stopAnimating()
+        activityIndicator?.removeFromSuperview()
+        blackView.removeFromSuperview()
     }
     
     func generatePost(hasImage:Bool, hasGif:Bool, imageRef:String?, gifID:String?){
@@ -336,7 +376,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
         if let auid = uid{
             FirestoreService.sharedInstance.addQuipToRecentUserQuips(auid: auid, data: data, key: key){
              
-                if let feedVC = self.feedVC as? ViewControllerFeed{
+                if let feedVC = self.feedVC{
                     feedVC.collectionView.reloadData()
                 }
             self.dismiss(animated: true, completion: nil)

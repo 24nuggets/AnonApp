@@ -41,7 +41,7 @@
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                     <color key="tintColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <state key="normal" title="Button" image="chevron.right" catalog="system">
+                                                    <state key="normal" title="Button" image="chevron.right">
                                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="medium" weight="medium"/>
                                                     </state>
                                                     <connections>
@@ -84,7 +84,7 @@
                                 <action selector="editButtonClicked:" destination="BSs-rS-e0K" id="ufD-xz-82v"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Item" image="plus" catalog="system" id="4rU-Xb-BFD">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="plus" id="4rU-Xb-BFD">
                             <color key="tintColor" cocoaTouchSystemColor="darkTextColor"/>
                             <connections>
                                 <action selector="addFavClick:" destination="BSs-rS-e0K" id="ubc-YG-ZeQ"/>
@@ -176,21 +176,6 @@
             </objects>
             <point key="canvasLocation" x="2852" y="949.47526236881572"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="tQ3-pp-0Y6">
-            <objects>
-                <viewController id="XMg-eF-kly" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="apY-Xg-Vn2">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <viewLayoutGuide key="safeArea" id="b51-Jy-7bH"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="FYF-CF-3pj" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3716" y="723"/>
-        </scene>
         <!--Quipit-->
         <scene sceneID="zAw-Qf-LFh">
             <objects>
@@ -250,7 +235,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" title="Button" image="chevron.right" catalog="system">
+                                                                        <state key="normal" title="Button" image="chevron.right">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="medium" weight="medium"/>
                                                                         </state>
                                                                         <connections>
@@ -318,7 +303,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" title="Button" image="chevron.right" catalog="system">
+                                                                        <state key="normal" title="Button" image="chevron.right">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="medium" weight="medium"/>
                                                                         </state>
                                                                         <connections>
@@ -386,7 +371,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" title="Button" image="chevron.right" catalog="system">
+                                                                        <state key="normal" title="Button" image="chevron.right">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="medium" weight="medium"/>
                                                                         </state>
                                                                         <connections>
@@ -536,11 +521,11 @@
             <objects>
                 <viewController storyboardIdentifier="ViewControllerDiscover" useStoryboardIdentifierAsRestorationIdentifier="YES" id="DAK-Uo-Uq4" customClass="ViewControllerDiscover" customModule="AnonApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cBz-la-WiJ">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ueG-ga-snV">
-                                <rect key="frame" x="0.0" y="44" width="375" height="109"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="109"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UvP-mr-wee">
                                         <rect key="frame" x="250" y="77" width="125" height="32"/>
@@ -611,7 +596,7 @@
                                 </constraints>
                             </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="XsS-vg-FTY">
-                                <rect key="frame" x="0.0" y="153" width="375" height="416"/>
+                                <rect key="frame" x="0.0" y="109" width="375" height="416"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="noF-a5-T6n">
                                     <size key="itemSize" width="128" height="128"/>
@@ -651,7 +636,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" title="Button" image="chevron.right" catalog="system">
+                                                                        <state key="normal" title="Button" image="chevron.right">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="medium" weight="medium"/>
                                                                         </state>
                                                                         <connections>
@@ -719,7 +704,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" title="Button" image="chevron.right" catalog="system">
+                                                                        <state key="normal" title="Button" image="chevron.right">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="medium" weight="medium"/>
                                                                         </state>
                                                                         <connections>
@@ -860,11 +845,11 @@
             <objects>
                 <viewController storyboardIdentifier="ViewControllerFeed" useStoryboardIdentifierAsRestorationIdentifier="YES" id="oG1-cO-yjC" customClass="ViewControllerFeed" customModule="AnonApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="orQ-JZ-v3a">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ntu-pz-hID">
-                                <rect key="frame" x="0.0" y="44" width="375" height="40"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0U3-ay-3fc">
                                         <rect key="frame" x="0.0" y="0.0" width="187.5" height="40"/>
@@ -909,7 +894,7 @@
                                 </constraints>
                             </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="GhD-Fs-H7c">
-                                <rect key="frame" x="0.0" y="84" width="375" height="485"/>
+                                <rect key="frame" x="0.0" y="40" width="375" height="485"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="Bp7-In-hK9">
                                     <size key="itemSize" width="128" height="128"/>
@@ -921,8 +906,9 @@
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="newCell" id="QpO-Kd-5GL" customClass="CollectionViewCellFeedRecent" customModule="AnonApp" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="266" height="207"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tzw-Bq-6o2">
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Tzw-Bq-6o2">
                                             <rect key="frame" x="0.0" y="0.0" width="266" height="207"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
                                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Xi5-qZ-kqm">
                                                     <rect key="frame" x="0.0" y="0.0" width="266" height="207"/>
@@ -967,7 +953,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                        <state key="normal" image="chevron.up" catalog="system">
+                                                                        <state key="normal" image="chevron.up">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="regular"/>
                                                                         </state>
                                                                         <connections>
@@ -982,7 +968,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                        <state key="normal" image="chevron.down" catalog="system">
+                                                                        <state key="normal" image="chevron.down">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
                                                                         </state>
                                                                         <connections>
@@ -996,7 +982,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                                         <color key="tintColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" title="Share" image="arrowshape.turn.up.right" catalog="system">
+                                                                        <state key="normal" title="Share" image="arrowshape.turn.up.right">
                                                                             <color key="titleColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
                                                                         </state>
@@ -1010,7 +996,7 @@
                                                                             <constraint firstAttribute="width" constant="35" id="ALh-3p-mnF"/>
                                                                         </constraints>
                                                                         <color key="tintColor" red="0.59623742099999999" green="0.83097124099999997" blue="0.73051875830000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" image="ellipsis" catalog="system">
+                                                                        <state key="normal" image="ellipsis">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small" weight="bold"/>
                                                                         </state>
                                                                         <connections>
@@ -1091,12 +1077,6 @@
                                                 <constraint firstAttribute="trailing" secondItem="Xi5-qZ-kqm" secondAttribute="trailing" id="zAR-4v-Omj"/>
                                             </constraints>
                                         </collectionViewCellContentView>
-                                        <constraints>
-                                            <constraint firstItem="Tzw-Bq-6o2" firstAttribute="top" secondItem="QpO-Kd-5GL" secondAttribute="topMargin" constant="-8" id="HNj-R0-LBa"/>
-                                            <constraint firstAttribute="trailingMargin" secondItem="Tzw-Bq-6o2" secondAttribute="trailing" constant="-8" id="KDJ-tI-GBR"/>
-                                            <constraint firstItem="Tzw-Bq-6o2" firstAttribute="leading" secondItem="QpO-Kd-5GL" secondAttribute="leadingMargin" constant="-8" id="sqw-Pi-WDK"/>
-                                            <constraint firstAttribute="bottomMargin" secondItem="Tzw-Bq-6o2" secondAttribute="bottom" constant="-8" id="vwh-Dq-wLj"/>
-                                        </constraints>
                                         <size key="customSize" width="266" height="207"/>
                                         <connections>
                                             <outlet property="feedTable" destination="Xi5-qZ-kqm" id="ddJ-7v-peS"/>
@@ -1152,7 +1132,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                        <state key="normal" image="chevron.up" catalog="system">
+                                                                        <state key="normal" image="chevron.up">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="regular"/>
                                                                         </state>
                                                                         <connections>
@@ -1167,7 +1147,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                        <state key="normal" image="chevron.down" catalog="system">
+                                                                        <state key="normal" image="chevron.down">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
                                                                         </state>
                                                                         <connections>
@@ -1181,7 +1161,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                                         <color key="tintColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" title="Share" image="arrowshape.turn.up.right" catalog="system">
+                                                                        <state key="normal" title="Share" image="arrowshape.turn.up.right">
                                                                             <color key="titleColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
                                                                         </state>
@@ -1195,7 +1175,7 @@
                                                                             <constraint firstAttribute="width" constant="35" id="fSl-Vh-4lf"/>
                                                                         </constraints>
                                                                         <color key="tintColor" red="0.59623742099999999" green="0.83097124099999997" blue="0.73051875830000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" image="ellipsis" catalog="system">
+                                                                        <state key="normal" image="ellipsis">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small" weight="bold"/>
                                                                         </state>
                                                                         <connections>
@@ -1343,7 +1323,7 @@
                                 <color key="barTintColor" systemColor="systemGray5Color" red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </toolbar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="gvd-H5-9Nz">
-                                <rect key="frame" x="0.0" y="44" width="375" height="475"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="524"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="mainQuip" rowHeight="106" id="NeS-1q-9fd" customClass="QuipCells" customModule="AnonApp" customModuleProvider="target">
@@ -1386,7 +1366,7 @@
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                     <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <state key="normal" image="chevron.up" catalog="system">
+                                                    <state key="normal" image="chevron.up">
                                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="regular"/>
                                                     </state>
                                                     <connections>
@@ -1401,7 +1381,7 @@
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                     <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <state key="normal" image="chevron.down" catalog="system">
+                                                    <state key="normal" image="chevron.down">
                                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
                                                     </state>
                                                     <connections>
@@ -1475,7 +1455,7 @@
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                     <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <state key="normal" image="chevron.up" catalog="system">
+                                                    <state key="normal" image="chevron.up">
                                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="regular"/>
                                                     </state>
                                                     <connections>
@@ -1490,7 +1470,7 @@
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                     <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <state key="normal" image="chevron.down" catalog="system">
+                                                    <state key="normal" image="chevron.down">
                                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
                                                     </state>
                                                     <connections>
@@ -1504,7 +1484,7 @@
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                     <color key="tintColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <state key="normal" title="Share" image="arrowshape.turn.up.right" catalog="system">
+                                                    <state key="normal" title="Share" image="arrowshape.turn.up.right">
                                                         <color key="titleColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
                                                     </state>
@@ -1518,7 +1498,7 @@
                                                         <constraint firstAttribute="width" constant="20" id="CE5-Mn-T7Z"/>
                                                     </constraints>
                                                     <color key="tintColor" red="0.59623742099999999" green="0.83097124099999997" blue="0.73051875830000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <state key="normal" image="ellipsis" catalog="system">
+                                                    <state key="normal" image="ellipsis">
                                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small" weight="bold"/>
                                                     </state>
                                                     <connections>
@@ -1561,7 +1541,7 @@
                                 </prototypes>
                             </tableView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="R4C-Sa-APF">
-                                <rect key="frame" x="0.0" y="519" width="375" height="50"/>
+                                <rect key="frame" x="0.0" y="568" width="375" height="50"/>
                                 <subviews>
                                     <view opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DM7-n4-jci">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
@@ -1621,8 +1601,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="Bjd-j9-gDT">
                         <barButtonItem key="backBarButtonItem" title=" " id="CSa-PP-BkH"/>
-                        <barButtonItem key="rightBarButtonItem" title="Item" image="ellipsis" catalog="system" id="Fhb-gW-aIp">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="ellipsis" id="Fhb-gW-aIp">
                             <color key="tintColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <connections>
+                                <action selector="ellipsesBarButtonClicked:" destination="g2F-GE-8Bi" id="cvY-cP-Fcz"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
@@ -1644,18 +1627,18 @@
             <objects>
                 <viewController storyboardIdentifier="ViewControllerWriteQuip" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Mce-Ny-dXb" customClass="ViewControllerWriteQuip" customModule="AnonApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="4bP-Za-O31">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SSQ-sK-msO">
-                                <rect key="frame" x="0.0" y="44" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                 <color key="barTintColor" red="0.59607843137254901" green="0.83137254901960778" blue="0.72941176470588232" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <items>
                                     <navigationItem id="moD-az-TP2"/>
                                 </items>
                             </navigationBar>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" bouncesZoom="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sWh-bb-tlv">
-                                <rect key="frame" x="4" y="64" width="355" height="65"/>
+                                <rect key="frame" x="4" y="20" width="355" height="65"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="65" id="M6t-Cw-8O8"/>
@@ -1672,7 +1655,7 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" keyboardType="twitter"/>
                             </textView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ip5-Fo-hMC">
-                                <rect key="frame" x="0.0" y="574" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="530" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
                                     <barButtonItem title="Item" image="photo" catalog="system" id="FzT-pb-E1u">
@@ -1688,17 +1671,17 @@
                                 </items>
                             </toolbar>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kPS-oX-bCg">
-                                <rect key="frame" x="15" y="145" width="320" height="404"/>
+                                <rect key="frame" x="15" y="101" width="320" height="404"/>
                             </imageView>
                             <button hidden="YES" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iir-HW-e6A">
-                                <rect key="frame" x="305" y="155" width="20" height="20"/>
+                                <rect key="frame" x="305" y="111" width="20" height="20"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="20" id="3a4-3j-BhB"/>
                                     <constraint firstAttribute="height" constant="20" id="8U9-Ya-g1r"/>
                                 </constraints>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" image="multiply" catalog="system"/>
+                                <state key="normal" image="multiply"/>
                                 <connections>
                                     <action selector="deleteImageBtnClick:" destination="Mce-Ny-dXb" eventType="touchUpInside" id="iG7-Rz-w4T"/>
                                 </connections>
@@ -1865,7 +1848,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                        <state key="normal" image="chevron.up" catalog="system">
+                                                                        <state key="normal" image="chevron.up">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="regular"/>
                                                                         </state>
                                                                         <connections>
@@ -1880,7 +1863,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                        <state key="normal" image="chevron.down" catalog="system">
+                                                                        <state key="normal" image="chevron.down">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
                                                                         </state>
                                                                         <connections>
@@ -1894,7 +1877,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                                         <color key="tintColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" title="Share" image="arrowshape.turn.up.right" catalog="system">
+                                                                        <state key="normal" title="Share" image="arrowshape.turn.up.right">
                                                                             <color key="titleColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
                                                                         </state>
@@ -1908,7 +1891,7 @@
                                                                             <constraint firstAttribute="width" constant="35" id="74q-YS-TZc"/>
                                                                         </constraints>
                                                                         <color key="tintColor" red="0.59623742099999999" green="0.83097124099999997" blue="0.73051875830000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" image="ellipsis" catalog="system">
+                                                                        <state key="normal" image="ellipsis">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small" weight="bold"/>
                                                                         </state>
                                                                         <connections>
@@ -2038,7 +2021,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                        <state key="normal" image="chevron.up" catalog="system">
+                                                                        <state key="normal" image="chevron.up">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="regular"/>
                                                                         </state>
                                                                         <connections>
@@ -2053,7 +2036,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                        <state key="normal" image="chevron.down" catalog="system">
+                                                                        <state key="normal" image="chevron.down">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
                                                                         </state>
                                                                         <connections>
@@ -2067,7 +2050,7 @@
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                                         <color key="tintColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" title="Share" image="arrowshape.turn.up.right" catalog="system">
+                                                                        <state key="normal" title="Share" image="arrowshape.turn.up.right">
                                                                             <color key="titleColor" red="0.53028464320000002" green="0.81730645899999999" blue="0.71006739139999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="bold"/>
                                                                         </state>
@@ -2081,7 +2064,7 @@
                                                                             <constraint firstAttribute="width" constant="35" id="b76-Gb-eSK"/>
                                                                         </constraints>
                                                                         <color key="tintColor" red="0.59623742099999999" green="0.83097124099999997" blue="0.73051875830000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                        <state key="normal" image="ellipsis" catalog="system">
+                                                                        <state key="normal" image="ellipsis">
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small" weight="bold"/>
                                                                         </state>
                                                                         <connections>
@@ -2184,10 +2167,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" misplaced="YES" progressViewStyle="bar" translatesAutoresizingMaskIntoConstraints="NO" id="xmG-o4-bjl">
-                                <rect key="frame" x="43" y="180" width="235" height="3"/>
-                                <color key="trackTintColor" systemColor="systemGray2Color" red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </progressView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9lv-8J-Irj">
                                 <rect key="frame" x="39" y="201" width="10.5" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -2201,6 +2180,10 @@
                                     <constraint firstAttribute="width" constant="2" id="sRX-Gn-B2t"/>
                                 </constraints>
                             </view>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" misplaced="YES" progressViewStyle="bar" translatesAutoresizingMaskIntoConstraints="NO" id="xmG-o4-bjl">
+                                <rect key="frame" x="43" y="179" width="235" height="3"/>
+                                <color key="trackTintColor" systemColor="systemGray2Color" red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -2267,22 +2250,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Vk-f4-UgR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3764" y="1530.5847076461771"/>
-        </scene>
-        <!--Edit Profile-->
-        <scene sceneID="qt9-rx-FN7">
-            <objects>
-                <viewController id="SYd-oX-V58" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="aKg-eQ-xv7">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <viewLayoutGuide key="safeArea" id="IRx-lv-fh6"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Edit Profile" id="R9R-Wf-PIC"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="fRN-xD-WvC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="5022" y="2300"/>
         </scene>
         <!--Base Tab Bar Controller-->
         <scene sceneID="KZb-BW-bkA">
@@ -2355,7 +2322,7 @@
         <scene sceneID="fl4-XB-twk">
             <objects>
                 <navigationController storyboardIdentifier="nav3" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3FH-rh-1N3" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="person.circle" catalog="system" id="KB9-pP-LKl"/>
+                    <tabBarItem key="tabBarItem" title="" image="person.circle" id="KB9-pP-LKl"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ct0-o9-Rer">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -2374,23 +2341,23 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="yOb-7B-Jmc"/>
-        <segue reference="hQF-fl-Yc4"/>
-        <segue reference="aY2-Bu-O2G"/>
+        <segue reference="ihN-6V-qV5"/>
+        <segue reference="2JY-4e-8xt"/>
+        <segue reference="PLs-iT-tcb"/>
     </inferredMetricsTieBreakers>
     <resources>
-        <image name="arrowshape.turn.up.right" catalog="system" width="128" height="106"/>
-        <image name="chevron.down" catalog="system" width="128" height="72"/>
-        <image name="chevron.right" catalog="system" width="96" height="128"/>
-        <image name="chevron.up" catalog="system" width="128" height="72"/>
-        <image name="ellipsis" catalog="system" width="128" height="37"/>
+        <image name="arrowshape.turn.up.right" width="18" height="16"/>
+        <image name="chevron.down" width="15" height="8"/>
+        <image name="chevron.right" width="8" height="15"/>
+        <image name="chevron.up" width="15" height="8"/>
+        <image name="ellipsis" width="16" height="4"/>
         <image name="gear" width="19" height="19"/>
         <image name="magnifyingglass" width="16" height="16"/>
         <image name="message" catalog="system" width="128" height="113"/>
-        <image name="multiply" catalog="system" width="128" height="111"/>
-        <image name="person.circle" catalog="system" width="128" height="121"/>
+        <image name="multiply" width="12" height="12"/>
+        <image name="person.circle" width="17" height="17"/>
         <image name="photo" catalog="system" width="128" height="93"/>
-        <image name="plus" catalog="system" width="128" height="113"/>
+        <image name="plus" width="14" height="14"/>
         <image name="square.and.pencil" width="17" height="17"/>
         <image name="star.fill" width="19" height="18"/>
     </resources>

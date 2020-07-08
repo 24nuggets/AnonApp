@@ -255,10 +255,8 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
              if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "newCell", for: indexPath) as? CollectionViewCellFeedRecent{
                 cell.myFeedController = self
                 cell.updateNew(){
-                    let indexPath = IndexPath(item: 1, section: 0)
-                    if let myCell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellFeedTop{
-                        
-                    }
+                    
+                   
                 }
               return cell
              }
@@ -267,10 +265,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
              if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "topCell", for: indexPath) as? CollectionViewCellFeedTop{
                 cell.myFeedController = self
                 cell.updateHot(){
-                    let indexPath = IndexPath(item: 0, section: 0)
-                    if let myCell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellFeedRecent{
-                        
-                    }
+                    
                 }
               return cell
              }
@@ -299,7 +294,16 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         bottomBarLeadingConstraint.constant = scrollView.contentOffset.x / 2
     }
   
- 
+    func showNextController(menuItem:MenuItem, quip:Quip){
+        if menuItem.name == "View User's Profile"{
+            let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+            let nextViewController = storyBoard.instantiateViewController(withIdentifier: "ViewControllerUser") as! ViewControllerUser
+            nextViewController.uid = uid
+            nextViewController.uidProfile = quip.user
+            navigationController?.pushViewController(nextViewController, animated: true)
+        }
+        
+    }
     
     
     // MARK: - Navigation

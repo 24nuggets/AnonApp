@@ -31,7 +31,8 @@ class FirebaseService: NSObject {
     
     func setCurrentTimeForUser(uid:String){
         
-        let timeUpdates = ["d":ServerValue.timestamp()]
+        let timeUpdates = ["d":ServerValue.timestamp(),
+                           "s": 10000] as [String : Any]
                       
                  ref.child("M/\(uid)/q/z").updateChildValues(timeUpdates)
     }

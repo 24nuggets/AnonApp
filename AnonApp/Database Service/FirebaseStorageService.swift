@@ -29,6 +29,7 @@ class FirebaseStorageService: NSObject {
                          let code = FunctionsErrorCode(rawValue: error.code)
                          let message = error.localizedDescription
                          let details = error.userInfo[FunctionsErrorDetailsKey]
+                        print("code:\(String(describing: code)), message:\(message), details:\(String(describing: details))")
                        }
                        // ...
                      }
@@ -46,7 +47,12 @@ class FirebaseStorageService: NSObject {
     }
     
     func deleteImage(imageRef:String){
-        
+        let deleteref = storageRef.child(imageRef)
+        deleteref.delete { (error) in
+            if let error = error{
+                print("error deleting image: \(error)")
+            }
+        }
     }
     
     func getDownloadURL(imageRef:String, completion: @escaping (URL)->()){

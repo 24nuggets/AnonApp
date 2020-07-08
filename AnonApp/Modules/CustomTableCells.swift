@@ -166,88 +166,124 @@ class QuipCells:UITableViewCell{
    
     func upToDown(quipScore:Int, quip:Quip?)->Int{
         
-                   
-                          self.upButton.isSelected = false
-                          self.downButton.isSelected = true
-                      
-                      self.upButton.tintColor = UIColor.lightGray
-                      self.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
-                     
-                    let originalScore = Int(self.score.text!)!
-                        
-                          let newScore = originalScore - 2
-                          self.score.text = String(newScore)
-      
-        quip?.tempScore=newScore
+                   upToDown2(quipScore: quipScore, quip: quip)
                
        return -2
            
        }
+    func upToDown2(quipScore:Int, quip:Quip?){
+           
+                      
+                             self.upButton.isSelected = false
+                             self.downButton.isSelected = true
+                         
+                         self.upButton.tintColor = UIColor.lightGray
+                         self.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                        
+                       let originalScore = Int(self.score.text!)!
+                           
+                             let newScore = originalScore - 2
+                             self.score.text = String(newScore)
+         
+           quip?.tempScore=newScore
+                  
+       
+              
+          }
+    
        
     func noneToDown(quipScore:Int, quip:Quip?)->Int{
-        self.downButton.isSelected=true
-        self.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
-            let originalScore = Int(self.score.text!)
-            let newScore = originalScore! - 1
-            self.score.text = String(newScore)
-        if let aquip = quip {
-                   aquip.tempScore=newScore
-               }
+        noneToDown2(quipScore: quipScore, quip: quip)
          return  -1
            
        }
+    
+    func noneToDown2(quipScore:Int, quip:Quip?){
+           self.downButton.isSelected=true
+           self.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+               let originalScore = Int(self.score.text!)
+               let newScore = originalScore! - 1
+               self.score.text = String(newScore)
+           if let aquip = quip {
+                      aquip.tempScore=newScore
+                  }
+           
+              
+          }
        
     func downToNone(quipScore:Int, quip:Quip?)->Int{
-                self.downButton.isSelected=false
-                     self.downButton.tintColor = UIColor.lightGray
-                         let originalScore = Int(self.score.text!)
-                         let newScore = originalScore! + 1
-                         self.score.text = String(newScore)
-        if let aquip = quip {
-                   aquip.tempScore=newScore
-               }
+             downToNone2(quipScore: quipScore, quip: quip)
         return 1
            
        }
+    
+    func downToNone2(quipScore:Int, quip:Quip?){
+                  self.downButton.isSelected=false
+                       self.downButton.tintColor = UIColor.lightGray
+                           let originalScore = Int(self.score.text!)
+                           let newScore = originalScore! + 1
+                           self.score.text = String(newScore)
+          if let aquip = quip {
+                     aquip.tempScore=newScore
+                 }
+          
+             
+         }
        
     func downToUp(quipScore:Int, quip:Quip?)->Int{
-                    self.downButton.isSelected=false
-                           self.upButton.isSelected=true
-                      self.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
-                      self.downButton.tintColor = UIColor.lightGray
-                           let originalScore = Int(self.score.text!)
-                      let newScore = originalScore! + 2
-                           self.score.text = String(newScore)
-                     if let aquip = quip {
-                                aquip.tempScore=newScore
-                            }
+                    downToUp2(quipScore: quipScore, quip: quip)
                        return 2
            
        }
+    func downToUp2(quipScore:Int, quip:Quip?){
+                 self.downButton.isSelected=false
+                        self.upButton.isSelected=true
+                   self.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                   self.downButton.tintColor = UIColor.lightGray
+                        let originalScore = Int(self.score.text!)
+                   let newScore = originalScore! + 2
+                        self.score.text = String(newScore)
+                  if let aquip = quip {
+                             aquip.tempScore=newScore
+                         }
+                  
+        
+    }
     func noneToUp(quipScore:Int, quip:Quip?)->Int{
-        self.upButton.isSelected=true
-        self.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
-             let originalScore = Int(self.score.text!)
-        let newScore = originalScore! + 1
-        if let aquip = quip {
-            aquip.tempScore=newScore
-        }
-             self.score.text = String(newScore)
+       noneToUp2(quipScore: quipScore, quip: quip)
          return 1
            
        }
-    func upToNone(quipScore:Int, quip:Quip?)->Int{
-        self.upButton.isSelected = false
-         self.upButton.tintColor = UIColor.lightGray
+    func noneToUp2(quipScore:Int, quip:Quip?){
+         self.upButton.isSelected=true
+         self.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
               let originalScore = Int(self.score.text!)
-         let newScore = originalScore! - 1
+         let newScore = originalScore! + 1
+         if let aquip = quip {
+             aquip.tempScore=newScore
+         }
               self.score.text = String(newScore)
-        if let aquip = quip {
-                   aquip.tempScore=newScore
-               }
+        
+            
+        }
+    
+    func upToNone(quipScore:Int, quip:Quip?)->Int{
+        upToNone2(quipScore: quipScore, quip: quip)
           return -1
            
        }
+    func upToNone2(quipScore:Int, quip:Quip?){
+           self.upButton.isSelected = false
+            self.upButton.tintColor = UIColor.lightGray
+                 let originalScore = Int(self.score.text!)
+            let newScore = originalScore! - 1
+                 self.score.text = String(newScore)
+           if let aquip = quip {
+                      aquip.tempScore=newScore
+                  }
+             
+              
+          }
    
     
    
@@ -276,7 +312,8 @@ class QuipCells:UITableViewCell{
              let leadingContraint = NSLayoutConstraint(item: self.myImageView, attribute: .leading, relatedBy: .equal, toItem: self.contentView, attribute: .leading, multiplier: 1, constant: 10)
              let trailingConstraint = NSLayoutConstraint(item: self.contentView, attribute: .trailing, relatedBy: .equal, toItem: self.myImageView, attribute: .trailing, multiplier: 1, constant: 77)
              let topConstraint = NSLayoutConstraint(item: self.myImageView, attribute: .top, relatedBy: .equal, toItem: self.quipText, attribute: .bottom, multiplier: 1, constant: 4)
-         self.myImageView.heightAnchor.constraint(equalToConstant: 250).isActive = true
+        self.myImageView.myHeightConstraint = self.myImageView.heightAnchor.constraint(equalToConstant: 250)
+        self.myImageView.myHeightConstraint?.isActive = true
         
              self.contentView.addConstraints([bottomConstraint,leadingContraint,trailingConstraint, topConstraint])
         self.myImageView.addActivityIndicator()

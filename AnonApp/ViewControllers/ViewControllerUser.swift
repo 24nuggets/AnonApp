@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
    
     
     @IBOutlet weak var nameTextView: UITextView!
@@ -27,6 +27,7 @@ class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollecti
     
     
     var uid:String?
+    var uidProfile:String?
   private weak var quipVC:ViewControllerQuip?
    private weak var passedQuip:Quip?
    var myLikesDislikesMap:[String:Int] = [:]
@@ -51,9 +52,15 @@ class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollecti
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        
+        if navigationController?.viewControllers.count == 1{
               let tabBar = tabBarController as! BaseTabBarController
               self.uid = tabBar.userID
+            uidProfile = uid
+        }else{
+            self.navigationItem.leftBarButtonItem = nil
+            self.navigationItem.rightBarButtonItem = nil
+            addGesture()
+        }
         nameTextView.layer.cornerRadius = 10
         nameTextView.clipsToBounds = true
         bioTextView.layer.cornerRadius = 10
@@ -77,7 +84,7 @@ class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollecti
     override func viewDidAppear(_ animated: Bool){
           super.viewDidAppear(animated)
         
-          
+           
         }
     
     //updates firestore and firebase with likes when view is dismissed
@@ -88,7 +95,7 @@ class ViewControllerUser: UIViewController, UICollectionViewDelegate, UICollecti
              
            }
     func loadUserProfile(){
-        if let auid = uid{
+        if let auid = uidProfile{
         FirestoreService.sharedInstance.getUserProfile(uid: auid) { (name, bio) in
             self.nameTextView.text = name
             self.bioTextView.text = bio

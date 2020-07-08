@@ -37,6 +37,7 @@ class FirestoreService: NSObject {
                    else{
                        let length = querySnapshot!.documents.count
                        if length == 0 {
+                        completion(newQuips, moreRecentQuipsFirestore)
                            return
                        }
                        
@@ -367,11 +368,13 @@ class FirestoreService: NSObject {
                       }
                       }
                completion(myData, aHotQuips, more)
+                return
              }
              
           }
          
       }
+        completion(myData, aHotQuips, more)
       }
     func createHotQuipsDocUser(aHotIDs:[String], aHotQuips:[Quip], more:Bool, aUid:String, completion: @escaping ([String:Any],[Quip], Bool)->()){
              var i:Int = 0
@@ -396,11 +399,13 @@ class FirestoreService: NSObject {
                          }
                          }
                   completion(myData, aHotQuips, more)
+                    return
                 }
                 
              }
             
          }
+        completion(myData, aHotQuips, more)
          }
     func updateLikesDislikes(myNewLikesDislikesMap:[String:Int], aChannelOrUserKey:String, myMap:[String:String], aUID:String, parentChannelKey:String?, parentChannelMap:[String:String]?){
         let batch = self.db.batch()
@@ -443,8 +448,8 @@ class FirestoreService: NSObject {
                                 if let name = myInfo["name"] as? String{
                                 let parent = myInfo["parent"] as? String
                                 let parentkey = myInfo["parentkey"] as? String
-                                let astart = myInfo["start"] as? Timestamp
-                                let aend = myInfo["end"] as? Timestamp
+                                let astart = myInfo["s"] as? Timestamp
+                                let aend = myInfo["e"] as? Timestamp
                                     let myChannel = Channel(name: name, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority, astartDate: astart?.dateValue(), aendDate:aend?.dateValue())
                                 activeChannels.append(myChannel)
                                 }
@@ -492,8 +497,8 @@ class FirestoreService: NSObject {
                                                  if let name = myInfo["name"] as? String{
                                                  let parent = myInfo["parent"] as? String
                                                  let parentkey = myInfo["parentkey"] as? String
-                                                    let astart = myInfo["start"] as? Timestamp
-                                                    let aend = myInfo["end"] as? Timestamp
+                                                    let astart = myInfo["s"] as? Timestamp
+                                                    let aend = myInfo["e"] as? Timestamp
                                                     let myChannel = Channel(name: name, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority,astartDate: astart?.dateValue(), aendDate:aend?.dateValue())
                                                  upcomingChannels.append(myChannel)
                                                  }
@@ -540,8 +545,8 @@ class FirestoreService: NSObject {
                                                         if let name = myInfo["name"] as? String{
                                                         let parent = myInfo["parent"] as? String
                                                         let parentkey = myInfo["parentkey"] as? String
-                                                        let astart = myInfo["start"] as? Timestamp
-                                                        let aend = myInfo["end"] as? Timestamp
+                                                        let astart = myInfo["s"] as? Timestamp
+                                                        let aend = myInfo["e"] as? Timestamp
                                                             let myChannel = Channel(name: name, akey: key, aparent: parent, aparentkey: parentkey, apriority: priority, astartDate: astart?.dateValue(), aendDate:aend?.dateValue())
                                                        pastChannels.append(myChannel)
                                                         }
@@ -773,8 +778,8 @@ class FirestoreService: NSObject {
                            if let eventInfo = myLiveEvents[aEvent] as? [String:Any]{
                                if let eventName = eventInfo["name"] as? String{
                                    let priority = eventInfo["priority"] as? Int
-                                let astart = eventInfo["start"] as? Timestamp
-                                let aend = eventInfo["end"] as? Timestamp
+                                let astart = eventInfo["s"] as? Timestamp
+                                let aend = eventInfo["e"] as? Timestamp
                                 let myEvent = Channel(name: eventName, akey: eventID, aparent: nil, aparentkey: nil, apriority: priority, astartDate: astart?.dateValue(), aendDate: aend?.dateValue())
                                    aLiveEvents.append(myEvent)
                                }
@@ -888,7 +893,8 @@ class FirestoreService: NSObject {
                else{
                    let length = querySnapshot!.documents.count
                    if length == 0 {
-                       return
+                       completion(newUserQuips, moreRecentQuips)
+                        return
                    }
                    for i in 0...length-1{
                     var j = 0
@@ -1074,7 +1080,7 @@ class FirestoreService: NSObject {
         var aReplies:[Quip] = []
         let repliesRef = db.collection("/Quips/\(quipID)/Replies")
             
-            repliesRef.getDocuments() {[weak self](querySnapshot, err) in
+            repliesRef.getDocuments() {(querySnapshot, err) in
             if let err = err {
                     print("Error getting documents: \(err)")
             }

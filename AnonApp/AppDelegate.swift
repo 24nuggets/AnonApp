@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         FirebaseApp.configure()
        Database.database().isPersistenceEnabled=false
-        Giphy.configure(apiKey: "SJljkieW3cSna0uKMHCF9bRHyQS0HsKf", verificationMode: true)
+        Giphy.configure(apiKey: "ZzKMADpIAEC666dtqf0viGg7rG95I9tD", verificationMode: true)
         
         return true
     }

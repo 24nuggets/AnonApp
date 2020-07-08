@@ -21,6 +21,7 @@ class CustomImageView:UIImageView{
     let storageRef = Storage.storage().reference()
     var myImageRef:String?
     var activityIndicator:UIActivityIndicatorView?
+    var myHeightConstraint: NSLayoutConstraint?
     
     func addActivityIndicator(){
         activityIndicator = UIActivityIndicatorView()
@@ -54,17 +55,21 @@ class CustomImageView:UIImageView{
         myImageRef = myQuipImageRef
         
         if let cacheImage = imageCache.object(forKey: myQuipImageRef as NSString){
-            DispatchQueue.main.async {
-             //   self.superview?.heightAnchor.constraint(greaterThanOrEqualToConstant: cacheImage.size.height).isActive = true
+            if let myHeightConstraint = self.myHeightConstraint{
+                myHeightConstraint.isActive = false
+            }
+          //  DispatchQueue.main.async {
+             
             let heightConstraint = self.heightAnchor.constraint(equalToConstant: cacheImage.size.height)
+                
             self.addConstraint(heightConstraint)
-                    feedTable.beginUpdates()
-                    feedTable.endUpdates()
+             //       feedTable.beginUpdates()
+             //       feedTable.endUpdates()
                 self.activityIndicator?.stopAnimating()
             self.layer.cornerRadius = 8.0
                    self.clipsToBounds = true
             self.image = cacheImage as? UIImage
-            }
+         //   }
         }
         else{
          let downloadRef = storageRef.child(myQuipImageRef)
@@ -85,6 +90,9 @@ class CustomImageView:UIImageView{
                                 imageCache.setObject(newImage, forKey: myQuipImageRef as NSString)
                               //      self?.superview?.heightAnchor.constraint(greaterThanOrEqualToConstant: newImage.size.height).isActive = true
                                 let heightConstraint = aself.heightAnchor.constraint(equalToConstant: newImage.size.height)
+                                    if let myHeightConstraint = aself.myHeightConstraint{
+                                        myHeightConstraint.isActive = false
+                                    }
                                 aself.addConstraint(heightConstraint)
                                         feedTable.beginUpdates()
                                         feedTable.endUpdates()
@@ -134,14 +142,14 @@ extension GPHMediaView{
         
         if let cacheGif = imageCache.object(forKey: gifID as NSString){
             let media = cacheGif as? GPHMedia
-             DispatchQueue.main.async {
+          //   DispatchQueue.main.async {
             self.widthAnchor.constraint(equalTo: self.heightAnchor, multiplier: media!.aspectRatio).isActive = true
-            feedTable.beginUpdates()
-            feedTable.endUpdates()
+         //   feedTable.beginUpdates()
+         //   feedTable.endUpdates()
             self.layer.cornerRadius = 8.0
             self.clipsToBounds = true
             self.media = media
-            }
+        //    }
         }
         else {
            let task = GiphyCore.shared.gifByID(gifID) {[weak self] (response, error) in

@@ -33,8 +33,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
     
     
     func btnEllipsesTapped(cell: QuipCells) {
-           MenuLauncher.makeViewFade()
-           MenuLauncher.addMenuFromBottom()
+          
        }
     
     func btnSharedTapped(cell: QuipCells) {
@@ -139,15 +138,15 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
     func downPressedForOtherCell(aQuip:Quip, cell:QuipCells){
         if cell.upButton.isSelected {
                         if let aQuipScore = aQuip.quipScore{
-                         let diff = cell.upToDown(quipScore: aQuipScore, quip: aQuip)
+                         cell.upToDown2(quipScore: aQuipScore, quip: aQuip)
             }
         }else if cell.downButton.isSelected {
             if let aQuipScore = aQuip.quipScore{
-             let diff = cell.downToNone(quipScore: aQuipScore, quip: aQuip)
+             cell.downToNone2(quipScore: aQuipScore, quip: aQuip)
                             }
         }else{
           if let aQuipScore = aQuip.quipScore{
-             let diff = cell.noneToDown(quipScore: aQuipScore, quip:aQuip)
+             cell.noneToDown2(quipScore: aQuipScore, quip:aQuip)
                 }
         }
                             
@@ -156,15 +155,15 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
     func upPressedForOtherCell(aQuip:Quip, cell:QuipCells){
         if cell.upButton.isSelected {
                      if let aQuipScore = aQuip.quipScore{
-                         let diff = cell.upToNone(quipScore: aQuipScore, quip:aQuip)
+                         cell.upToNone2(quipScore: aQuipScore, quip:aQuip)
             }
         } else if cell.downButton.isSelected {
                          if let aQuipScore = aQuip.quipScore{
-                             let diff = cell.downToUp(quipScore: aQuipScore, quip:aQuip)
+                             cell.downToUp2(quipScore: aQuipScore, quip:aQuip)
             }
         }else{
         if let aQuipScore = aQuip.quipScore{
-            let diff = cell.noneToUp(quipScore: aQuipScore, quip:aQuip)
+            cell.noneToUp2(quipScore: aQuipScore, quip:aQuip)
             }
         }
     }
@@ -276,7 +275,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
     private var myScores:[String:Any]=[:]
     private var moreRecentQuipsFirebase:Bool = false
     private var moreRecentQuipsFirestore:Bool = false
-   
+   private var cellHeights = [IndexPath: CGFloat]()
     
     @IBOutlet weak var feedTable: UITableView!
     
@@ -469,6 +468,14 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
        }
     
    
+
+   func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+       cellHeights[indexPath] = cell.frame.size.height
+   }
+
+   func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+       return cellHeights[indexPath] ?? UITableView.automaticDimension
+   }
     override func btnDownTapped(cell: QuipCells) {
         //Get the indexpath of cell where button was tapped
         if let indexPath = self.feedTable.indexPath(for: cell){
@@ -513,6 +520,19 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                           
        }
     
+    override func btnEllipsesTapped(cell: QuipCells) {
+         MenuLauncher.makeViewFade()
+        MenuLauncher.addMenuFromBottom()
+        if let indexPath = self.feedTable.indexPath(for: cell){
+                                     
+                                          if let myQuip = newQuips[indexPath.row]{
+                                            MenuLauncher.myQuip = myQuip
+                                          }
+                                          
+                                      
+                                      }
+    }
+    
    
       func scrollViewDidScroll(_ scrollView: UIScrollView) {
           let height = scrollView.frame.size.height
@@ -541,6 +561,7 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
     private var refreshControl=UIRefreshControl()
      private var myHotIDs:[String]=[]
     private var moreHotQuipsFirebase:Bool = false
+    private var cellHeights = [IndexPath: CGFloat]()
     
     @IBOutlet weak var feedTable: UITableView!
     
@@ -698,7 +719,13 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
           return UITableViewCell()
        }
     
-   
+   func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+         cellHeights[indexPath] = cell.frame.size.height
+     }
+
+     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+         return cellHeights[indexPath] ?? UITableView.automaticDimension
+     }
       override func btnDownTapped(cell: QuipCells) {
           //Get the indexpath of cell where button was tapped
           if let indexPath = self.feedTable.indexPath(for: cell){
@@ -739,6 +766,19 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                                     }
                              
           }
+    
+    override func btnEllipsesTapped(cell: QuipCells) {
+            MenuLauncher.makeViewFade()
+           MenuLauncher.addMenuFromBottom()
+           if let indexPath = self.feedTable.indexPath(for: cell){
+                                        
+                                             if let myQuip = hotQuips[indexPath.row]{
+                                               MenuLauncher.myQuip = myQuip
+                                             }
+                                             
+                                         
+                                         }
+       }
    
     
       func scrollViewDidScroll(_ scrollView: UIScrollView) {

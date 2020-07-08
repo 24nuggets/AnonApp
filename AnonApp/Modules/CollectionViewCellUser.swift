@@ -41,15 +41,15 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
        func downPressedForOtherCell(aQuip:Quip, cell:QuipCells){
              if cell.upButton.isSelected {
                              if let aQuipScore = aQuip.quipScore{
-                              let diff = cell.upToDown(quipScore: aQuipScore, quip: aQuip)
+                              cell.upToDown2(quipScore: aQuipScore, quip: aQuip)
                  }
              }else if cell.downButton.isSelected {
                  if let aQuipScore = aQuip.quipScore{
-                  let diff = cell.downToNone(quipScore: aQuipScore, quip: aQuip)
+                  cell.downToNone2(quipScore: aQuipScore, quip: aQuip)
                                  }
              }else{
                if let aQuipScore = aQuip.quipScore{
-                  let diff = cell.noneToDown(quipScore: aQuipScore, quip:aQuip)
+                  cell.noneToDown2(quipScore: aQuipScore, quip:aQuip)
                      }
              }
                                  
@@ -58,15 +58,15 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
          func upPressedForOtherCell(aQuip:Quip, cell:QuipCells){
              if cell.upButton.isSelected {
                           if let aQuipScore = aQuip.quipScore{
-                              let diff = cell.upToNone(quipScore: aQuipScore, quip:aQuip)
+                              cell.upToNone2(quipScore: aQuipScore, quip:aQuip)
                  }
              } else if cell.downButton.isSelected {
                               if let aQuipScore = aQuip.quipScore{
-                                  let diff = cell.downToUp(quipScore: aQuipScore, quip:aQuip)
+                                  cell.downToUp2(quipScore: aQuipScore, quip:aQuip)
                  }
              }else{
              if let aQuipScore = aQuip.quipScore{
-                 let diff = cell.noneToUp(quipScore: aQuipScore, quip:aQuip)
+                 cell.noneToUp2(quipScore: aQuipScore, quip:aQuip)
                  }
              }
          }
@@ -200,7 +200,7 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
     
     func getUserLikesDislikesForUser(completion: @escaping ()->()){
           myUserController?.myLikesDislikesMap = [:]
-          if let aUID = myUserController?.uid {
+          if let aUID = myUserController?.uidProfile {
               if let bUId = myUserController?.uid{
                 FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUID, aKey: bUId) {[weak self] (myLikesDislikesMap) in
                       self?.myUserController?.myLikesDislikesMap = myLikesDislikesMap
@@ -225,12 +225,14 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
     private var myScores:[String:Any]=[:]
     private var moreRecentQuips:Bool = false
      private var moreRecentUserQuipsFirebase:Bool = false
+    private var cellHeights = [IndexPath: CGFloat]()
     
     override func awakeFromNib() {
          super.awakeFromNib()
          userQuipsTable.delegate = self
          userQuipsTable.dataSource = self
-       
+       self.userQuipsTable.rowHeight = UITableView.automaticDimension
+       self.userQuipsTable.estimatedRowHeight = 500.0
           refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
           
           userQuipsTable.refreshControl = refreshControl
@@ -280,7 +282,7 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
           moreRecentQuips = false
           newUserQuips = []
         
-        if let auid = myUserController?.uid{
+        if let auid = myUserController?.uidProfile{
             getUserLikesDislikesForUser {
               FirebaseService.sharedInstance.getRecentUserQuips(uid: auid) { [weak self](myScores, currentTime, moreRecentUserQuipsFirebase) in
                   
@@ -304,7 +306,7 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
     func loadMoreRecentUserQuips(){
           self.moreRecentQuips = false
           
-          if let auid = myUserController?.uid {
+          if let auid = myUserController?.uidProfile {
               if self.moreRecentUserQuipsFirebase == true{
                   FirebaseService.sharedInstance.getMoreNewScoresUser(aUid: auid) {[weak self] (moreScores, moreRecentUserQuipsFirebase) in
                       if let aself = self{
@@ -407,6 +409,13 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
                       
               }
           }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+          cellHeights[indexPath] = cell.frame.size.height
+      }
+
+      func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+          return cellHeights[indexPath] ?? UITableView.automaticDimension
+      }
        
 }
 
@@ -419,12 +428,14 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
     var topUserQuips:[Quip?]=[]
     private var moreTopUserQuipsFirebase:Bool = false
     private var myHotIDs:[String] = []
+    private var cellHeights = [IndexPath: CGFloat]()
     
     override func awakeFromNib() {
          super.awakeFromNib()
          userQuipsTable.delegate = self
          userQuipsTable.dataSource = self
-       
+       self.userQuipsTable.rowHeight = UITableView.automaticDimension
+       self.userQuipsTable.estimatedRowHeight = 500.0
           refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
           
           userQuipsTable.refreshControl = refreshControl
@@ -473,7 +484,7 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
         refreshControl.beginRefreshing()
         self.topUserQuips = []
         self.myHotIDs = []
-        if let auid = myUserController?.uid{
+        if let auid = myUserController?.uidProfile{
         FirebaseService.sharedInstance.getTopUserQuips(uid: auid) { [weak self](myTopScores, currentTime, moreTopFirebaseQuips, myHotIDs) in
             self?.topUserQuips = myTopScores
             self?.currentTime = currentTime
@@ -516,7 +527,7 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
             }
     func loadMoreTopUserQuips(){
         moreTopUserQuipsFirebase = false
-        if let auid = myUserController?.uid{
+        if let auid = myUserController?.uidProfile{
             FirebaseService.sharedInstance.loadMoreHotUser(auid: auid) {[weak self] (ahotquips, ahotids, morehotquipsfirebase) in
                 FirestoreService.sharedInstance.loadMoreHotUser(auid: auid, aHotIDs: ahotids, hotQuips: ahotquips) {[weak self] (myData, aHotQuips, more) in
                     self?.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
@@ -609,5 +620,12 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
                         
                 }
             }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+          cellHeights[indexPath] = cell.frame.size.height
+      }
+
+      func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+          return cellHeights[indexPath] ?? UITableView.automaticDimension
+      }
     
 }

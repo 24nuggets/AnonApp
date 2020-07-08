@@ -45,6 +45,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     var myUserMap:[String:String] = [:]
     var parentIsNew:Bool?
     private var refreshControl = UIRefreshControl()
+    private var cellHeights = [IndexPath: CGFloat]()
     lazy var MenuLauncher:ellipsesMenuQuip = {
               let launcher = ellipsesMenuQuip()
            launcher.quipController = self
@@ -68,7 +69,8 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         addGesture()
         replyTable.delegate=self
         replyTable.dataSource=self
-        
+        self.replyTable.rowHeight = UITableView.automaticDimension
+        self.replyTable.estimatedRowHeight = 500.0
         refreshControl.addTarget(self, action: #selector(ViewControllerQuip.refreshData), for: .valueChanged)
         replyTable.refreshControl=refreshControl
         
@@ -169,7 +171,12 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         saveReply()
     }
     
-   
+    @IBAction func ellipsesBarButtonClicked(_ sender: Any) {
+        MenuLauncher.makeViewFade()
+        MenuLauncher.addMenuFromBottom()
+        MenuLauncher.myQuip = myQuip
+    }
+    
     
     
     func updateReplies(){
@@ -331,13 +338,32 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     func btnEllipsesTapped(cell: QuipCells) {
         MenuLauncher.makeViewFade()
         MenuLauncher.addMenuFromBottom()
+        if let indexPath = self.replyTable.indexPath(for: cell){
+                                         
+                                              if let myQuip = myReplies[indexPath.row]{
+                                                MenuLauncher.myQuip = myQuip
+                                              }
+                                              
+                                          
+                                          }
+    }
+    
+    func showNextControllerReply(menuItem:MenuItem, quip:Quip){
+        if menuItem.name == "View User's Profile"{
+            let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+            let nextViewController = storyBoard.instantiateViewController(withIdentifier: "ViewControllerUser") as! ViewControllerUser
+            nextViewController.uid = uid
+            nextViewController.uidProfile = quip.user
+            navigationController?.pushViewController(nextViewController, animated: true)
+        }
+        
     }
     func downButtonPressedReply(aReply:Quip, cell:QuipCells){
         if cell.upButton.isSelected {
             if let aQuipScore = aReply.quipScore{
                 let diff = cell.upToDown(quipScore: aQuipScore, quip: aReply)
                 if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.upToDown(quipScore: aQuipScore, quip: aReply)
+                    passedQuipCell?.upToDown2(quipScore: aQuipScore, quip: aReply)
                 }
                 if let aID = aReply.quipID{
                     if let auid = aReply.user{
@@ -367,7 +393,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             if let aQuipScore = aReply.quipScore{
                            let diff = cell.downToNone(quipScore: aQuipScore,quip: aReply)
                 if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.downToNone(quipScore: aQuipScore, quip: aReply)
+                   passedQuipCell?.downToNone2(quipScore: aQuipScore, quip: aReply)
                 }
                 if let aID = aReply.quipID{
                               if let auid = aReply.user{
@@ -398,7 +424,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             if let aQuipScore = aReply.quipScore{
                        let diff = cell.noneToDown(quipScore: aQuipScore,quip:  aReply)
                 if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.noneToDown(quipScore: aQuipScore, quip: aReply)
+                    passedQuipCell?.noneToDown2(quipScore: aQuipScore, quip: aReply)
                 }
                 if let aID = aReply.quipID{
                            if let auid = aReply.user{
@@ -436,7 +462,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             if let aQuipScore = aReply.quipScore{
                        let diff = cell.upToNone(quipScore: aQuipScore,quip:  aReply)
                 if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.upToNone(quipScore: aQuipScore, quip: aReply)
+                    passedQuipCell?.upToNone2(quipScore: aQuipScore, quip: aReply)
                 }
                 if let aID = aReply.quipID{
                           if let auid = aReply.user{
@@ -467,7 +493,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             if let aQuipScore = aReply.quipScore{
                                let diff = cell.downToUp(quipScore: aQuipScore,quip:  aReply)
                 if passedReply?.quipID == aReply.quipID{
-                                   passedQuipCell?.downToUp(quipScore: aQuipScore, quip: aReply)
+                    passedQuipCell?.downToUp2(quipScore: aQuipScore, quip: aReply)
                                }
                 if let aID = aReply.quipID{
                                    if let auid = aReply.user{
@@ -497,7 +523,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             if let aQuipScore = aReply.quipScore{
                        let diff = cell.noneToUp(quipScore: aQuipScore,quip:  aReply)
                 if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.noneToUp(quipScore: aQuipScore, quip: aReply)
+                    passedQuipCell?.noneToUp2(quipScore: aQuipScore, quip: aReply)
                 }
                 if let aID = aReply.quipID{
                               if let auid = aReply.user{
@@ -525,6 +551,13 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     }
         
     }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+          cellHeights[indexPath] = cell.frame.size.height
+      }
+
+      func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+          return cellHeights[indexPath] ?? UITableView.automaticDimension
+      }
     
     func updateVotesFirebase(diff:Int, replyID:String, aUID:String){
         //increment value has to be double or long or it wont work properly
@@ -918,18 +951,19 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
      }
     
     func saveReply(){
-            var imageRef:String?
-               var hasImage:Bool=false
+            
+              
                var gifID:String?
                var hasGif:Bool=false
         if imageView?.image != nil  && imageView?.isHidden==false{
                    checkIfImageIsClean()
+                    return
                }
                else if mediaView?.media != nil && mediaView?.isHidden == false{
                    gifID = mediaView?.media?.id
                    hasGif = true
                }
-            generatePost(hasImage: hasImage, hasGif: hasGif, imageRef: imageRef, gifID: gifID)
+            generatePost(hasImage: false, hasGif: hasGif, imageRef: nil, gifID: gifID)
         
         
          
@@ -957,8 +991,26 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            
        }
        
-       func displayMsgBox(){
-           
+          func displayMsgBox(){
+           let title = "Inappropriate Image"
+           let message = "We could not post your image becuase we have identified it has having inappropriate content.  If you want more information on this please email us at quipitinc@gmail.com"
+           let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                 switch action.style{
+                 case .default:
+                       print("default")
+
+                 case .cancel:
+                       print("cancel")
+
+                 case .destructive:
+                       print("destructive")
+
+
+                 @unknown default:
+                    print("unknown action")
+            }}))
+           self.present(alert, animated: true, completion: nil)
        }
     
     func generatePost(hasImage:Bool, hasGif:Bool, imageRef:String?, gifID:String?){
@@ -972,7 +1024,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                "a": uid ?? "Other",
                                "d": FieldValue.serverTimestamp(),
                                "r": true,
-                               "p": myQuip?.quipID] as [String : Any]
+                               "p": myQuip?.quipID as Any] as [String : Any]
                           
                       if hasImage {
                           

@@ -208,14 +208,16 @@ class ellipsesMenuFeed:Menu{
     
    
    weak var feedController: ViewControllerFeed?
-    
+    weak var myQuip:Quip?
     
     override func nextController(menuItem:MenuItem){
-          
+        if let myQuip = myQuip{
+        feedController?.showNextController(menuItem: menuItem, quip: myQuip)
+        }
        }
     
     override func populateMenuItems(){
-     menuItems = [MenuItem(name:"Delete Quip", imageName: "plus.circle"), MenuItem(name: "Report User", imageName: "plus.circle"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+     menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"), MenuItem(name: "Report Quip", imageName: "flag"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
         
     }
 
@@ -230,7 +232,7 @@ class ellipsesMenuUser:Menu{
     }
     
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"Delete Quip", imageName: "plus.circle"), MenuItem(name: "Report User", imageName: "plus.circle"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        menuItems = [MenuItem(name:"View Event Feed", imageName: "person.circle"), MenuItem(name: "Report User", imageName: "flag"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
            
        }
 }
@@ -239,13 +241,16 @@ class ellipsesMenuUser:Menu{
 class ellipsesMenuQuip:Menu{
     
     weak var quipController: ViewControllerQuip?
+    weak var myQuip:Quip?
     
     override func nextController(menuItem:MenuItem){
-       
+        if let myQuip = myQuip{
+        quipController?.showNextControllerReply(menuItem: menuItem, quip: myQuip)
+        }
     }
 
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"Delete Quip", imageName: "plus.circle"), MenuItem(name: "Report User", imageName: "plus.circle"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"), MenuItem(name: "Report Reply", imageName: "flag"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
            
        }
 }
