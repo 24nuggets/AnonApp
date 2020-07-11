@@ -16,7 +16,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
     var myFeedController:ViewControllerFeed?
      var newQuips:[Quip?] = []
      var hotQuips:[Quip?] = []
-    
+   
     lazy var MenuLauncher:ellipsesMenuFeed = {
             let launcher = ellipsesMenuFeed()
          launcher.feedController = myFeedController
@@ -521,16 +521,20 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
        }
     
     override func btnEllipsesTapped(cell: QuipCells) {
+       
+        if let indexPath = self.feedTable.indexPath(for: cell){
+                                          
+                                               if let myQuip = newQuips[indexPath.row]{
+                                                if let myFeedController = myFeedController{
+                                                MenuLauncher.setVars(feedController: myFeedController, myQuip: myQuip)
+                                                }
+                                               }
+                                               
+                                           
+                                           }
          MenuLauncher.makeViewFade()
         MenuLauncher.addMenuFromBottom()
-        if let indexPath = self.feedTable.indexPath(for: cell){
-                                     
-                                          if let myQuip = newQuips[indexPath.row]{
-                                            MenuLauncher.myQuip = myQuip
-                                          }
-                                          
-                                      
-                                      }
+     
     }
     
    
@@ -768,16 +772,21 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
           }
     
     override func btnEllipsesTapped(cell: QuipCells) {
-            MenuLauncher.makeViewFade()
-           MenuLauncher.addMenuFromBottom()
+        
+            
            if let indexPath = self.feedTable.indexPath(for: cell){
                                         
                                              if let myQuip = hotQuips[indexPath.row]{
-                                               MenuLauncher.myQuip = myQuip
+                                                if let myFeedController = myFeedController{
+                                               MenuLauncher.setVars(feedController: myFeedController, myQuip: myQuip)
+                                                }
                                              }
                                              
                                          
                                          }
+        MenuLauncher.makeViewFade()
+        MenuLauncher.addMenuFromBottom()
+ 
        }
    
     

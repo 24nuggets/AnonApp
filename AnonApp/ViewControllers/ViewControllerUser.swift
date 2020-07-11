@@ -204,6 +204,60 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         settingsMenuLauncher.addMenuFromSide()
     }
     
+    func showNextControllerSettings(menuItem:MenuItem){
+        if menuItem.name == "Edit Profile"{
+            changeToEditMode()
+        }else if menuItem.name == "Privacy Policy"{
+            let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+            let nextViewController = storyBoard.instantiateViewController(withIdentifier: "PrivacyController") as! myUIViewController
+            navigationController?.pushViewController(nextViewController, animated: true)
+        }else if menuItem.name == "Report a Problem"{
+            let email = "quipitinc@gmail.com"
+            if let url = URL(string: "mailto:\(email)") {
+                 UIApplication.shared.open(url)
+            }
+        }else if menuItem.name == "Contact Us"{
+            let email = "quipitinc@gmail.com"
+                       if let url = URL(string: "mailto:\(email)") {
+                            UIApplication.shared.open(url)
+                       }
+        }
+        
+    }
+    
+    func showNextControllerEllipses(menuItem: MenuItem, quip: Quip?){
+        if menuItem.name == "View Event Feed"{
+            
+        }else if menuItem.name == "Report Quip"{
+            displayMsgBox()
+        }else if menuItem.name == "Share Quip"{
+            
+        }
+        
+    }
+    
+    func displayMsgBox(){
+    let title = "Report Successful"
+    let message = "The user has been reported. If you want to give us more details on this incident please email us at quipitinc@gmail.com"
+    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+          switch action.style{
+          case .default:
+                print("default")
+
+          case .cancel:
+                print("cancel")
+
+          case .destructive:
+                print("destructive")
+
+
+          @unknown default:
+            print("unknown action")
+        }}))
+    self.present(alert, animated: true, completion: nil)
+    }
+    
     @IBAction func editBtnClicked(_ sender: Any) {
         if nameTextView.isEditable {
             changeToNormalMode()

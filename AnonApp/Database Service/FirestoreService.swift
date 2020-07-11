@@ -374,13 +374,12 @@ class FirestoreService: NSObject {
           }
          
       }
-        completion(myData, aHotQuips, more)
       }
     func createHotQuipsDocUser(aHotIDs:[String], aHotQuips:[Quip], more:Bool, aUid:String, completion: @escaping ([String:Any],[Quip], Bool)->()){
              var i:Int = 0
              var myData:[String:Any] = [:]
              for aHotId in aHotIDs{
-                self.db.collection("Quips").document(aHotId).getDocument { (document, error) in
+                db.collection("Quips").document(aHotId).getDocument { (document, error) in
                     if let document = document, document.exists {
                      let data = document.data(with: ServerTimestampBehavior.estimate)
                      myData[aHotId] = data
@@ -405,7 +404,6 @@ class FirestoreService: NSObject {
              }
             
          }
-        completion(myData, aHotQuips, more)
          }
     func updateLikesDislikes(myNewLikesDislikesMap:[String:Int], aChannelOrUserKey:String, myMap:[String:String], aUID:String, parentChannelKey:String?, parentChannelMap:[String:String]?){
         let batch = self.db.batch()
@@ -1158,5 +1156,87 @@ class FirestoreService: NSObject {
         batch.setData(["name" : name,
                        "bio" : bio], forDocument: userRef, merge: true)
                        batch.commit()
+    }
+    func deleteQuip(quipID:String, completion: @escaping ()->()){
+        getQuip(quipID: quipID) { (quip) in
+            if let eventID = quip.channelKey{
+                    if let author = quip.user{
+                        self.removeQuip(eventID: eventID, author: author, quipID: quipID, quip: quip,parentEventID: quip.quipParent){
+                            completion()
+                        }
+                }
+            }
+        }
+        
+    }
+    
+    func removeQuip(eventID:String, author:String, quipID:String, quip:Quip,parentEventID:String?, completion: @escaping ()->()){
+       
+                   
+                           
+                           db.collection("Quips/\(quipID)/Replies").document("RecentReplies").delete { (err) in
+                                 if let err = err {
+                                                         print("Error removing document: \(err)")
+                                                     } else {
+                                                         print("Document successfully removed!")
+                                                     }
+                           }
+                           db.collection("Quips").document(quipID).delete { (err) in
+                                 if let err = err {
+                                                         print("Error removing document: \(err)")
+                                                     } else {
+                                                         print("Document successfully removed!")
+                                                     }
+                           }
+                           let userRecentRef = db.collection("Users/\(author)/RecentQuips")
+                           userRecentRef.order(by: "quips.\(quipID)").getDocuments { (querrySnapshot, error) in
+                               if let error = error{
+                                   print("error: \(error)")
+                                   return
+                               }
+                            if let count = querrySnapshot?.documents.count{
+                            if count > 0{
+                                let doc = querrySnapshot?.documents[0]
+                                                     doc?.reference.updateData(["quips.\(quipID)":FieldValue.delete(),
+                                                                                "n": FieldValue.increment(Int64(-1))])
+                                }
+                            }
+                           }
+                           let eventRecentRef = db.collection("Channels/\(eventID)/RecentQuips")
+                        eventRecentRef.order(by: "quips.\(quipID)").getDocuments { (querrySnapshot, error) in
+                                                  if let error = error{
+                                                      print("error: \(error)")
+                                                      return
+                                                  }
+                            if let count = querrySnapshot?.documents.count{
+                            if count > 0{
+                                let doc = querrySnapshot?.documents[0]
+                            doc?.reference.updateData(["quips.\(quipID)":FieldValue.delete(),
+                            "n": FieldValue.increment(Int64(-1))])
+                            }
+                            }
+                        }
+        if let aparent = parentEventID{
+            let parentEventRecentRef = db.collection("Channels/\(aparent)/RecentQuips")
+                                  parentEventRecentRef.order(by: "quips.\(quipID)").getDocuments { (querrySnapshot, error) in
+                                                            if let error = error{
+                                                                print("error: \(error)")
+                                                                return
+                                                            }
+                                      if let count = querrySnapshot?.documents.count{
+                                      if count > 0{
+                                          let doc = querrySnapshot?.documents[0]
+                                      doc?.reference.updateData(["quips.\(quipID)":FieldValue.delete(),
+                                      "n": FieldValue.increment(Int64(-1))])
+                                      }
+                                      }
+                                  }
+        }
+        FirebaseService.sharedInstance.deleteQuip(quipID: quipID, eventID: eventID, author: author, parentEventID: parentEventID){
+            completion()
+        }
+                   if let imageRef = quip.imageRef{
+                       FirebaseStorageService.sharedInstance.deleteImage(imageRef: imageRef)
+                   }
     }
 }

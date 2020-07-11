@@ -172,9 +172,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     }
     
     @IBAction func ellipsesBarButtonClicked(_ sender: Any) {
+        MenuLauncher.setVars(quipController: self, myQuip: myQuip)
         MenuLauncher.makeViewFade()
         MenuLauncher.addMenuFromBottom()
-        MenuLauncher.myQuip = myQuip
+        
     }
     
     
@@ -336,16 +337,17 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     }
     
     func btnEllipsesTapped(cell: QuipCells) {
-        MenuLauncher.makeViewFade()
-        MenuLauncher.addMenuFromBottom()
+        
         if let indexPath = self.replyTable.indexPath(for: cell){
                                          
-                                              if let myQuip = myReplies[indexPath.row]{
-                                                MenuLauncher.myQuip = myQuip
-                                              }
+                if let myQuip = myReplies[indexPath.row]{
+                        MenuLauncher.setVars(quipController: self, myQuip: myQuip)
+                }
                                               
                                           
-                                          }
+        }
+        MenuLauncher.makeViewFade()
+        MenuLauncher.addMenuFromBottom()
     }
     
     func showNextControllerReply(menuItem:MenuItem, quip:Quip){
@@ -355,9 +357,37 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             nextViewController.uid = uid
             nextViewController.uidProfile = quip.user
             navigationController?.pushViewController(nextViewController, animated: true)
+        }else if menuItem.name == "Report Quip"{
+            displayMsgBoxReport()
+        }else if menuItem.name == "Share Quip"{
+            
         }
         
     }
+    
+    func displayMsgBoxReport(){
+       let title = "Report Successful"
+       let message = "The user has been reported. If you want to give us more details on this incident please email us at quipitinc@gmail.com"
+       let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+       alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+             switch action.style{
+             case .default:
+                   print("default")
+
+             case .cancel:
+                   print("cancel")
+
+             case .destructive:
+                   print("destructive")
+
+
+             @unknown default:
+               print("unknown action")
+           }}))
+       self.present(alert, animated: true, completion: nil)
+       }
+       
+    
     func downButtonPressedReply(aReply:Quip, cell:QuipCells){
         if cell.upButton.isSelected {
             if let aQuipScore = aReply.quipScore{

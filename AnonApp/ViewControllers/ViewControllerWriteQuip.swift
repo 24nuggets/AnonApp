@@ -379,6 +379,9 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
                 if let feedVC = self.feedVC{
                     feedVC.collectionView.reloadData()
                 }
+                self.activityIndicator?.stopAnimating()
+                self.activityIndicator?.removeFromSuperview()
+                self.blackView.removeFromSuperview()
             self.dismiss(animated: true, completion: nil)
             }
         }

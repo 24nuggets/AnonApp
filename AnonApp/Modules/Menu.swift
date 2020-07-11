@@ -166,9 +166,9 @@ class Menu: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UICo
     
     override init() {
         super.init()
-        populateMenuItems()
-        initialize()
         
+        initialize()
+      //  populateMenuItems()
     }
     
     func initialize(){
@@ -190,7 +190,9 @@ class addFavsMenu:Menu{
     weak var favController: ViewControllerFavorites?
     
     override func nextController(menuItem:MenuItem){
+        
         self.favController?.showAddViewController(menuItem: menuItem)
+        
     }
     
 
@@ -210,15 +212,32 @@ class ellipsesMenuFeed:Menu{
    weak var feedController: ViewControllerFeed?
     weak var myQuip:Quip?
     
+    
+  
+ 
+    func setVars(feedController:ViewControllerFeed?, myQuip:Quip?){
+        self.feedController = feedController
+        self.myQuip = myQuip
+        populateMenuItems()
+    }
+    
     override func nextController(menuItem:MenuItem){
-        if let myQuip = myQuip{
-        feedController?.showNextController(menuItem: menuItem, quip: myQuip)
-        }
+        
+            if let myQuip = myQuip{
+            feedController?.showNextController(menuItem: menuItem, quip: myQuip)
+            }
+        
        }
     
     override func populateMenuItems(){
-     menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"), MenuItem(name: "Report Quip", imageName: "flag"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        if feedController?.uid == myQuip?.user{
         
+     menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"),MenuItem(name:"Delete Quip", imageName: "multiply.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        }else{
+            
+            menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name: "Report Quip", imageName: "flag"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
+            }
+        collectionView.reloadData()
     }
 
 }
@@ -226,13 +245,26 @@ class ellipsesMenuFeed:Menu{
 class ellipsesMenuUser:Menu{
 
     weak var userController: ViewControllerUser?
+    weak var myQuip: Quip?
     
     override func nextController(menuItem:MenuItem){
+        userController?.showNextControllerEllipses(menuItem: menuItem, quip: myQuip)
        
     }
     
+    func setVars(userController:ViewControllerUser?, myQuip:Quip?){
+        self.userController = userController
+        self.myQuip = myQuip
+        populateMenuItems()
+    }
+    
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"View Event Feed", imageName: "person.circle"), MenuItem(name: "Report User", imageName: "flag"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        if userController?.uid == myQuip?.user{
+            menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"),MenuItem(name:"View Event Feed", imageName: "person.circle"),MenuItem(name:"Delete Quip", imageName: "multiply.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        }else{
+            menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"View Event Feed", imageName: "person.circle"), MenuItem(name: "Report Quip", imageName: "flag"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        }
+       collectionView.reloadData()
            
        }
 }
@@ -244,14 +276,26 @@ class ellipsesMenuQuip:Menu{
     weak var myQuip:Quip?
     
     override func nextController(menuItem:MenuItem){
-        if let myQuip = myQuip{
-        quipController?.showNextControllerReply(menuItem: menuItem, quip: myQuip)
-        }
+        
+            if let myQuip = myQuip{
+            quipController?.showNextControllerReply(menuItem: menuItem, quip: myQuip)
+            }
+        
     }
+    
+    func setVars(quipController:ViewControllerQuip?, myQuip:Quip?){
+           self.quipController = quipController
+           self.myQuip = myQuip
+           populateMenuItems()
+       }
 
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"), MenuItem(name: "Report Reply", imageName: "flag"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
-           
+        if quipController?.uid == myQuip?.user{
+        menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"),MenuItem(name: "Delete Quip", imageName: "flag"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        }else{
+             menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name: "Report Quip", imageName: "flag"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        }
+        collectionView.reloadData()
        }
 }
 
@@ -260,7 +304,9 @@ class SettingsMenuQuip:Menu{
     weak var userController: ViewControllerUser?
     
     override func nextController(menuItem:MenuItem){
-       
+        
+        userController?.showNextControllerSettings(menuItem: menuItem)
+        
     }
     
     override func selectItem(index:Int){
@@ -296,7 +342,7 @@ class SettingsMenuQuip:Menu{
     }
 
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"Delete Quip", imageName: "plus.circle"), MenuItem(name: "Report User", imageName: "plus.circle"), MenuItem(name:"View User's Profile", imageName:"plus.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        menuItems = [MenuItem(name:"Edit Profile", imageName: "plus.circle"), MenuItem(name: "Privacy Policy", imageName: "plus.circle"), MenuItem(name:"Report a Problem", imageName:"flag"), MenuItem(name:"Contact Us", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
            
        }
 }

@@ -69,6 +69,12 @@ class FirebaseService: NSObject {
                               
                                
                                let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
+                            if myQuipScore2 ?? -5 <= -5{
+                                FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
+                                    
+                                }
+                                continue
+                            }
                                let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
                           
                                myScores[actualkey]=["s":myQuipScore2,
@@ -124,6 +130,12 @@ class FirebaseService: NSObject {
                                       }
                                          
                                          let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
+                                        if myQuipScore2 ?? -5 <= -5{
+                                            FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
+                                                
+                                            }
+                                            continue
+                                        }
                                          let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
                                          
                                             myScores[actualkey]=["s":myQuipScore2,
@@ -181,6 +193,12 @@ class FirebaseService: NSObject {
                                               
                                                  
                                     let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
+                                if myQuipScore2 ?? -5 <= -5{
+                                    FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
+                                        
+                                    }
+                                    continue
+                                }
                                     let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
                                                 
                                     let myQuip = Quip(score: myQuipScore2!, replies: myReplies2!, myQuipID: actualkey)
@@ -243,6 +261,12 @@ class FirebaseService: NSObject {
                                                        
                                                         
                                                let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
+                                            if myQuipScore2 ?? -5 <= -5{
+                                                FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
+                                                    
+                                                }
+                                                continue
+                                            }
                                                let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
                                                        
                                                let myQuip = Quip(score: myQuipScore2!, replies: myReplies2!, myQuipID: actualkey)
@@ -304,6 +328,13 @@ class FirebaseService: NSObject {
                                                        
                                                         
                                                let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
+                                            
+                                            if myQuipScore2 ?? -5 <= -5{
+                                                FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
+                                                    
+                                                }
+                                                continue
+                                            }
                                                let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
                                                        
                                                let myQuip = Quip(score: myQuipScore2!, replies: myReplies2!, myQuipID: actualkey)
@@ -373,7 +404,12 @@ class FirebaseService: NSObject {
                                         
                                          
                                           let myQuipScore2  = rest.childSnapshot(forPath: "s").value as? Int
-                                        
+                                        if myQuipScore2 ?? -5 <= -5{
+                                            FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
+                                                
+                                            }
+                                            continue
+                                        }
                                          let myReplies2  =  rest.childSnapshot(forPath: "r").value as? Int
                                        
                                         
@@ -430,7 +466,12 @@ class FirebaseService: NSObject {
                                         
                                          
                                           let myQuipScore2  = rest.childSnapshot(forPath: "s").value as? Int
-                                        
+                                        if myQuipScore2 ?? -5 <= -5{
+                                            FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
+                                                
+                                            }
+                                            continue
+                                        }
                                          let myReplies2  =  rest.childSnapshot(forPath: "r").value as? Int
                                        
                                     myRecentScores[actualkey]=["s":myQuipScore2,
@@ -474,6 +515,12 @@ class FirebaseService: NSObject {
                                          }
                                             
                                             let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
+                                            if myQuipScore2 ?? -5 <= -5{
+                                                FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
+                                                    
+                                                }
+                                                continue
+                                            }
                                             let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
                                             
                                                myScores[actualkey]=["s":myQuipScore2,
@@ -536,6 +583,12 @@ class FirebaseService: NSObject {
                                   
                                   
                                   let myReplyScore = rest.childSnapshot(forPath: "s").value as? Int
+                            if myReplyScore ?? -5 <= -5{
+                                FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
+                                    
+                                }
+                                continue
+                            }
                                   
                                   replyScores[actualkey]=myReplyScore
                                                          
@@ -548,5 +601,21 @@ class FirebaseService: NSObject {
                    
                       
                   })
+    }
+    
+    func deleteQuip(quipID:String, eventID: String, author:String, parentEventID:String?, completion: @escaping ()->()){
+        ref.child("A/\(eventID)/Q/\(quipID)").removeValue()
+        ref.child("M/\(author)/q/\(quipID)").removeValue()
+        if let aparentID = parentEventID{
+           ref.child("A/\(aparentID)/Q/\(quipID)").removeValue()
+        }
+        ref.child("Q/\(quipID)/R").observeSingleEvent(of: .value) { (snapshot) in
+            if snapshot.exists(){
+                if snapshot.childrenCount < 2{
+                    self.ref.child("Q/\(quipID)").removeValue()
+                }
+            }
+            completion()
+        }
     }
 }

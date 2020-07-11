@@ -301,8 +301,40 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
             nextViewController.uid = uid
             nextViewController.uidProfile = quip.user
             navigationController?.pushViewController(nextViewController, animated: true)
+        }else if menuItem.name == "Report Quip"{
+            displayMsgBox()
+        }else if menuItem.name == "Share Quip"{
+            
+        }else if menuItem.name == "Delete Quip"{
+            if let aQuipID = quip.quipID{
+                FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
+                    self.collectionView.reloadData()
+                }
+            }
         }
         
+    }
+    
+    func displayMsgBox(){
+    let title = "Report Successful"
+    let message = "The user has been reported. If you want to give us more details on this incident please email us at quipitinc@gmail.com"
+    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+          switch action.style{
+          case .default:
+                print("default")
+
+          case .cancel:
+                print("cancel")
+
+          case .destructive:
+                print("destructive")
+
+
+          @unknown default:
+            print("unknown action")
+        }}))
+    self.present(alert, animated: true, completion: nil)
     }
     
     

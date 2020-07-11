@@ -157,6 +157,7 @@ class QuipCells:UITableViewCell{
         downButton.isSelected = false
         upButton.tintColor = .lightGray
         downButton.tintColor = .lightGray
+        replyButton.isHidden = false
         myGifView.cancelLoad()
         myImageView.cancelLoad()
         

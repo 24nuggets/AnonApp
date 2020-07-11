@@ -240,6 +240,21 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
         
       }
     
+    override func btnEllipsesTapped(cell: QuipCells) {
+          if let indexPath = self.userQuipsTable.indexPath(for: cell){
+                                                     
+                    if let myQuip = newUserQuips[indexPath.row]{
+                        if let myUserController = myUserController{
+                                MenuLauncher.setVars(userController: myUserController, myQuip: myQuip)
+                        }
+                    }
+                                                          
+                                                      
+            }
+                     MenuLauncher.makeViewFade()
+                     MenuLauncher.addMenuFromBottom()
+    }
+    
     override func btnUpTapped(cell: QuipCells) {
         //Get the indexpath of cell where button was tapped
               if let indexPath = self.userQuipsTable.indexPath(for: cell){
@@ -442,7 +457,20 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
           
         
       }
-    
+    override func btnEllipsesTapped(cell: QuipCells) {
+        if let indexPath = self.userQuipsTable.indexPath(for: cell){
+                                               
+                                                    if let myQuip = topUserQuips[indexPath.row]{
+                                                       if let myUserController = myUserController{
+                                                      MenuLauncher.setVars(userController: myUserController, myQuip: myQuip)
+                                                       }
+                                                    }
+                                                    
+                                                
+                                                }
+               MenuLauncher.makeViewFade()
+               MenuLauncher.addMenuFromBottom()
+    }
    override func btnUpTapped(cell: QuipCells) {
         //Get the indexpath of cell where button was tapped
               if let indexPath = self.userQuipsTable.indexPath(for: cell){

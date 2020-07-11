@@ -93,8 +93,9 @@ class CustomImageView:UIImageView{
                                     if let myHeightConstraint = aself.myHeightConstraint{
                                         myHeightConstraint.isActive = false
                                     }
+                                 feedTable.beginUpdates()
                                 aself.addConstraint(heightConstraint)
-                                        feedTable.beginUpdates()
+                                       
                                         feedTable.endUpdates()
                                     aself.activityIndicator?.stopAnimating()
                                 aself.layer.cornerRadius = 8.0
@@ -161,8 +162,9 @@ extension GPHMediaView{
                             imageCache.setObject(media, forKey: gifID as NSString)
                             
                             if let aself = self{
-                            aself.widthAnchor.constraint(equalTo: aself.heightAnchor, multiplier: media.aspectRatio).isActive = true
                             feedTable.beginUpdates()
+                            aself.widthAnchor.constraint(equalTo: aself.heightAnchor, multiplier: media.aspectRatio).isActive = true
+                            
                             feedTable.endUpdates()
                             aself.layer.cornerRadius = 8.0
                             aself.clipsToBounds = true
