@@ -13,7 +13,7 @@ import Firebase
 
 
 
-class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
+class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     
     
     weak var myChannel:Channel?
@@ -462,7 +462,7 @@ class ViewControllerWriteQuip: UIViewController, UITextViewDelegate{
     */
 
 }
-extension ViewControllerWriteQuip: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ViewControllerWriteQuip: UIImagePickerControllerDelegate {
     func showImagePickerController(){
         let imagePickerController = UIImagePickerController()
            imagePickerController.delegate = self

@@ -16,6 +16,12 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
    weak var categoryController:ViewControllerCategories?
     var isFiltered = false
     private var refreshControl=UIRefreshControl()
+    lazy var dateFormatter:DateFormatter = {
+           let dateForm = DateFormatter()
+           dateForm.dateFormat = "MMM d, h:mm a"
+           dateForm.timeZone = TimeZone.autoupdatingCurrent
+           return dateForm
+       }()
     
     @IBOutlet weak var categoriesTable: UITableView!
     
@@ -58,6 +64,8 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
                             if let cell = categoriesTable.dequeueReusableCell(withIdentifier: "channelCell", for: indexPath) as? ChannelCells{
                                            
                                     cell.channelName?.text = self.myLiveEvents[indexPath.row].channelName
+                                let date = dateFormatter.string(from: self.myLiveEvents[indexPath.row].endDate ?? Date())
+                                cell.date.text = "Closes: \(date)"
                                 cell.delegate = self
                                            return cell
                             }
@@ -113,7 +121,7 @@ class collectionCellSportsCategories:UICollectionViewCell, UITableViewDelegate, 
     func filterSearchResults(searchText:String){
            
           isFiltered = true
-          filteredCats = allSports.filter{($0.categoryName?.contains(searchText) ?? false)}
+          filteredCats = allSports.filter{($0.categoryName?.localizedCaseInsensitiveContains(searchText) ?? false)}
            self.categoriesTable.reloadData()
        }
     
@@ -191,7 +199,7 @@ class collectionCellEntertainmentCategories:UICollectionViewCell, UITableViewDel
     
     func filterSearchResults(searchText:String){
            isFiltered = true
-               filteredCats = allEntertainment.filter{($0.categoryName?.contains(searchText) ?? false)}
+               filteredCats = allEntertainment.filter{($0.categoryName?.localizedCaseInsensitiveContains(searchText) ?? false)}
            
            self.categoriesTable.reloadData()
        }

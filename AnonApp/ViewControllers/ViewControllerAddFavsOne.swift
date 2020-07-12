@@ -85,7 +85,7 @@ class ViewControllerAddFavsOne: UIViewController, UITableViewDelegate, UITableVi
      func filterSearchResults(searchText:String){
                
               isFiltered = true
-              filteredCats = myCats.filter{($0.categoryName?.contains(searchText) ?? false)}
+              filteredCats = myCats.filter{($0.categoryName?.localizedCaseInsensitiveContains(searchText) ?? false)}
                self.addFavsTable.reloadData()
         }
     

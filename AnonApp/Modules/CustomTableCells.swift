@@ -40,6 +40,9 @@ class UpcomingChannelCells:UITableViewCell{
 class ChannelCells: UITableViewCell {
 
     @IBOutlet weak var channelName: UILabel!
+    
+    @IBOutlet weak var date: UILabel!
+    
     weak var delegate: MyCellDelegate3?
     
     @IBAction func arrowTap(_ sender: Any) {
@@ -157,7 +160,9 @@ class QuipCells:UITableViewCell{
         downButton.isSelected = false
         upButton.tintColor = .lightGray
         downButton.tintColor = .lightGray
+        if replyButton != nil {
         replyButton.isHidden = false
+        }
         myGifView.cancelLoad()
         myImageView.cancelLoad()
         

@@ -80,7 +80,7 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
         } else {
             // Fallback on earlier versions
         }
-       hideKeyboardWhenTappedAround()
+       hideKeyboardWhenTappedAround2()
     }
     
     override func viewWillAppear(_ animated: Bool) {

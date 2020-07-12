@@ -916,8 +916,7 @@ class FirestoreService: NSObject {
                         aQuipScore = myQuipNumbers["s"] as? Int
                         aReplies = myQuipNumbers["r"] as? Int
                     } else {
-                        aQuipScore = myInfo["s"] as? Int
-                       aReplies = myInfo["r"] as? Int
+                       continue
                     }
                     
                       let myImageRef = myInfo["i"] as? String
@@ -977,8 +976,7 @@ class FirestoreService: NSObject {
                                    aQuipScore = myQuipNumbers["s"] as? Int
                                    aReplies = myQuipNumbers["r"] as? Int
                                } else {
-                                   aQuipScore = 0
-                                  aReplies = 0
+                                   continue
                                    
                                }
                                  let myImageRef = myInfo["i"] as? String

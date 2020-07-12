@@ -52,6 +52,8 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                return launcher
           }()
     let placeHolderText = "Type Something"
+    let blackView = UIView()
+    var activityIndicator:UIActivityIndicatorView?
 
     @IBOutlet weak var replyTable: UITableView!
     @IBOutlet weak var stackView: UIStackView!
@@ -61,6 +63,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var toolBar: UIToolbar!
     @IBOutlet weak var postReplyView: UIView!
     
+    @IBOutlet weak var postBtn: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,6 +91,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         textView.textContainer.lineBreakMode = .byClipping
        // hideKeyboardWhenTappedAround()
         hideKeyboardWhenTappedAround()
+        
         resetVars()
         refreshData()
         
@@ -112,6 +116,18 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            myNewLikesDislikesMap=[:]
            myVotes=[:]
        }
+    func makeViewFade(){
+              if let window = UIApplication.shared.keyWindow{
+                     
+                       
+                         blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+                     window.addSubview(blackView)
+                     blackView.frame = window.frame
+                         blackView.alpha = 1
+                         
+                         
+                     }
+          }
     
     @objc func handleKeyboardNotification(_ notification: Notification) {
 
@@ -168,6 +184,18 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     @IBAction func postButtonClicked(_ sender: UIButton) {
         refreshControl.beginRefreshing()
+        postBtn.isEnabled = false
+        if #available(iOS 13.0, *) {
+                   activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+               } else {
+                   // Fallback on earlier versions
+               }
+               activityIndicator?.center = self.view.center
+               activityIndicator?.startAnimating()
+               if let myActivityIndicator = activityIndicator{
+               self.view.addSubview(myActivityIndicator)
+               }
+               makeViewFade()
         saveReply()
     }
     
@@ -217,7 +245,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                textView.textColor = .gray
                self.adjustTextViewHeight()
            } else {
+            if textView.text == placeHolderText{
+                textView.textColor = .gray
+            }else{
                textView.textColor = .black
+            }
                self.adjustTextViewHeight()
            }
        }
@@ -975,6 +1007,8 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         imageView?.removeFromSuperview()
          mediaView?.removeFromSuperview()
          deleteBtn?.removeFromSuperview()
+        imageView?.isHidden = true
+        mediaView?.isHidden = true
         isNewImage = true
         
          
@@ -1014,6 +1048,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                if isClean{
                                   self.generatePost(hasImage: hasImage, hasGif: false, imageRef: imageRef, gifID: nil)
                                }else{
+                                self.activityIndicator?.stopAnimating()
+                                self.activityIndicator?.removeFromSuperview()
+                                self.blackView.removeFromSuperview()
+                                self.postBtn.isEnabled = true
                                    self.displayMsgBox()
                                }
                            }
@@ -1127,14 +1165,26 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                    
         FirebaseService.sharedInstance.updateChildValues(myUpdates: childUpdates)
         textView.text = placeHolderText
+        textView.textColor = .gray
         textView.resignFirstResponder()
         if imageView?.image != nil || mediaView?.media != nil{
             adjustStackViewHeigt(height: -210)
         }
+       deleteBtn?.removeFromSuperview()
         mediaView?.removeFromSuperview()
+        
+        
         imageView?.removeFromSuperview()
         
+        mediaView?.isHidden = true
+        imageView?.isHidden = true
+        isNewImage = true
+        self.activityIndicator?.stopAnimating()
+        self.activityIndicator?.removeFromSuperview()
+        self.blackView.removeFromSuperview()
         updateReplies()
+        postBtn.isEnabled = true
+        
     }
     
     @objc func refreshData(){
@@ -1268,9 +1318,9 @@ extension ViewControllerQuip: UIImagePickerControllerDelegate{
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         setUpImageView()
         addCancelImageButton(isGif: false)
-        if mediaView?.isHidden == false || imageView?.isHidden == false {
-             isNewImage = false
-        }
+        if mediaView?.isHidden == false || imageView?.isHidden == false{
+           isNewImage = false
+       }
         mediaView?.isHidden=true
         imageView?.isHidden=false
         if let myImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
@@ -1305,8 +1355,8 @@ extension ViewControllerQuip: GiphyDelegate {
    
     setUpGiphyView()
     addCancelImageButton(isGif: true)
-    if mediaView?.isHidden == false || imageView?.isHidden == false {
-         isNewImage = false
+    if mediaView?.isHidden == false || imageView?.isHidden == false{
+        isNewImage = false
     }
     mediaView?.isHidden = false
     imageView?.isHidden = true

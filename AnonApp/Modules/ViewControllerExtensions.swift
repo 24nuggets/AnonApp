@@ -92,22 +92,31 @@ extension myUIViewController:UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
            return true
        }
-}
-
-
-extension UIViewController{
+    
     func hideKeyboardWhenTappedAround() {
-                let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
-                tap.cancelsTouchesInView = false
-                view.addGestureRecognizer(tap)
-            }
+                  let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(myUIViewController.dismissKeyboard))
+                //  tap.cancelsTouchesInView = false
+                  tap.delegate = self
+       
+                  view.addGestureRecognizer(tap)
+              }
 
-            @objc func dismissKeyboard() {
-                view.endEditing(true)
-            }
-      
+              @objc func dismissKeyboard() {
+                  view.endEditing(true)
+              }
+    
+    func hideKeyboardWhenTappedAround2() {
+               let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(myUIViewController.dismissKeyboard))
+               tap.cancelsTouchesInView = false
+               tap.delegate = self
+    
+               view.addGestureRecognizer(tap)
+           }
     
 }
+
+
+
 
 
 

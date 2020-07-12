@@ -18,6 +18,12 @@ class CollectionViewCellChannelLive: UICollectionViewCell, MyCellDelegate3, UITa
     var bigCategory:String?
     var categoryName:String?
     private var refreshControl = UIRefreshControl()
+    lazy var dateFormatter:DateFormatter = {
+        let dateForm = DateFormatter()
+        dateForm.dateFormat = "MMM d, h:mm a"
+        dateForm.timeZone = TimeZone.autoupdatingCurrent
+        return dateForm
+    }()
     
     
     override func awakeFromNib() {
@@ -78,6 +84,8 @@ class CollectionViewCellChannelLive: UICollectionViewCell, MyCellDelegate3, UITa
           
               if activeChannels.count > 0 {
                   cell.channelName?.text = self.activeChannels[indexPath.row].channelName
+                let date = dateFormatter.string(from: self.activeChannels[indexPath.row].endDate ?? Date())
+                cell.date.text = "Closes: \(date)"
                   cell.delegate = self
               }
               return cell
@@ -153,6 +161,7 @@ class CollectionViewCellChannelPast: UICollectionViewCell, MyCellDelegate3, UITa
          
               if pastChannels.count > 0{
                    cell.channelName?.text = self.pastChannels[indexPath.row].channelName
+                
                   cell.delegate = self
               }
               return cell
@@ -171,6 +180,12 @@ class CollectionViewCellChannelUpcoming: UICollectionViewCell, UITableViewDelega
      var upcomingChannels:[Channel] = []
     var bigCategory:String?
        var categoryName:String?
+    lazy var dateFormatter:DateFormatter = {
+        let dateForm = DateFormatter()
+        dateForm.dateFormat = "MMM d, h:mm a"
+        dateForm.timeZone = TimeZone.autoupdatingCurrent
+        return dateForm
+    }()
     
     override func awakeFromNib() {
            super.awakeFromNib()
@@ -227,7 +242,8 @@ class CollectionViewCellChannelUpcoming: UICollectionViewCell, UITableViewDelega
         if let cell = channelTable.dequeueReusableCell(withIdentifier: "upcomingChannelCell", for: indexPath) as? UpcomingChannelCells{
               if upcomingChannels.count > 0 {
                   cell.channelName?.text = self.upcomingChannels[indexPath.row].channelName
-                  cell.startDate?.text = "Start: Date"
+                let date = dateFormatter.string(from: self.upcomingChannels[indexPath.row].startDate ?? Date())
+                cell.startDate?.text = "Opens: \(date)"
                   cell.selectionStyle = .none
               }
               return cell
