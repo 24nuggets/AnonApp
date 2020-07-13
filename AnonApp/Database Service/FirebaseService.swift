@@ -46,59 +46,53 @@ class FirebaseService: NSObject {
         //query should be limited to double the firestore doc storage plus 1 to account for fetching time, could have extra as well
         query1.observeSingleEvent(of: .value, with: {[weak self](snapshot)  in
                     var i = 0
-                   let enumerator = snapshot.children
+            let keys = snapshot.children.allObjects as? [DataSnapshot]
                    var tempLastRecentkey:String?
             var myScores:[String:Any] = [:]
             self?.lastRecentKeyFeed = ""
             var moreRecentQuipsFirebase = false
             var currentTime:Double = 1.0
-                   while let rest = enumerator.nextObject() as? DataSnapshot {
+            if let mykeys = keys{
+                
+                   for key in mykeys {
                         i += 1
-                       if rest.key == "z"{
-                        currentTime = rest.childSnapshot(forPath: "d").value as! Double
-                        
-                       
+                    if key.key == "z"{
+                        currentTime = key.childSnapshot(forPath: "d").value as! Double
                        }
                        else{
-                               
-                          let aQuipID:String? = rest.key
+                        let aQuipID:String? = key.key
                            if let actualkey = aQuipID {
                                if i == 1 {
                                 tempLastRecentkey = actualkey
                                }
-                              
-                               
-                               let myQuipScore2 = rest.childSnapshot(forPath: "s").value as? Int
+                               let myQuipScore2 = key.childSnapshot(forPath: "s").value as? Int
                             if myQuipScore2 ?? -5 <= -5{
                                 FirestoreService.sharedInstance.deleteQuip(quipID: actualkey) {
-                                    
                                 }
                                 continue
                             }
-                               let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
-                          
+                               let myReplies2 =  key.childSnapshot(forPath: "r").value as? Int
                                myScores[actualkey]=["s":myQuipScore2,
                                                          "r":myReplies2]
-                               
-                              
-                            
-                               if i == 41 {
-                                self?.lastRecentKeyFeed = tempLastRecentkey!
-                                   moreRecentQuipsFirebase = true
-                                   
-                               }
+
+                             
                               
                                }
                            }
-                   }
-                  
+                }
+                    if i == 41 {
+                        self?.lastRecentKeyFeed = tempLastRecentkey!
+                        moreRecentQuipsFirebase = true
+                                                     
+                    }
+                   
                   
                    completion(myScores, currentTime,  moreRecentQuipsFirebase)
                          
                    }
         
+            })
         
-        )
         
         
         
@@ -143,17 +137,17 @@ class FirebaseService: NSObject {
                                          
                                          
                                      
-                                          if i == 21 {
-                                            self?.lastRecentKeyFeed = tempLastRecentkey!
-                                                moreRecentQuipsFirebase = true
-                                                               
-                                          }
+                                         
                                          }
                                      }
+                            }
+                                if i == 20 {
+                                    self?.lastRecentKeyFeed = tempLastRecentkey!
+                                    moreRecentQuipsFirebase = true
+                                                                                        
+                                }
                                 
-                                
-                                
-                             }
+                             
                             
                             completion(myScores, moreRecentQuipsFirebase)
                              
@@ -201,7 +195,7 @@ class FirebaseService: NSObject {
                                 }
                                     let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
                                                 
-                                    let myQuip = Quip(score: myQuipScore2!, replies: myReplies2!, myQuipID: actualkey)
+                                    let myQuip = Quip(score: myQuipScore2!, replies: myReplies2 ?? 0, myQuipID: actualkey)
                                     if i == 1 {
                                         self?.lastHotKeyFeed = actualkey
                                         self?.lastHotScoreFeed = myQuipScore2
@@ -210,9 +204,7 @@ class FirebaseService: NSObject {
                                                  hotQuips.insert(myQuip, at: 0)
                                                myHotIDs.append(actualkey)
                                                
-                                        if i == 21 {
-                                            moreHotQuipsFirebase = true
-                                        }
+                                        
                                               
                                                                       
                                                
@@ -221,7 +213,11 @@ class FirebaseService: NSObject {
                                                       
                                
                                }
-                           }
+                }
+                    if i == 21 {
+                        moreHotQuipsFirebase = true
+                    }
+                           
                    completion(hotQuips, myHotIDs, moreHotQuipsFirebase, currentTime)
                 
                 
@@ -232,7 +228,7 @@ class FirebaseService: NSObject {
     
     func loadMoreHotFeed(myChannelKey:String,  completion: @escaping ([Quip],[String], Bool)->()){
         var moreHotQuipsFirebase = false
-        let query1 = ref.child("A/" + myChannelKey + "/Q").queryOrdered(byChild: "s").queryLimited(toLast: 10).queryEnding(atValue: self.lastHotScoreFeed, childKey: self.lastHotKeyFeed)
+        let query1 = ref.child("A/" + myChannelKey + "/Q").queryOrdered(byChild: "s").queryLimited(toLast: 21).queryEnding(atValue: self.lastHotScoreFeed, childKey: self.lastHotKeyFeed)
                      
                       query1.observeSingleEvent(of: .value, with: {[weak self](snapshot)   in
                        let count = snapshot.childrenCount
@@ -269,7 +265,7 @@ class FirebaseService: NSObject {
                                             }
                                                let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
                                                        
-                                               let myQuip = Quip(score: myQuipScore2!, replies: myReplies2!, myQuipID: actualkey)
+                                               let myQuip = Quip(score: myQuipScore2!, replies: myReplies2 ?? 0, myQuipID: actualkey)
                                                       
                                                                                
                                                         aHotQuips.insert(myQuip, at: 0)
@@ -280,16 +276,18 @@ class FirebaseService: NSObject {
                                                        }
                                                       
                                                                                    
-                                        if i == 10 {
-                                            self?.lastHotKeyFeed = tempLastHotKeyFirebase
-                                            self?.lastHotScoreFeed = tempHotScore
-                                            moreHotQuipsFirebase = true
-                                                       }
+                                       
                                                }
                                
                                       
                                       }
-                                  }
+                           
+                        }
+                        if i == 21 {
+                            self?.lastHotKeyFeed = tempLastHotKeyFirebase
+                            self?.lastHotScoreFeed = tempHotScore
+                            moreHotQuipsFirebase = true
+                        }
                           completion(aHotQuips, aHotIDs, moreHotQuipsFirebase)
                           
                           
@@ -299,7 +297,7 @@ class FirebaseService: NSObject {
     
     func loadMoreHotUser(auid:String,  completion: @escaping ([Quip],[String], Bool)->()){
         var moreHotQuipsFirebase = false
-        let query1 = ref.child("M/" + auid + "/q").queryOrdered(byChild: "s").queryLimited(toLast: 10).queryEnding(atValue: self.lastTopScoreUser, childKey: self.lastTopKeyUser)
+        let query1 = ref.child("M/" + auid + "/q").queryOrdered(byChild: "s").queryLimited(toLast: 11).queryEnding(atValue: self.lastTopScoreUser, childKey: self.lastTopKeyUser)
                      
                       query1.observeSingleEvent(of: .value, with: {[weak self](snapshot)   in
                        let count = snapshot.childrenCount
@@ -337,27 +335,28 @@ class FirebaseService: NSObject {
                                             }
                                                let myReplies2 =  rest.childSnapshot(forPath: "r").value as? Int
                                                        
-                                               let myQuip = Quip(score: myQuipScore2!, replies: myReplies2!, myQuipID: actualkey)
+                                               let myQuip = Quip(score: myQuipScore2!, replies: myReplies2 ?? 0, myQuipID: actualkey)
                                                       
                                                                                
                                                         aHotQuips.insert(myQuip, at: 0)
                                                       aHotIDs.append(actualkey)
                                                        if i == 1 {
-                                                           tempLastHotKeyFirebase = actualkey
-                                                           tempHotScore = myQuipScore2
+                                                        self?.lastTopKeyUser = actualkey
+                                                        self?.lastTopScoreUser = myQuipScore2
                                                        }
                                                       
                                                                                    
-                                        if i == 10 {
-                                            self?.lastTopKeyUser = tempLastHotKeyFirebase
-                                            self?.lastTopScoreUser = tempHotScore
-                                            moreHotQuipsFirebase = true
-                                                       }
+                                       
                                                }
                                
                                       
                                       }
-                                  }
+                        }
+                            if i == 11 {
+                                
+                                moreHotQuipsFirebase = true
+                                    }
+                                  
                           completion(aHotQuips, aHotIDs, moreHotQuipsFirebase)
                           
                           
@@ -384,7 +383,7 @@ class FirebaseService: NSObject {
         var tempLastHotKeyFirebase:String?
         var tempHotScore:Int?
         var moreHotQuipsUserFirebase = false
-        let query1 = ref.child("M/\(uid)/q").queryOrdered(byChild: "s").queryLimited(toLast: 21)
+        let query1 = ref.child("M/\(uid)/q").queryOrdered(byChild: "s").queryLimited(toLast: 11)
         
         query1.observeSingleEvent(of: .value, with: {[weak self](snapshot)   in
                     
@@ -419,19 +418,20 @@ class FirebaseService: NSObject {
                                     myHotIDs.append(actualkey)
                                         myTopScores.insert(myQuip, at: 0)
                                          if i == 1 {
-                                            tempLastHotKeyFirebase = actualkey
-                                            tempHotScore = myQuipScore2
+                                            self?.lastTopKeyUser = actualkey
+                                            self?.lastTopScoreUser = myQuipScore2
                                                                                                }
                                                                                               
-                                        if i == 21 {
-                                            self?.lastHotKeyFeed = tempLastHotKeyFirebase
-                                            self?.lastHotScoreFeed = tempHotScore
-                                            moreHotQuipsUserFirebase = true
-                                                                                               }
+                                       
                                          
                                          
                                      }
-                             }
+            }
+                if i == 11 {
+                        
+                        moreHotQuipsUserFirebase = true
+                            }
+                    
             
                         completion(myTopScores, currentTime, moreHotQuipsUserFirebase, myHotIDs)
             
@@ -476,14 +476,16 @@ class FirebaseService: NSObject {
                                        
                                     myRecentScores[actualkey]=["s":myQuipScore2,
                                                          "r":myReplies2]
-                                    if i == 21{
-                                        self?.lastRecentKeyUser=tempLastRecentKey
-                                        moreRecentQuipsUserFirebase = true
-                                    }
+                                   
                                          
                                          
                                      }
-                             }
+            }
+                if i == 21{
+                    self?.lastRecentKeyUser=tempLastRecentKey
+                    moreRecentQuipsUserFirebase = true
+                }
+                             
             
                         completion(myRecentScores, currentTime, moreRecentQuipsUserFirebase)
             
@@ -493,14 +495,19 @@ class FirebaseService: NSObject {
            //limited to last should be at least the size of a firestore doc + 1 becasue one of the ones retrieved will be the quip we ended at last time
            var myScores:[String:Any] = [:]
            var moreRecentQuipsFirebase:Bool = false
-           let query1 = ref.child("M/" + aUid + "/q").queryOrderedByKey().queryLimited(toLast:  21).queryEnding(atValue:lastRecentKeyUser)
+           let query1 = ref.child("M/" + aUid + "/q").queryOrderedByKey().queryLimited(toLast:  11).queryEnding(atValue:lastRecentKeyUser)
                             query1.observeSingleEvent(of: .value, with: {[weak self](snapshot)   in
                                 self?.lastRecentKeyUser = ""
                                  var i = 0
                                 let enumerator = snapshot.children
+                                let count = snapshot.childrenCount
                              var tempLastRecentkey:String?
                                 while let rest = enumerator.nextObject() as? DataSnapshot {
                                    i += 1
+                                    
+                                    if i == count {
+                                        continue
+                                    }
                                     if rest.key == "z"{
                                         
                                     
@@ -528,17 +535,17 @@ class FirebaseService: NSObject {
                                             
                                             
                                         
-                                             if i == 21 {
-                                                self?.lastRecentKeyUser = tempLastRecentkey!
-                                                   moreRecentQuipsFirebase = true
-                                                                  
-                                             }
+                                            
                                             }
                                         }
-                                   
-                                   
-                                   
                                 }
+                        if i == 11 {
+                            self?.lastRecentKeyUser = tempLastRecentkey!
+                            moreRecentQuipsFirebase = true
+                                    }
+                                   
+                                   
+                                
                                
                                completion(myScores, moreRecentQuipsFirebase)
                                 
@@ -604,6 +611,7 @@ class FirebaseService: NSObject {
     }
     
     func deleteQuip(quipID:String, eventID: String, author:String, parentEventID:String?, completion: @escaping ()->()){
+        
         ref.child("A/\(eventID)/Q/\(quipID)").removeValue()
         ref.child("M/\(author)/q/\(quipID)").removeValue()
         if let aparentID = parentEventID{
@@ -616,6 +624,35 @@ class FirebaseService: NSObject {
                 }
             }
             completion()
+        }
+    }
+    
+    func deleteReply(parentQuipID:String, author:String, replyID:String, completion: @escaping ()->()){
+        ref.child("M/\(author)/q/\(replyID)").removeValue()
+        
+        ref.child("Q/\(parentQuipID)/R/\(replyID)").removeValue { (error, databaseRef) in
+            
+        }
+        FirestoreService.sharedInstance.getQuip(quipID: parentQuipID) { (quip) in
+            var updates:[String:Any] = [:]
+            
+                if let eventId = quip.channelKey{
+                  //  self.ref.child("A/\(eventId)/Q/\(parentQuipID)").updateChildValues(updates)
+                    updates["A/\(eventId)/Q/\(parentQuipID)/r"] = ServerValue.increment(-1)
+                }
+                if let parentEventId = quip.parentKey{
+                   // self.ref.child("A/\(parentEventId)/Q/\(parentQuipID)").updateChildValues(updates)
+                    updates["A/\(parentEventId)/Q/\(parentQuipID)/r"] = ServerValue.increment(-1)
+                }
+                if let quipAuthor = quip.user{
+                   // self.ref.child("M/\(quipAuthor)/q/\(parentQuipID)").updateChildValues(updates)
+                    updates["M/\(quipAuthor)/q/\(parentQuipID)/r"] = ServerValue.increment(-1)
+                }
+            
+                self.ref.updateChildValues(updates)
+            
+            completion()
+            
         }
     }
 }

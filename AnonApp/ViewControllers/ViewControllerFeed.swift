@@ -24,12 +24,14 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     var uid:String?
     private weak var passedQuip:Quip?
     private weak var quipVC:ViewControllerQuip?
+    var isOpen:Bool?
   
    
            var myLikesDislikesMap:[String:Int] = [:]
            var myNewLikesDislikesMap:[String:Int] = [:]
           var myUserMap:[String:String] = [:]
     
+    @IBOutlet weak var writeQuipBtn: UIBarButtonItem!
     
     @IBOutlet weak var bottomBarLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var topBtn: UIButton!
@@ -49,6 +51,11 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.layoutIfNeeded()
      
+        if isOpen ?? false{
+            self.navigationItem.rightBarButtonItem = self.writeQuipBtn
+        }else{
+            self.navigationItem.rightBarButtonItem = nil
+        }
         
         self.title =  myChannel?.channelName
         

@@ -330,16 +330,19 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
                       })
                         aself.moreRecentUserQuipsFirebase = moreRecentUserQuipsFirebase
                       }
+                    if let aScores = self?.myScores{
+                    FirestoreService.sharedInstance.loadMoreRecentUserQuips(uid: auid, myScores: aScores) {[weak self] (newUserQuips, moreRecentQuips) in
+                                     if let aself = self{
+                                     aself.newUserQuips = aself.newUserQuips + newUserQuips
+                                     aself.userQuipsTable.reloadData()
+                                     aself.moreRecentQuips = moreRecentQuips
+                                     }
+                                   
+                                 }
+                    }
                   }
               }
-              FirestoreService.sharedInstance.loadMoreRecentUserQuips(uid: auid, myScores: myScores) {[weak self] (newUserQuips, moreRecentQuips) in
-                  if let aself = self{
-                  aself.newUserQuips = aself.newUserQuips + newUserQuips
-                  aself.userQuipsTable.reloadData()
-                  aself.moreRecentQuips = moreRecentQuips
-                  }
-                
-              }
+             
           }
           
       }

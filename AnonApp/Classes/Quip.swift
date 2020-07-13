@@ -88,13 +88,17 @@ class Quip{
         quipReplies=replies
     }
     
-    init(myQuipID:String, auser:String?, parentchannelKey:String?, achannelkey:String?, atimePosted:Timestamp?, text:String?){
+    init(myQuipID:String, auser:String?, parentchannelKey:String?, achannelkey:String?, atimePosted:Timestamp?, text:String?, quipParent:String?, isReply:Bool?, imageRef:String?){
         parentKey=parentchannelKey
         channelKey=achannelkey
         quipID = myQuipID
         user = auser
         timePosted=atimePosted
         quipText=text
+        self.quipParent = quipParent
+        self.isReply = isReply ?? false
+        self.imageRef = imageRef
+        
     }
     
     

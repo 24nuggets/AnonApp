@@ -219,15 +219,16 @@ class FirestoreService: NSObject {
                           else{
                               if let querySnapshot = querySnapshot{
                                 let length = querySnapshot.documents.count
-                                mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
+                               
                                 if length == 0 {
                                                                         
                                     self?.createHotQuipsDoc(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: true, aChannelKey: myChannelKey) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)
                                         }
                                                                                 
-                                    }
-                                else if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                                }else{
+                                     mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
+                                if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
                                     self?.lastHotDocumentFeed = querySnapshot.documents[0]
                                     self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: true) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)
@@ -240,6 +241,7 @@ class FirestoreService: NSObject {
                                         completion(mydata, hotQuips, true)
                                                              
                                                                  
+                                }
                                 }
                                                 
                             }
@@ -675,7 +677,7 @@ class FirestoreService: NSObject {
                         }else{
                           
                             if querySnapshot?.isEmpty ?? true ||
-                                querySnapshot?.documents[0].data()["n"] as! Double >= 20{
+                                querySnapshot?.documents[0].data()["n"] as! Double >= 10{
                                 self?.createNewDocForRecentUser(data: data, key: key, auid: auid)
                         
                             }
@@ -900,6 +902,7 @@ class FirestoreService: NSObject {
                    let myQuips = document.data(with: ServerTimestampBehavior.estimate)["quips"] as! [String:Any]
                    let sortedKeys = Array(myQuips.keys).sorted(by: >)
                    for aQuip in sortedKeys{
+                    j += 1
                        let myInfo = myQuips[aQuip] as! [String:Any]
                        let aQuipID = aQuip
                        let atimePosted = myInfo["d"] as? Timestamp
@@ -925,12 +928,12 @@ class FirestoreService: NSObject {
                     
                        newUserQuips.append(myQuip)
                     
-                    j += 1
+                    
                        
                    }
                     if i == 1 {
                     
-                           if j == 20  {
+                           if j == 10  {
                             self?.myLastRecentDocUser = document
                                     moreRecentQuips = true
                             }
@@ -964,6 +967,7 @@ class FirestoreService: NSObject {
                               let sortedKeys = Array(myQuips.keys).sorted(by: >)
                            
                               for aQuip in sortedKeys{
+                                i += 1
                                   let myInfo = myQuips[aQuip] as! [String:Any]
                                   let aQuipID = aQuip
                                   let atimePosted = myInfo["d"] as? Timestamp
@@ -984,17 +988,17 @@ class FirestoreService: NSObject {
                                 let myChannelKey = myInfo["k"] as? String
                                 let myChannelParentKey = myInfo["pk"] as? String
                                 let isReply = myInfo["reply"] as? Bool
-                               let myQuip = Quip(text: aQuipText!, bowl: myChannel ?? "Other", time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, replies: aReplies!,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent:quipParent )
+                               let myQuip = Quip(text: aQuipText!, bowl: myChannel ?? "Other", time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent:quipParent )
                                   newUserQuips.append(myQuip)
                                 
-                                i += 1
+                                
                                
                                     
                                 }
                             
                             
                             
-                                    if i == 20 {
+                                    if i == 10 {
                                         self?.myLastRecentDocUser = document
                                         moreRecentQuipsUser = true
                                     }
@@ -1018,15 +1022,16 @@ class FirestoreService: NSObject {
                           else{
                               if let querySnapshot = querySnapshot{
                                 let length = querySnapshot.documents.count
-                                mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
+                               
                                 if length == 0 {
                                                                         
                                     self?.createHotQuipsDocUser(aHotIDs: aHotIDs, aHotQuips: hotQuips, more: true, aUid:auid) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)
                                         }
                                                                                 
-                                    }
-                                else if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                                }else{
+                                     mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
+                                if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
                                     self?.lastHotDocumentFeed = querySnapshot.documents[0]
                                     self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: true) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)
@@ -1039,6 +1044,7 @@ class FirestoreService: NSObject {
                                         completion(mydata, hotQuips, true)
                                                              
                                                                  
+                                }
                                 }
                                                 
                             }
@@ -1064,7 +1070,10 @@ class FirestoreService: NSObject {
                 let parentchannelKey = mydata["pk"] as? String
                 let atimePosted = mydata["d"] as? Timestamp
                 let text = mydata["t"] as? String
-                    let aQuip = Quip(myQuipID: quipID, auser: author, parentchannelKey: parentchannelKey, achannelkey: channelkey, atimePosted: atimePosted, text:text)
+                let quipParent = mydata["p"] as? String
+                let isReply = mydata["r"] as? Bool
+                let imageRef = mydata["i"] as? String
+                    let aQuip = Quip(myQuipID: quipID, auser: author, parentchannelKey: parentchannelKey, achannelkey: channelkey, atimePosted: atimePosted, text:text, quipParent: quipParent, isReply: isReply, imageRef:imageRef)
                     
                 completion(aQuip)
                 }
@@ -1164,13 +1173,20 @@ class FirestoreService: NSObject {
                         }
                 }
             }
+            else if let parentQuip = quip.quipParent{
+                if let author = quip.user{
+                    self.removeReply(parentID: parentQuip, author: author, replyID: quipID, quip: quip, parentEventID: nil) {
+                        completion()
+                    }
+                }
+            }
         }
         
     }
     
     func removeQuip(eventID:String, author:String, quipID:String, quip:Quip,parentEventID:String?, completion: @escaping ()->()){
        
-                   
+        
                            
                            db.collection("Quips/\(quipID)/Replies").document("RecentReplies").delete { (err) in
                                  if let err = err {
@@ -1195,8 +1211,8 @@ class FirestoreService: NSObject {
                             if let count = querrySnapshot?.documents.count{
                             if count > 0{
                                 let doc = querrySnapshot?.documents[0]
-                                                     doc?.reference.updateData(["quips.\(quipID)":FieldValue.delete(),
-                                                                                "n": FieldValue.increment(Int64(-1))])
+                                                           doc?.reference.updateData(["quips.\(quipID)":FieldValue.delete(),
+                                                           "n": FieldValue.increment(Int64(-1))])
                                 }
                             }
                            }
@@ -1236,5 +1252,54 @@ class FirestoreService: NSObject {
                    if let imageRef = quip.imageRef{
                        FirebaseStorageService.sharedInstance.deleteImage(imageRef: imageRef)
                    }
+    }
+    
+    func removeReply(parentID:String, author:String, replyID:String, quip:Quip,parentEventID:String?, completion: @escaping ()->()){
+        
+        db.collection("Quips").document(replyID).delete { (err) in
+              if let err = err {
+                                      print("Error removing document: \(err)")
+                                  } else {
+                                      print("Document successfully removed!")
+                                  }
+        }
+        let userRecentRef = db.collection("Users/\(author)/RecentQuips")
+                                 userRecentRef.order(by: "quips.\(replyID)").getDocuments { (querrySnapshot, error) in
+                                     if let error = error{
+                                         print("error: \(error)")
+                                         return
+                                     }
+                                  if let count = querrySnapshot?.documents.count{
+                                  if count > 0{
+                                      let doc = querrySnapshot?.documents[0]
+                                                           doc?.reference.updateData(["quips.\(replyID)":FieldValue.delete(),
+                                                                                      "n": FieldValue.increment(Int64(-1))])
+                                      }
+                                  }
+                                 }
+        
+        let quipRecentRef = db.collection("Quips/\(parentID)/Replies")
+                              quipRecentRef.getDocuments { (querrySnapshot, error) in
+                                                        if let error = error{
+                                                            print("error: \(error)")
+                                                            return
+                                                        }
+                                  if let count = querrySnapshot?.documents.count{
+                                  if count > 0{
+                                      let doc = querrySnapshot?.documents[0]
+                                  doc?.reference.updateData([replyID:FieldValue.delete()])
+                                  }
+                                  }
+                              }
+        
+        FirebaseService.sharedInstance.deleteReply(parentQuipID: parentID, author: author, replyID: replyID) {
+            completion()
+        }
+        
+        
+        if let imageRef = quip.imageRef{
+                              FirebaseStorageService.sharedInstance.deleteImage(imageRef: imageRef)
+                          }
+        
     }
 }

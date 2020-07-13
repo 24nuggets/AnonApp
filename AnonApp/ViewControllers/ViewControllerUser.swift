@@ -232,6 +232,12 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
             displayMsgBox()
         }else if menuItem.name == "Share Quip"{
             
+        }else if menuItem.name == "Delete Quip"{
+            if let aQuipID = quip?.quipID{
+                           FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
+                               self.collectionView.reloadData()
+                           }
+                       }
         }
         
     }

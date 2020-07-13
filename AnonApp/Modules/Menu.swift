@@ -168,7 +168,7 @@ class Menu: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UICo
         super.init()
         
         initialize()
-      //  populateMenuItems()
+        populateMenuItems()
     }
     
     func initialize(){
@@ -259,7 +259,7 @@ class ellipsesMenuUser:Menu{
     }
     
     override func populateMenuItems(){
-        if userController?.uid == myQuip?.user{
+        if userController?.uid == userController?.uidProfile{
             menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"),MenuItem(name:"View Event Feed", imageName: "person.circle"),MenuItem(name:"Delete Quip", imageName: "multiply.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
         }else{
             menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"View Event Feed", imageName: "person.circle"), MenuItem(name: "Report Quip", imageName: "flag"), MenuItem(name:"Cancel", imageName: "multiply.circle")]

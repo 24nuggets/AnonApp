@@ -94,6 +94,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         self.view.addSubview(myActivityIndicator)
         }
         makeViewFade()
+        dismissKeyboard()
         saveQuip()
     }
     

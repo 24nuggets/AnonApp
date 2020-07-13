@@ -348,8 +348,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                    })
                    }
                    
-                   //need to make sure firebase is always ahead of firestore
-                   if self?.moreRecentQuipsFirestore ?? false{
+                  
                        if let myChannelName = self?.myFeedController?.myChannel?.channelName{
                            FirestoreService.sharedInstance.loadMoreNewQuipsFeed(myChannelKey: myChannelKey, channelName: myChannelName) { [weak self](newQuips, moreRecentQuipsFirestore) in
                                if let aself = self{
@@ -362,7 +361,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                                }
                            }
                            
-                       }
+                       
                    }else{
                        self?.mergeFirestoreFirebaseNewQuips()
                        self?.feedTable.reloadData()

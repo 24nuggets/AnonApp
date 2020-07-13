@@ -365,6 +365,7 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
+        if let feedVC = segue.destination as? ViewControllerFeed{
         if activeBtn.isSelected {
         let indexPath = IndexPath(item: 0, section: 0)
         let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellChannelLive
@@ -374,7 +375,7 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
             let myIndexPath = IndexPath(item: index, section: 0)
                                         cell?.channelTable.deselectRow(at: myIndexPath, animated: true)
             }
-            
+            feedVC.isOpen = true
         }
         else if pastBtn.isSelected{
              let indexPath = IndexPath(item: 1, section: 0)
@@ -385,9 +386,9 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
                         let myIndexPath = IndexPath(item: index, section: 0)
                                                     cell?.channelTable.deselectRow(at: myIndexPath, animated: true)
                         }
-             
+            feedVC.isOpen = false
         }
-            if let feedVC = segue.destination as? ViewControllerFeed{
+            
             feedVC.myChannel = passedChannel
            
             feedVC.uid=self.uid

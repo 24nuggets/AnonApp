@@ -1308,6 +1308,7 @@
                         <outlet property="collectionView" destination="GhD-Fs-H7c" id="z61-AZ-rjf"/>
                         <outlet property="newBtn" destination="0U3-ay-3fc" id="WHy-GA-Myz"/>
                         <outlet property="topBtn" destination="ZEx-en-pfD" id="wI4-eP-3Pv"/>
+                        <outlet property="writeQuipBtn" destination="Ede-dA-UN8" id="kMo-Vo-0o2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MED-V1-Jsh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1657,7 +1658,7 @@
                                 </items>
                             </navigationBar>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" bouncesZoom="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sWh-bb-tlv">
-                                <rect key="frame" x="4" y="104" width="355" height="65"/>
+                                <rect key="frame" x="4" y="64" width="355" height="65"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="65" id="M6t-Cw-8O8"/>
@@ -1690,10 +1691,10 @@
                                 </items>
                             </toolbar>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kPS-oX-bCg">
-                                <rect key="frame" x="15" y="185" width="320" height="364"/>
+                                <rect key="frame" x="15" y="145" width="320" height="404"/>
                             </imageView>
                             <button hidden="YES" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iir-HW-e6A">
-                                <rect key="frame" x="305" y="195" width="20" height="20"/>
+                                <rect key="frame" x="305" y="155" width="20" height="20"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="20" id="3a4-3j-BhB"/>
@@ -1716,9 +1717,9 @@
                             <constraint firstItem="iir-HW-e6A" firstAttribute="trailing" secondItem="kPS-oX-bCg" secondAttribute="trailing" constant="-10" id="Pb7-cC-qgI"/>
                             <constraint firstItem="iir-HW-e6A" firstAttribute="top" secondItem="kPS-oX-bCg" secondAttribute="top" constant="10" id="Z7Y-dp-d1G"/>
                             <constraint firstItem="kPS-oX-bCg" firstAttribute="top" secondItem="sWh-bb-tlv" secondAttribute="bottom" constant="16" id="lr6-2w-39W"/>
+                            <constraint firstItem="sWh-bb-tlv" firstAttribute="top" secondItem="Kmg-V4-MDR" secondAttribute="top" constant="20" id="oOK-mm-1NU"/>
                             <constraint firstItem="sWh-bb-tlv" firstAttribute="leading" secondItem="Kmg-V4-MDR" secondAttribute="leading" constant="4" id="rWc-Ts-1ut"/>
                             <constraint firstItem="SSQ-sK-msO" firstAttribute="leading" secondItem="Kmg-V4-MDR" secondAttribute="leading" id="w4q-Yy-SZ9"/>
-                            <constraint firstItem="sWh-bb-tlv" firstAttribute="top" secondItem="SSQ-sK-msO" secondAttribute="bottom" constant="16" id="xgS-Ub-fL9"/>
                             <constraint firstItem="Kmg-V4-MDR" firstAttribute="bottom" secondItem="kPS-oX-bCg" secondAttribute="bottom" constant="20" id="zgg-T7-UOR"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Kmg-V4-MDR"/>

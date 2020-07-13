@@ -210,6 +210,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     func updateReplies(){
         self.replyScores = [:]
+        self.myReplies = []
         if let quipID = myQuip?.quipID{
         FirebaseService.sharedInstance.getReplyScores(quipId: quipID) { (currentTime, replyScores) in
                 self.currentTime = currentTime
@@ -217,6 +218,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                 if replyScores.count > 0 {
                  self.getFirestoreReplies()
                 }else{
+                    self.replyTable.reloadData()
                     self.refreshControl.endRefreshing()
                 }
             }
@@ -308,7 +310,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
        }
     
     func getFirestoreReplies(){
-        self.myReplies = []
+        
         if let aQuipID = myQuip?.quipID{
             FirestoreService.sharedInstance.getReplies(quipID: aQuipID, replyScores: replyScores) {[weak self] (myReplies) in
                 self?.myReplies = myReplies
@@ -372,7 +374,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         
         if let indexPath = self.replyTable.indexPath(for: cell){
                                          
-                if let myQuip = myReplies[indexPath.row]{
+                if let myQuip = myReplies[indexPath.row - 1]{
                         MenuLauncher.setVars(quipController: self, myQuip: myQuip)
                 }
                                               
@@ -393,6 +395,13 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             displayMsgBoxReport()
         }else if menuItem.name == "Share Quip"{
             
+        }else if menuItem.name == "Delete Quip"{
+            if let aQuipID = quip.quipID{
+                           FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
+                        
+                               self.updateReplies()
+                           }
+                       }
         }
         
     }
