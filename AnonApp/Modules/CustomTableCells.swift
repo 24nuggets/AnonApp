@@ -163,6 +163,9 @@ class QuipCells:UITableViewCell{
         if replyButton != nil {
         replyButton.isHidden = false
         }
+        if shareButton != nil {
+            shareButton.isHidden = false
+        }
         myGifView.cancelLoad()
         myImageView.cancelLoad()
         
@@ -184,7 +187,7 @@ class QuipCells:UITableViewCell{
                              self.downButton.isSelected = true
                          
                          self.upButton.tintColor = UIColor.lightGray
-                         self.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+        self.downButton.tintColor = UIColor(hexString: "ffaf46")
                         
                        let originalScore = Int(self.score.text!)!
                            
@@ -206,7 +209,7 @@ class QuipCells:UITableViewCell{
     
     func noneToDown2(quipScore:Int, quip:Quip?){
            self.downButton.isSelected=true
-           self.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+           self.downButton.tintColor = UIColor(hexString: "ffaf46")
                let originalScore = Int(self.score.text!)
                let newScore = originalScore! - 1
                self.score.text = String(newScore)
@@ -244,7 +247,7 @@ class QuipCells:UITableViewCell{
     func downToUp2(quipScore:Int, quip:Quip?){
                  self.downButton.isSelected=false
                         self.upButton.isSelected=true
-                   self.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                   self.upButton.tintColor = UIColor(hexString: "ffaf46")
                    self.downButton.tintColor = UIColor.lightGray
                         let originalScore = Int(self.score.text!)
                    let newScore = originalScore! + 2
@@ -262,7 +265,7 @@ class QuipCells:UITableViewCell{
        }
     func noneToUp2(quipScore:Int, quip:Quip?){
          self.upButton.isSelected=true
-         self.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+        self.upButton.tintColor = UIColor(hexString: "ffaf46")
               let originalScore = Int(self.score.text!)
          let newScore = originalScore! + 1
          if let aquip = quip {

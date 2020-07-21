@@ -102,10 +102,12 @@ func timeSincePost(timePosted:Double, currentTime:Double)->String{
     // Actually do the resizing to the rect using the ImageContext stuff
     UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
     image.draw(in: rect)
-    let newImage = UIGraphicsGetImageFromCurrentImageContext()
+    if let newImage = UIGraphicsGetImageFromCurrentImageContext(){
     UIGraphicsEndImageContext()
 
-    return newImage!
+    return newImage
+    }
+    return UIImage()
 }
 
 extension UIView {

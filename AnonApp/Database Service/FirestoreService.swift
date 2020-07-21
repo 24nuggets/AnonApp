@@ -72,6 +72,7 @@ class FirestoreService: NSObject {
                            
                            let myGifRef = myInfo["g"] as? String
                            let myQuip = Quip(text: aQuipText!, bowl: myChannelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef)
+                        myQuip.channelKey = myChannelKey
                          
                             newQuips.append(myQuip)
                          
@@ -148,6 +149,7 @@ class FirestoreService: NSObject {
                                     let myImageRef = myInfo["i"] as? String
                                    let myGifRef = myInfo["g"] as? String
                                    let myQuip = Quip(text: aQuipText!, bowl: channelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef)
+                                     myQuip.channelKey = myChannelKey
                                     newQuips.append(myQuip)
                                     
                                 }
@@ -1073,7 +1075,8 @@ class FirestoreService: NSObject {
                 let quipParent = mydata["p"] as? String
                 let isReply = mydata["r"] as? Bool
                 let imageRef = mydata["i"] as? String
-                    let aQuip = Quip(myQuipID: quipID, auser: author, parentchannelKey: parentchannelKey, achannelkey: channelkey, atimePosted: atimePosted, text:text, quipParent: quipParent, isReply: isReply, imageRef:imageRef)
+                let gifid = mydata["g"] as? String
+                    let aQuip = Quip(myQuipID: quipID, auser: author, parentchannelKey: parentchannelKey, achannelkey: channelkey, atimePosted: atimePosted, text:text, quipParent: quipParent, isReply: isReply, imageRef:imageRef, gifid:gifid)
                     
                 completion(aQuip)
                 }
@@ -1302,4 +1305,22 @@ class FirestoreService: NSObject {
                           }
         
     }
+    
+    func checkIfEventIsOpen(eventID:String, completion: @escaping (Bool)->()){
+        db.collection("Channels").document(eventID).getDocument { (snapshot, error) in
+            if let error = error{
+                print(error)
+            }
+            if let data = snapshot?.data(){
+                if let stage = data["a"] as? Int {
+            if stage == 2{
+                completion(true)
+            }else{
+                completion(false)
+            }
+            }
+            }
+        }
+    }
+    
 }

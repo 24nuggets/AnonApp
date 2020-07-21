@@ -25,7 +25,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     var mediaView:GPHMediaView?
     var giphyBottomSpaceConstraint:NSLayoutConstraint?
     var giphyTrailingSpace:NSLayoutConstraint?
-    let placeholderText = "Type something"
+    let placeholderText = "Get Cracking"
     var activityIndicator:UIActivityIndicatorView?
     let blackView = UIView()
     
@@ -56,10 +56,10 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         textView.textContainer.maximumNumberOfLines = 10
         textView.textContainer.lineBreakMode = .byClipping
         Quipit.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.cancelClicked))
-        Quipit.leftBarButtonItem?.tintColor = .black
+        Quipit.leftBarButtonItem?.tintColor = .white
         
         Quipit.rightBarButtonItem = UIBarButtonItem(title: "Post", style: .plain, target: self, action: #selector(self.postClicked))
-        Quipit.rightBarButtonItem?.tintColor = .black
+        Quipit.rightBarButtonItem?.tintColor = .white
         deleteImageBtn.clipsToBounds = true
         deleteImageBtn.layer.cornerRadius = deleteImageBtn.bounds.width/2
         imageView.layer.cornerRadius = 8.0
@@ -95,7 +95,14 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         }
         makeViewFade()
         dismissKeyboard()
-        saveQuip()
+        FirestoreService.sharedInstance.checkIfEventIsOpen(eventID: myChannel?.key ?? "Other") {[weak self] (isOpen) in
+            if isOpen{
+                self?.saveQuip()
+            }else{
+                self?.displayMsgBox2()
+            }
+        }
+       
     }
     
     func makeViewFade(){
@@ -259,7 +266,33 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                 print("unknown action")
             }}))
         self.present(alert, animated: true, completion: nil)
-        Quipit.leftBarButtonItem?.isEnabled = true
+        stopPosting()
+    }
+    func displayMsgBox2(){
+           let title = "Event Closed"
+           let message = "We could not post your quip because the event has ended."
+           let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                 switch action.style{
+                 case .default:
+                       print("default")
+
+                 case .cancel:
+                       print("cancel")
+
+                 case .destructive:
+                       print("destructive")
+
+
+                 @unknown default:
+                   print("unknown action")
+               }}))
+           self.present(alert, animated: true, completion: nil)
+           stopPosting()
+       }
+    
+    func stopPosting(){
+       Quipit.leftBarButtonItem?.isEnabled = true
         Quipit.rightBarButtonItem?.isEnabled = true
         activityIndicator?.stopAnimating()
         activityIndicator?.removeFromSuperview()

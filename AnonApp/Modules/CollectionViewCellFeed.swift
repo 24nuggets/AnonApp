@@ -8,10 +8,12 @@
 
 import UIKit
 import Firebase
+import GiphyUISDK
+import GiphyCoreSDK
 
 class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
     
-   
+   let shareText = "Check out this crack on pnut!"
      var currentTime:Double?
     var myFeedController:ViewControllerFeed?
      var newQuips:[Quip?] = []
@@ -41,13 +43,25 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                        
     }
     
-    func generateDynamicLink(aquip:Quip, cell: QuipCells){
+    func generateDynamicLink(aquip:Quip, cell: QuipCells?){
         var components = URLComponents()
+        var eventparentIDQueryItem2:URLQueryItem?
         components.scheme = "https"
         components.host = "anonapp.page.link"
         components.path = "/quips"
-        let quipIDQueryItem = URLQueryItem(name: "quipid", value: aquip.quipID)
-        components.queryItems = [quipIDQueryItem]
+         let eventIDQueryItem3 = URLQueryItem(name: "eventid", value: aquip.channelKey)
+        if let parentEventKey = aquip.parentKey{
+            eventparentIDQueryItem2 = URLQueryItem(name: "parenteventid", value: parentEventKey)
+        }
+        
+        
+        let eventNameQueryItem1 = URLQueryItem(name: "eventname", value: aquip.channel?.encodeUrl())
+        let quipIDQueryItem4 = URLQueryItem(name: "quipid", value: aquip.quipID)
+        if let parentqueryitem = eventparentIDQueryItem2{
+        components.queryItems = [eventNameQueryItem1,parentqueryitem, eventIDQueryItem3,quipIDQueryItem4]
+        }else{
+            components.queryItems = [eventNameQueryItem1, eventIDQueryItem3,quipIDQueryItem4]
+        }
         guard let linkparam = components.url else {return}
         print(linkparam)
         let dynamicLinksDomainURIPrefix = "https://anonapp.page.link"
@@ -64,6 +78,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
         if let myImage = aquip.imageRef {
              FirebaseStorageService.sharedInstance.getDownloadURL(imageRef: myImage, completion: {[weak self] (url) in
                 print(url)
+                
                 sharelink.socialMetaTagParameters?.imageURL = url
                 guard let longDynamicLink = sharelink.url else { return }
                  sharelink.shorten {[weak self] (url, warnings, error) in
@@ -81,36 +96,58 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                                self?.showShareViewController(url: url)
                            }
             })
-        }else{
-            if let myGif = aquip.gifID {
-            let gifURL = "api.giphy.com/v1/gifs/\(myGif)?api_key=2OFJFhBB22BPrYcLHLs2JtaMA5xSrQ2Y"
-            print(gifURL)
-            sharelink.socialMetaTagParameters?.imageURL = URL(string: gifURL)
-            
-            }
-        
-        guard let longDynamicLink = sharelink.url else { return }
-        print("The long URL is: \(longDynamicLink)")
-            sharelink.shorten {[weak self] (url, warnings, error) in
-                if let error = error{
-                    print(error)
-                    return
-                }
-                if let warnings = warnings{
-                    for warning in warnings{
-                        print(warning)
+        }else if let myGif = aquip.gifID {
+                GiphyCore.shared.gifByID(myGif) { (response, error) in
+                    if let media = response?.data {
+                        if let gifURL = media.url(rendition: .fixedWidthStill, fileType: .gif){
+                        print(gifURL)
+                        sharelink.socialMetaTagParameters?.imageURL = URL(string: gifURL)
+                        }
                     }
-                }
-                guard let url = url else {return}
-                print(url)
-                self?.showShareViewController(url: url)
+                    guard let longDynamicLink = sharelink.url else { return }
+                    print("The long URL is: \(longDynamicLink)")
+                        sharelink.shorten {[weak self] (url, warnings, error) in
+                            if let error = error{
+                                print(error)
+                                return
+                            }
+                            if let warnings = warnings{
+                                for warning in warnings{
+                                    print(warning)
+                                }
+                            }
+                            guard let url = url else {return}
+                            print(url)
+                            self?.showShareViewController(url: url)
+                        }
             }
+            
+        }
+        else {
+            guard let longDynamicLink = sharelink.url else { return }
+            print("The long URL is: \(longDynamicLink)")
+                sharelink.shorten {[weak self] (url, warnings, error) in
+                    if let error = error{
+                        print(error)
+                        return
+                    }
+                    if let warnings = warnings{
+                        for warning in warnings{
+                            print(warning)
+                        }
+                    }
+                    guard let url = url else {return}
+                    print(url)
+                    self?.showShareViewController(url: url)
+                }
+        
+        
             
         }
     }
     
     func showShareViewController(url:URL){
-        let myactivity1 = "Check out this quip on Quipit!"
+        let myactivity1 = shareText
         let myactivity2 = url
                              
                         
@@ -168,7 +205,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
         }
     }
     
-   func downButtonPressed(aQuip:Quip, cell:QuipCells){
+    func downButtonPressed(aQuip:Quip, cell:QuipCells, checkHot:Bool){
           if cell.upButton.isSelected {
                  if let aQuipScore = aQuip.quipScore{
                   let diff = cell.upToDown(quipScore: aQuipScore, quip: aQuip)
@@ -179,6 +216,12 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                           myFeedController?.myLikesDislikesMap[aID] = -1
                          myFeedController?.myUserMap[aID]=aQuip.user
                               myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                            if checkHot{
+                            myFeedController?.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
+                            } else{
+                                  myFeedController?.checkNewQuips(myQuipID: aID, isUp: false, change: diff)
+                                }
+
                           }
                       }
               }
@@ -193,6 +236,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                           myFeedController?.myLikesDislikesMap[aID]=0
                           myFeedController?.myUserMap[aID]=aQuip.user
                               myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                            if checkHot{
+                            myFeedController?.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
+                            } else{
+                              myFeedController?.checkNewQuips(myQuipID: aID, isUp: false, change: diff)
+                            }
                           }
                       }
                   
@@ -208,6 +256,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                       myFeedController?.myLikesDislikesMap[aID] = -1
                       myFeedController?.myUserMap[aID]=aQuip.user
                           myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                        if checkHot{
+                        myFeedController?.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
+                        } else{
+                          myFeedController?.checkNewQuips(myQuipID: aID, isUp: false, change: diff)
+                        }
                       }
                   }
               }
@@ -215,7 +268,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
           }
           
       }
-    func upButtonPressed(aQuip:Quip, cell:QuipCells){
+    func upButtonPressed(aQuip:Quip, cell:QuipCells, checkHot:Bool){
           if cell.upButton.isSelected {
               if let aQuipScore = aQuip.quipScore{
                   let diff = cell.upToNone(quipScore: aQuipScore, quip:aQuip)
@@ -226,6 +279,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                         myFeedController?.myLikesDislikesMap[aID]=0
                       myFeedController?.myUserMap[aID]=aQuip.user
                           myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                        if checkHot{
+                         myFeedController?.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
+                        }else{
+                           myFeedController?.checkNewQuips(myQuipID: aID, isUp: true, change: diff)
+                        }
                       }
                       }
                       
@@ -241,6 +299,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                               myFeedController?.myLikesDislikesMap[aID] = 1
                               myFeedController?.myUserMap[aID]=aQuip.user
                                   myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                                if checkHot{
+                                 myFeedController?.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
+                                }else{
+                                   myFeedController?.checkNewQuips(myQuipID: aID, isUp: true, change: diff)
+                                }
                               }
                           }
                       }
@@ -255,6 +318,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                           myFeedController?.myLikesDislikesMap[aID] = 1
                           myFeedController?.myUserMap[aID]=aQuip.user
                           myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                            if checkHot{
+                             myFeedController?.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
+                            }else{
+                               myFeedController?.checkNewQuips(myQuipID: aID, isUp: true, change: diff)
+                            }
                           }
                       }
                   }
@@ -272,7 +340,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
    
     private var refreshControl=UIRefreshControl()
     private var firestoreQuips:[Quip?] = []
-    private var myScores:[String:Any]=[:]
+    var myScores:[String:Any]=[:]
     private var moreRecentQuipsFirebase:Bool = false
     private var moreRecentQuipsFirestore:Bool = false
    private var cellHeights = [IndexPath: CGFloat]()
@@ -419,6 +487,8 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                 if newQuips.count > 0 {
                 
                     if let myQuip = self.newQuips[indexPath.row]{
+                        myQuip.channel = myFeedController?.myChannel?.channelName
+                        myQuip.parentKey = myFeedController?.myChannel?.parentKey
                         cell?.aQuip = myQuip
                            if let myImageRef = myQuip.imageRef  {
                                
@@ -443,12 +513,12 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                 if self.myFeedController?.myLikesDislikesMap[aID] == 1{
                     cell?.upButton.isSelected=true
                                         
-                                                       cell?.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                                       cell?.upButton.tintColor = UIColor(hexString: "ffaf46")
                                                }
                                                else if self.myFeedController?.myLikesDislikesMap[aID] == -1{
                                                        cell?.downButton.isSelected=true
                                                       
-                                                       cell?.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                                       cell?.downButton.tintColor = UIColor(hexString: "ffaf46")
                                                                                                              
                                                }
                                            }
@@ -480,10 +550,8 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
         if let indexPath = self.feedTable.indexPath(for: cell){
        
             if let myQuip = newQuips[indexPath.row]{
-            downButtonPressed(aQuip: myQuip, cell: cell)
-                if let aQuipID = myQuip.quipID{
-                myFeedController?.checkHotQuips(myQuipID: aQuipID, isUp: false)
-                }
+                downButtonPressed(aQuip: myQuip, cell: cell, checkHot:true)
+                
 
             }
         }
@@ -497,10 +565,8 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
            if let indexPath = self.feedTable.indexPath(for: cell){
           
                if let myQuip = newQuips[indexPath.row]{
-               upButtonPressed(aQuip: myQuip, cell: cell)
-                if let aQuipID = myQuip.quipID{
-                myFeedController?.checkHotQuips(myQuipID: aQuipID, isUp: true)
-                }
+                upButtonPressed(aQuip: myQuip, cell: cell, checkHot:true)
+               
                }
                
            
@@ -699,11 +765,11 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                                            cell.upButton.isSelected=true
                                   
                                   
-                                   cell.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                   cell.upButton.tintColor = UIColor(hexString: "ffaf46")
                                }
                                else if self.myFeedController?.myLikesDislikesMap[aID] == -1{
                                            cell.downButton.isSelected=true
-                                                 cell.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                                 cell.downButton.tintColor = UIColor(hexString: "ffaf46")
                                }
                                }
                                }
@@ -735,10 +801,8 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
          
               
               if let myQuip = hotQuips[indexPath.row]{
-              downButtonPressed(aQuip: myQuip, cell: cell)
-                if let aQuipID = myQuip.quipID{
-                    myFeedController?.checkNewQuips(myQuipID: aQuipID, isUp: false)
-                }
+              downButtonPressed(aQuip: myQuip, cell: cell, checkHot: false)
+               
               }
           }
           
@@ -749,10 +813,8 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
            if let indexPath = self.feedTable.indexPath(for: cell){
            
                if let myQuip = hotQuips[indexPath.row]{
-               upButtonPressed(aQuip: myQuip, cell: cell)
-                if let aQuipID = myQuip.quipID{
-                    myFeedController?.checkNewQuips(myQuipID: aQuipID, isUp: true)
-                }
+               upButtonPressed(aQuip: myQuip, cell: cell, checkHot: false)
+               
                }
             
         }

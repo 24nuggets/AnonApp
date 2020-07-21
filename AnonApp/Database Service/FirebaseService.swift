@@ -556,8 +556,8 @@ class FirebaseService: NSObject {
            
        }
     func getQuipScore(aQuip:Quip, completion: @escaping (Quip)->()){
-        let aQuipUser = aQuip.user!
-        let aQuipID = aQuip.quipID!
+        if let aQuipUser = aQuip.user{
+            if let aQuipID = aQuip.quipID {
         let path = "M/\(aQuipUser)/q/\(aQuipID)"
         ref.child(path).observeSingleEvent(of: .value) {(snapshot) in
         
@@ -568,7 +568,8 @@ class FirebaseService: NSObject {
             completion(aQuip)
             }
         }
-        
+        }
+        }
     }
     
     func getReplyScores(quipId:String, completion: @escaping (Double,[String:Int])->()){
@@ -654,5 +655,16 @@ class FirebaseService: NSObject {
             completion()
             
         }
+    }
+    
+    func getUserOverallScore(uid:String, completion: @escaping (Int)->()){
+        let path = "M/\(uid)/s"
+        ref.child(path).observeSingleEvent(of: .value) { (snapshot) in
+            if let score = snapshot.value as? Int {
+           
+            completion(score)
+            }
+        }
+        
     }
 }

@@ -11,9 +11,9 @@ import Firebase
 
 class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
     
-    private var DatabaseUrl:String="https://quippet-2213.firebaseio.com/"
+    
     var userID:String?
-    private weak var discoverVC:ViewControllerDiscover?
+  
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,29 +31,15 @@ class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
     
    
     
-    //initializes database reference
-    func refDatabaseFirebase()->DatabaseReference{
-       
-       let ref = Database.database().reference(fromURL: DatabaseUrl)
-        
-        return ref
-      }
-    func refDatabaseFirestore()->Firestore{
-        let db = Firestore.firestore()
-        return db
-    }
-    func refStorage()->StorageReference{
-        let storageRef = Storage.storage().reference()
-        return storageRef
-    }
+ 
     
-    func authorizeUser(){
+    func authorizeUser(completion: @escaping (String)->()){
         
-        Auth.auth().signInAnonymously() { (authResult, error) in
+        Auth.auth().signInAnonymously() {[weak self] (authResult, error) in
           // ...
          guard let user = authResult?.user else { return }
-             self.userID = user.uid
-            
+            self?.userID = user.uid
+            completion(user.uid)
         }
         
        

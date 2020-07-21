@@ -25,7 +25,11 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     @IBOutlet weak var topBtn: UIButton!
     @IBOutlet weak var bottomBarLeadingConstraint: NSLayoutConstraint!
     
+    @IBOutlet weak var leadingScoreBarConstraint: NSLayoutConstraint!
     
+    
+    
+  //  var bioHeightConstraint:NSLayoutConstraint?
     var uid:String?
     var uidProfile:String?
   private weak var quipVC:ViewControllerQuip?
@@ -35,6 +39,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
    var myChannelsMap:[String:String] = [:]
    var myParentChannelsMap:[String:String] = [:]
    var myParentQuipsMap:[String:String] = [:]
+    let bioPlaceholderText = "Insert Bio"
 
    
     
@@ -50,7 +55,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+     //   bioHeightConstraint = NSLayoutConstraint(item: bioTextView!, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         // Do any additional setup after loading the view.
         if navigationController?.viewControllers.count == 1{
               let tabBar = tabBarController as! BaseTabBarController
@@ -70,6 +75,9 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         bioTextView.textContainer.maximumNumberOfLines = 5
         bioTextView.textContainer.lineBreakMode = .byClipping
         loadUserProfile()
+        getUserScore()
+        
+        
         
             collectionView.delegate = self
                    collectionView.dataSource = self
@@ -96,27 +104,78 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
            }
     func loadUserProfile(){
         if let auid = uidProfile{
-        FirestoreService.sharedInstance.getUserProfile(uid: auid) { (name, bio) in
-            self.nameTextView.text = name
-            self.bioTextView.text = bio
-           
+        FirestoreService.sharedInstance.getUserProfile(uid: auid) {[weak self] (name, bio) in
+            self?.nameTextView.text = name
+            self?.bioTextView.text = bio
+            if bio == self?.bioPlaceholderText{
+             //   self?.bioTextView.addConstraint((self?.bioHeightConstraint)!)
+                self?.bioTextView.isHidden = true
+            }else{
+             //   self?.bioTextView.removeConstraint((self?.bioHeightConstraint)!)
+                self?.bioTextView.isHidden = false
+            }
+            self?.view.setNeedsLayout()
         }
         }
     }
     
     func setUpButtons(){
-                newBtn.setTitleColor(.darkText, for: .selected  )
-                topBtn.setTitleColor(.darkText, for: .selected  )
-                
-                if #available(iOS 13.0, *) {
-                    newBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-                    topBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-                    
-                } else {
-                    // Fallback on earlier versions
-                }
+               let selectedColor = UIColor(hexString: "ffaf46")
+                newBtn.setTitleColor(selectedColor, for: .selected  )
+                topBtn.setTitleColor(selectedColor, for: .selected  )
                 
             }
+    
+    func getUserScore(){
+        if let auid = uidProfile{
+            FirebaseService.sharedInstance.getUserOverallScore(uid: auid) {[weak self] (score) in
+                self?.adjustScoreLogic(score: score)
+                
+            }
+        }
+    }
+    
+    func adjustScoreLogic(score:Int){
+        let progressBarLength = progressBar.bounds.width
+        if score < 0 {
+            userScoreLabel.text = "0"
+            levelLable.text = "Level 1"
+            firstRangeLabel.text = "0"
+            secondRangeLabel.text = "100"
+            progressBar.progress = 0.0
+            leadingScoreBarConstraint.constant = 0
+            
+        }
+        else if score < 100{
+        
+        userScoreLabel.text = String(score)
+        levelLable.text = "Level 1"
+        firstRangeLabel.text = "0"
+        secondRangeLabel.text = "100"
+            let progress = Float(score) / 100.0
+        progressBar.progress = progress
+            leadingScoreBarConstraint.constant = progressBarLength * CGFloat(progress)
+        }
+        else if score < 1000{
+            userScoreLabel.text = String(score)
+                   levelLable.text = "Level 2"
+                   firstRangeLabel.text = "100"
+                   secondRangeLabel.text = "1000"
+                       let progress = (Float(score) - 100) / 900.0
+                   progressBar.progress = progress
+                       leadingScoreBarConstraint.constant = progressBarLength * CGFloat(progress)
+        }
+        else if score < 10000{
+                   userScoreLabel.text = String(score)
+                          levelLable.text = "Level 3"
+                          firstRangeLabel.text = "1000"
+                          secondRangeLabel.text = "10000"
+                              let progress = (Float(score) - 1000) / 9000.0
+                          progressBar.progress = progress
+                              leadingScoreBarConstraint.constant = progressBarLength * CGFloat(progress)
+               }
+        
+    }
     
     @IBAction func newBtnClicked(_ sender: Any) {
         selectNew()
@@ -129,12 +188,16 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     }
     
     func selectNew(){
+        topBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        newBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
            newBtn.isSelected = true
            topBtn.isSelected = false
            
        }
        
        func selectTop(){
+        topBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        newBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
            newBtn.isSelected = false
            topBtn.isSelected = true
            
@@ -231,7 +294,11 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         }else if menuItem.name == "Report Quip"{
             displayMsgBox()
         }else if menuItem.name == "Share Quip"{
-            
+            if let aquip = quip{
+            if let collectionViewCell = collectionView.visibleCells[0] as? CollectionViewCellUser{
+                collectionViewCell.generateDynamicLink(aquip: aquip, cell: nil)
+            }
+            }
         }else if menuItem.name == "Delete Quip"{
             if let aQuipID = quip?.quipID{
                            FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
@@ -274,6 +341,9 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     }
     
     func changeToEditMode(){
+      //  bioTextView.removeConstraint(bioHeightConstraint!)
+        bioTextView.isHidden = false
+        self.view.setNeedsLayout()
         nameTextView.isEditable = true
         nameTextView.isSelectable = true
         bioTextView.isSelectable = true
@@ -283,7 +353,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         self.navigationItem.leftBarButtonItem?.title = "Done"
         self.navigationItem.title = "EDIT PROFILE"
         self.navigationItem.rightBarButtonItem?.isEnabled = false
-        
+       
     }
    
     func changeToNormalMode(){
@@ -299,6 +369,15 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
             nameTextView.backgroundColor = self.view.backgroundColor
             bioTextView.backgroundColor = self.view.backgroundColor
         }
+        if bioTextView.text == bioPlaceholderText{
+      //      bioTextView.addConstraint(bioHeightConstraint!)
+            bioTextView.isHidden = true
+        }else{
+      //     bioTextView.removeConstraint(bioHeightConstraint!)
+            bioTextView.isHidden = false
+            
+        }
+        
         
         self.navigationItem.leftBarButtonItem?.title = "Edit"
         self.navigationItem.title = "PROFILE"
@@ -327,6 +406,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
            }
         if let aUID = uid {
            myVotes["M/\(aUID)/q/\(quipID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
+            myVotes["M/\(aUID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
            }
         updateFirestoreLikesDislikes()
                FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
@@ -438,8 +518,8 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                                    quipVC.loadParentQuip(aquipId: aquipId)
                                }
                     quipVC.currentTime = cell.currentTime
-                     let myCell = cell.userQuipsTable.cellForRow(at: cell.userQuipsTable.indexPathForSelectedRow!) as? QuipCells
-                    quipVC.passedQuipCell = myCell
+              //       let myCell = cell.userQuipsTable.cellForRow(at: cell.userQuipsTable.indexPathForSelectedRow!) as? QuipCells
+                    //   quipVC.passedQuipCell = myCell
                      cell.userQuipsTable.deselectRow(at: cell.userQuipsTable.indexPathForSelectedRow!, animated: false)
                 }else{
                    let myCell = cell.userQuipsTable.cellForRow(at: cell.userQuipsTable.indexPathForSelectedRow!) as? QuipCells
@@ -451,7 +531,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                                   quipVC.quipLikeStatus = false
                               }
                    quipVC.currentTime = cell.currentTime
-                   quipVC.passedQuipCell = myCell
+              //     quipVC.passedQuipCell = myCell
                    cell.userQuipsTable.deselectRow(at: cell.userQuipsTable.indexPathForSelectedRow!, animated: false)
                    }
                 }
@@ -474,8 +554,8 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                             quipVC.loadParentQuip(aquipId: aquipId)
                                                   }
                                        quipVC.currentTime = cell.currentTime
-                         let myCell = cell.userQuipsTable.cellForRow(at: cell.userQuipsTable.indexPathForSelectedRow!) as? QuipCells
-                        quipVC.passedQuipCell = myCell
+              //           let myCell = cell.userQuipsTable.cellForRow(at: cell.userQuipsTable.indexPathForSelectedRow!) as? QuipCells
+                   //quipVC.passedQuipCell = myCell
                          cell.userQuipsTable.deselectRow(at: cell.userQuipsTable.indexPathForSelectedRow!, animated: false)
                                    }else{
                    let myCell = cell.userQuipsTable.cellForRow(at: cell.userQuipsTable.indexPathForSelectedRow!) as? QuipCells
@@ -487,7 +567,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                                              quipVC.quipLikeStatus = false
                                          }
                     quipVC.currentTime = cell.currentTime
-                   quipVC.passedQuipCell = myCell
+                 //  quipVC.passedQuipCell = myCell
                cell.userQuipsTable.deselectRow(at: cell.userQuipsTable.indexPathForSelectedRow!, animated: false)
                    }
                 }

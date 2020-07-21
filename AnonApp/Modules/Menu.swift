@@ -232,10 +232,10 @@ class ellipsesMenuFeed:Menu{
     override func populateMenuItems(){
         if feedController?.uid == myQuip?.user{
         
-     menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"),MenuItem(name:"Delete Quip", imageName: "multiply.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+     menuItems = [MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"),MenuItem(name:"Delete Quip", imageName: "trash.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
         }else{
             
-            menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name: "Report Quip", imageName: "flag"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
+            menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"),MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Quip", imageName: "flag.circle"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
             }
         collectionView.reloadData()
     }
@@ -260,9 +260,9 @@ class ellipsesMenuUser:Menu{
     
     override func populateMenuItems(){
         if userController?.uid == userController?.uidProfile{
-            menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"),MenuItem(name:"View Event Feed", imageName: "person.circle"),MenuItem(name:"Delete Quip", imageName: "multiply.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+            menuItems = [MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"),MenuItem(name:"Delete Quip", imageName: "trash.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
         }else{
-            menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name:"View Event Feed", imageName: "person.circle"), MenuItem(name: "Report Quip", imageName: "flag"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+            menuItems = [MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Quip", imageName: "flag.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
         }
        collectionView.reloadData()
            
@@ -293,7 +293,7 @@ class ellipsesMenuQuip:Menu{
         if quipController?.uid == myQuip?.user{
         menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"),MenuItem(name: "Delete Quip", imageName: "flag"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
         }else{
-             menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"),MenuItem(name:"Share Quip", imageName:"plus.circle"), MenuItem(name: "Report Quip", imageName: "flag"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
+             menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"),MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Quip", imageName: "flag.circle"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
         }
         collectionView.reloadData()
        }
@@ -342,7 +342,26 @@ class SettingsMenuQuip:Menu{
     }
 
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"Edit Profile", imageName: "plus.circle"), MenuItem(name: "Privacy Policy", imageName: "plus.circle"), MenuItem(name:"Report a Problem", imageName:"flag"), MenuItem(name:"Contact Us", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        menuItems = [MenuItem(name:"Edit Profile", imageName: "wrench"), MenuItem(name: "Privacy Policy", imageName: "doc.text"), MenuItem(name:"Report a Problem", imageName:"flag"), MenuItem(name:"Contact Us", imageName:"envelope"), MenuItem(name:"Cancel", imageName: "multiply")]
            
        }
+}
+
+class EllipsesMenuEvent:Menu{
+    weak var feedController:ViewControllerFeed?
+    
+    override func nextController(menuItem:MenuItem){
+        
+        feedController?.shareEvent()
+          
+      }
+      
+     
+
+      override func populateMenuItems(){
+         
+          menuItems = [MenuItem(name:"Share Event", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+          
+          collectionView.reloadData()
+         }
 }

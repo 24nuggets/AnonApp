@@ -62,6 +62,7 @@ class FirebaseStorageService: NSObject {
                 return
             }
             if let aurl = url{
+                
                 completion(aurl)
             }
             

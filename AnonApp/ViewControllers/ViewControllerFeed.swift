@@ -19,7 +19,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     
 
-    weak var myChannel:Channel?
+    var myChannel:Channel?
     private weak var writeQuip:ViewControllerWriteQuip?
     var uid:String?
     private weak var passedQuip:Quip?
@@ -30,6 +30,11 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
            var myLikesDislikesMap:[String:Int] = [:]
            var myNewLikesDislikesMap:[String:Int] = [:]
           var myUserMap:[String:String] = [:]
+    lazy var ellipeseMenuLauncher:EllipsesMenuEvent = {
+                    let launcher = EllipsesMenuEvent()
+                 launcher.feedController = self
+                     return launcher
+                }()
     
     @IBOutlet weak var writeQuipBtn: UIBarButtonItem!
     
@@ -40,7 +45,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     @IBOutlet weak var bottomBar: UIView!
     @IBOutlet weak var collectionView: UICollectionView!
-    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
        
@@ -51,19 +56,19 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.layoutIfNeeded()
      
-        if isOpen ?? false{
-            self.navigationItem.rightBarButtonItem = self.writeQuipBtn
-        }else{
-            self.navigationItem.rightBarButtonItem = nil
-        }
+       self.title =  myChannel?.channelName
         
-        self.title =  myChannel?.channelName
+           if isOpen ?? false{
+                      self.navigationItem.rightBarButtonItem = self.writeQuipBtn
+                  }else{
+                      self.navigationItem.rightBarButtonItem = nil
+                  }
+        
+        
         
         //notification when app will enter foreground
         NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
          
-        bottomBar.layer.cornerRadius = 10
-        bottomBar.clipsToBounds = true
        
         addGesture()
         collectionView.delegate = self
@@ -73,23 +78,16 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     }
     
     func setUpButtons(){
-             newBtn.setTitleColor(.darkText, for: .selected  )
-             topBtn.setTitleColor(.darkText, for: .selected  )
-             
-             if #available(iOS 13.0, *) {
-                 newBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-                 topBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-                 
-             } else {
-                 // Fallback on earlier versions
-             }
+        let selectedColor = UIColor(hexString: "ffaf46")
+             newBtn.setTitleColor(selectedColor, for: .selected  )
+             topBtn.setTitleColor(selectedColor, for: .selected  )
+       
              
          }
   
     
     override func viewDidAppear(_ animated: Bool){
               super.viewDidAppear(animated)
-        
       
         
        
@@ -138,6 +136,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
           }
          
           myVotes["M/\(aUID)/q/\(quipID)/s"] = ServerValue.increment(myDiff)
+         myVotes["M/\(aUID)/s"] = ServerValue.increment(myDiff)
           
               updateFirestoreLikesDislikes()
                FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
@@ -162,7 +161,11 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
            myNewLikesDislikesMap=[:]
        }
     
-  
+    @IBAction func eventEllipsesClicked(_ sender: Any) {
+        ellipeseMenuLauncher.makeViewFade()
+        ellipeseMenuLauncher.addMenuFromBottom()
+    }
+    
     @IBAction func newClicked(_ sender: Any) {
         selectNew()
         scrollToItemAtIndexPath(index: 0)
@@ -175,19 +178,97 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     }
     
     func selectNew(){
+        topBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        newBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         newBtn.isSelected = true
         topBtn.isSelected = false
         
     }
     
     func selectTop(){
+        topBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        newBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
         newBtn.isSelected = false
         topBtn.isSelected = true
         
         
     }
     
-    func checkNewQuips(myQuipID:String, isUp:Bool){
+   
+    
+    func shareEvent(){
+        var components = URLComponents()
+        var eventparentIDQueryItem2:URLQueryItem?
+        components.scheme = "https"
+        components.host = "anonapp.page.link"
+        components.path = "/events"
+        let eventIDQueryItem3 = URLQueryItem(name: "eventid", value: myChannel?.key)
+        if let parentEventKey = myChannel?.parentKey{
+            eventparentIDQueryItem2 = URLQueryItem(name: "parenteventid", value: parentEventKey)
+        }
+        
+        
+        let eventNameQueryItem1 = URLQueryItem(name: "eventname", value: myChannel?.channelName?.encodeUrl())
+        
+        if let parentqueryitem = eventparentIDQueryItem2{
+        components.queryItems = [eventNameQueryItem1,parentqueryitem, eventIDQueryItem3]
+        }else{
+            components.queryItems = [eventNameQueryItem1, eventIDQueryItem3]
+        }
+        guard let linkparam = components.url else {return}
+        print(linkparam)
+        let dynamicLinksDomainURIPrefix = "https://anonapp.page.link"
+        guard let sharelink = DynamicLinkComponents.init(link: linkparam, domainURIPrefix: dynamicLinksDomainURIPrefix) else {return}
+        if let bundleId = Bundle.main.bundleIdentifier {
+            sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
+        }
+        //change to app store id
+        sharelink.iOSParameters?.appStoreID = "962194608"
+        sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+        
+        sharelink.socialMetaTagParameters?.title = myChannel?.channelName
+       // sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
+       
+            guard let longDynamicLink = sharelink.url else { return }
+            print("The long URL is: \(longDynamicLink)")
+                sharelink.shorten {[weak self] (url, warnings, error) in
+                    if let error = error{
+                        print(error)
+                        return
+                    }
+                    if let warnings = warnings{
+                        for warning in warnings{
+                            print(warning)
+                        }
+                    }
+                    guard let url = url else {return}
+                    print(url)
+                    self?.showShareViewController(url: url)
+                }
+        
+        
+            
+        
+    }
+    
+    func showShareViewController(url:URL){
+        let myactivity1 = "Check out this event on pnut!"
+        let myactivity2 = url
+                             
+                        
+                               // set up activity view controller
+        let firstactivity = [myactivity1, myactivity2] as [Any]
+                        let activityViewController = UIActivityViewController(activityItems: firstactivity, applicationActivities: nil)
+                              activityViewController.popoverPresentationController?.sourceView = self.view // so that iPads won't crash
+
+                               // exclude some activity types from the list (optional)
+                        activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.addToReadingList, UIActivity.ActivityType.assignToContact, UIActivity.ActivityType.markupAsPDF, UIActivity.ActivityType.openInIBooks, UIActivity.ActivityType.print]
+
+                               // present the view controller
+                               self.present(activityViewController, animated: true, completion: nil)
+    }
+    
+    func checkNewQuips(myQuipID:String, isUp:Bool, change:Int?){
               var i = 0
         let indexPath = IndexPath(item: 0, section: 0)
                if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellFeedRecent{
@@ -195,7 +276,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                 
                  if aQuip?.quipID == myQuipID{
                      if let myQuip = aQuip{
-                         updateOtherQuipList(index: 0, myQuip: myQuip, i: i, isUp: isUp)
+                         updateOtherQuipList(index: 0, myQuip: myQuip, i: i, isUp: isUp, change: change)
 
                      }
                     
@@ -206,7 +287,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         }
          }
     
-    func checkHotQuips(myQuipID:String, isUp:Bool){
+    func checkHotQuips(myQuipID:String, isUp:Bool, change:Int?){
            var i = 0
         let indexPath = IndexPath(item: 1, section: 0)
         if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellFeedTop{
@@ -214,7 +295,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                
                if aQuip?.quipID == myQuipID{
                    if let myQuip = aQuip{
-                       updateOtherQuipList(index: 1, myQuip: myQuip, i: i, isUp: isUp)
+                       updateOtherQuipList(index: 1, myQuip: myQuip, i: i, isUp: isUp, change: change)
 
                    }
                    
@@ -224,26 +305,39 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         }
        }
     
-    func updateOtherQuipList(index:Int, myQuip:Quip, i:Int, isUp:Bool){
+    func updateOtherQuipList(index:Int, myQuip:Quip, i:Int, isUp:Bool, change:Int?){
         let indexPath = IndexPath(item: index, section: 0)
         if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellFeedRecent{
             let indexPath2 = IndexPath(item: i, section: 0)
             if let myCell = cell.feedTable.cellForRow(at: indexPath2) as? QuipCells{
-            if isUp{
-                cell.upPressedForOtherCell(aQuip: myQuip, cell: myCell)
+                if isUp{
+                    cell.upPressedForOtherCell(aQuip: myQuip, cell: myCell)
+                }else{
+                    cell.downPressedForOtherCell(aQuip: myQuip, cell: myCell)
+                }
             }else{
-                cell.downPressedForOtherCell(aQuip: myQuip, cell: myCell)
-            }
+                if let aChange = change{
+                  //  myQuip.quipScore! += aChange
+                    myQuip.tempScore! += aChange
+                    guard var myQuipInfo = cell.myScores[myQuip.quipID ?? ""] as? [String:Int] else {return}
+                    myQuipInfo["s"]! += aChange
+                    
+                }
             }
         }
         if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellFeedTop{
         let indexPath2 = IndexPath(item: i, section: 0)
         if let myCell = cell.feedTable.cellForRow(at: indexPath2) as? QuipCells{
-                   if isUp{
-                       cell.upPressedForOtherCell(aQuip: myQuip, cell: myCell)
+                       if isUp{
+                           cell.upPressedForOtherCell(aQuip: myQuip, cell: myCell)
+                       }else{
+                           cell.downPressedForOtherCell(aQuip: myQuip, cell: myCell)
+                       }
                    }else{
-                       cell.downPressedForOtherCell(aQuip: myQuip, cell: myCell)
-                   }
+                       if let aChange = change{
+                      //  myQuip.quipScore! += aChange
+                        myQuip.tempScore! += aChange
+                       }
                    }
     }
     }
@@ -311,7 +405,9 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         }else if menuItem.name == "Report Quip"{
             displayMsgBox()
         }else if menuItem.name == "Share Quip"{
-            
+            if let collectionViewCell = collectionView.visibleCells[0] as? CollectionCellFeed{
+                collectionViewCell.generateDynamicLink(aquip: quip, cell: nil)
+            }
         }else if menuItem.name == "Delete Quip"{
             if let aQuipID = quip.quipID{
                 FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
@@ -367,7 +463,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                            quipVC.quipLikeStatus = false
                        }
             quipVC.currentTime = cell.currentTime
-            quipVC.passedQuipCell = myCell
+       //     quipVC.passedQuipCell = myCell
             cell.feedTable.deselectRow(at: cell.feedTable.indexPathForSelectedRow!, animated: false)
             }
             quipVC.parentIsNew = true
@@ -386,7 +482,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                                       quipVC.quipLikeStatus = false
                                   }
              quipVC.currentTime = cell.currentTime
-            quipVC.passedQuipCell = myCell
+     //quipVC.passedQuipCell = myCell
             cell.feedTable.deselectRow(at: cell.feedTable.indexPathForSelectedRow!, animated: false)
             }
             quipVC.parentIsNew = false

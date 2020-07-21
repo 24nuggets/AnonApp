@@ -65,7 +65,7 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
        
        
         setUpButtons()
-      
+      selectLive()
         
        
        
@@ -92,16 +92,11 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
        }
     
     func setUpButtons(){
-           pastBtn.setTitleColor(.black, for: .selected  )
-           activeBtn.setTitleColor(.black, for: .selected  )
-           upcomingBtn.setTitleColor(.black, for: .selected  )
-           if #available(iOS 13.0, *) {
-               pastBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-               activeBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-               upcomingBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-           } else {
-               // Fallback on earlier versions
-           }
+            let selectedColor = UIColor(hexString: "ffaf46")
+                       pastBtn.setTitleColor(selectedColor, for: .selected  )
+                       activeBtn.setTitleColor(selectedColor, for: .selected  )
+         upcomingBtn.setTitleColor(selectedColor, for: .selected  )
+          
            
        }
    
@@ -271,16 +266,25 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
        }
     
     func selectLive(){
+        upcomingBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        activeBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        pastBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
         upcomingBtn.isSelected = false
         activeBtn.isSelected = true
         pastBtn.isSelected = false
     }
     func selectPast(){
+        upcomingBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        activeBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        pastBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         upcomingBtn.isSelected = false
                activeBtn.isSelected = false
                pastBtn.isSelected = true
     }
     func selectUpcoming(){
+        upcomingBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        activeBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        pastBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
         upcomingBtn.isSelected = true
         activeBtn.isSelected = false
         pastBtn.isSelected = false

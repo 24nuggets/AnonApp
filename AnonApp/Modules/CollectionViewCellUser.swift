@@ -8,6 +8,8 @@
 
 import UIKit
 import Firebase
+import GiphyUISDK
+import GiphyCoreSDK
 
 class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
     
@@ -19,6 +21,8 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
             launcher.userController = myUserController
                 return launcher
            }()
+    
+     let shareText = "Check out this crack on pnut!"
     
     func btnSharedTapped(cell: QuipCells) {
                  
@@ -37,6 +41,125 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
                   
               
           }
+    func generateDynamicLink(aquip:Quip, cell: QuipCells?){
+        var components = URLComponents()
+        var eventparentIDQueryItem2:URLQueryItem?
+        components.scheme = "https"
+        components.host = "anonapp.page.link"
+        components.path = "/quips"
+         let eventIDQueryItem3 = URLQueryItem(name: "eventid", value: aquip.channelKey)
+        if let parentEventKey = aquip.parentKey{
+            eventparentIDQueryItem2 = URLQueryItem(name: "parenteventid", value: parentEventKey)
+        }
+        
+        
+        let eventNameQueryItem1 = URLQueryItem(name: "eventname", value: aquip.channel?.encodeUrl())
+        let quipIDQueryItem4 = URLQueryItem(name: "quipid", value: aquip.quipID)
+        if let parentqueryitem = eventparentIDQueryItem2{
+        components.queryItems = [eventNameQueryItem1,parentqueryitem, eventIDQueryItem3,quipIDQueryItem4]
+        }else{
+            components.queryItems = [eventNameQueryItem1, eventIDQueryItem3,quipIDQueryItem4]
+        }
+        guard let linkparam = components.url else {return}
+        print(linkparam)
+        let dynamicLinksDomainURIPrefix = "https://anonapp.page.link"
+        guard let sharelink = DynamicLinkComponents.init(link: linkparam, domainURIPrefix: dynamicLinksDomainURIPrefix) else {return}
+        if let bundleId = Bundle.main.bundleIdentifier {
+            sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
+        }
+        //change to app store id
+        sharelink.iOSParameters?.appStoreID = "962194608"
+        sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+        
+        sharelink.socialMetaTagParameters?.title = aquip.quipText
+        sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
+        if let myImage = aquip.imageRef {
+             FirebaseStorageService.sharedInstance.getDownloadURL(imageRef: myImage, completion: {[weak self] (url) in
+                print(url)
+                
+                sharelink.socialMetaTagParameters?.imageURL = url
+                guard let longDynamicLink = sharelink.url else { return }
+                 sharelink.shorten {[weak self] (url, warnings, error) in
+                               if let error = error{
+                                   print(error)
+                                   return
+                               }
+                               if let warnings = warnings{
+                                   for warning in warnings{
+                                       print(warning)
+                                   }
+                               }
+                               guard let url = url else {return}
+                                
+                               self?.showShareViewController(url: url)
+                           }
+            })
+        }else if let myGif = aquip.gifID {
+                GiphyCore.shared.gifByID(myGif) { (response, error) in
+                    if let media = response?.data {
+                        if let gifURL = media.url(rendition: .fixedWidthStill, fileType: .gif){
+                        print(gifURL)
+                        sharelink.socialMetaTagParameters?.imageURL = URL(string: gifURL)
+                        }
+                    }
+                    guard let longDynamicLink = sharelink.url else { return }
+                    print("The long URL is: \(longDynamicLink)")
+                        sharelink.shorten {[weak self] (url, warnings, error) in
+                            if let error = error{
+                                print(error)
+                                return
+                            }
+                            if let warnings = warnings{
+                                for warning in warnings{
+                                    print(warning)
+                                }
+                            }
+                            guard let url = url else {return}
+                            print(url)
+                            self?.showShareViewController(url: url)
+                        }
+            }
+            
+        }
+        else {
+            guard let longDynamicLink = sharelink.url else { return }
+            print("The long URL is: \(longDynamicLink)")
+                sharelink.shorten {[weak self] (url, warnings, error) in
+                    if let error = error{
+                        print(error)
+                        return
+                    }
+                    if let warnings = warnings{
+                        for warning in warnings{
+                            print(warning)
+                        }
+                    }
+                    guard let url = url else {return}
+                    print(url)
+                    self?.showShareViewController(url: url)
+                }
+        
+        
+            
+        }
+    }
+    
+    func showShareViewController(url:URL){
+        let myactivity1 = shareText
+        let myactivity2 = url
+                             
+                        
+                               // set up activity view controller
+        let firstactivity = [myactivity1, myactivity2] as [Any]
+                        let activityViewController = UIActivityViewController(activityItems: firstactivity, applicationActivities: nil)
+                              activityViewController.popoverPresentationController?.sourceView = myUserController?.view // so that iPads won't crash
+
+                               // exclude some activity types from the list (optional)
+                        activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.addToReadingList, UIActivity.ActivityType.assignToContact, UIActivity.ActivityType.markupAsPDF, UIActivity.ActivityType.openInIBooks, UIActivity.ActivityType.print]
+
+                               // present the view controller
+                               myUserController?.present(activityViewController, animated: true, completion: nil)
+    }
        
        func downPressedForOtherCell(aQuip:Quip, cell:QuipCells){
              if cell.upButton.isSelected {
@@ -285,9 +408,19 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
             
         
     }
+    override func btnSharedTapped(cell: QuipCells) {
+        if let indexPath = self.userQuipsTable.indexPath(for: cell){
+        
+             if let myQuip = newUserQuips[indexPath.row]{
+             
+                 generateDynamicLink(aquip: myQuip, cell: cell)
+             }
+         
+         }
+    }
       
       @objc func refreshData(){
-          
+        myUserController?.getUserScore()
           updateNew()
       }
     
@@ -374,6 +507,7 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
                                                                              
                                               if myQuip.isReply{
                                                   cell.replyButton.isHidden = true
+                                                cell.shareButton.isHidden = true
                                               }
                                                                       
                                           cell.categoryLabel.text = String(indexPath.row)
@@ -389,12 +523,12 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
                                               if self.myUserController?.myLikesDislikesMap[aID] == 1{
                                                   cell.upButton.isSelected=true
                                                                                           
-                                                  cell.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                                  cell.upButton.tintColor = UIColor(hexString: "ffaf46")
                                               }
                                               else if self.myUserController?.myLikesDislikesMap[aID] == -1{
                                                   cell.downButton.isSelected=true
                                                                                          
-                                                  cell.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                                  cell.downButton.tintColor = UIColor(hexString: "ffaf46")
                                                                                                                                                 
                                               }
                                           }
@@ -505,9 +639,20 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
             
         
     }
+    override func btnSharedTapped(cell: QuipCells) {
+        if let indexPath = self.userQuipsTable.indexPath(for: cell){
+                 
+                       
+                       if let myQuip = topUserQuips[indexPath.row]{
+                       generateDynamicLink(aquip: myQuip, cell: cell)
+                       }
+                    
+                   
+                   }
+    }
       
       @objc func refreshData(){
-          
+           myUserController?.getUserScore()
           updateTop()
       }
     
@@ -596,6 +741,7 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
                                                                     
                                      if myQuip.isReply{
                                              cell.replyButton.isHidden = true
+                                        cell.shareButton.isHidden = true
                                      }
                                                                          
                                                                     
@@ -606,11 +752,11 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
                                      if let aID = myQuip.quipID{
                                          if self.myUserController?.myLikesDislikesMap[aID] == 1{
                                              cell.upButton.isSelected=true
-                                             cell.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                             cell.upButton.tintColor = UIColor(hexString: "ffaf46")
                                      }
                                      else if self.myUserController?.myLikesDislikesMap[aID] == -1{
                                              cell.downButton.isSelected=true
-                                             cell.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                             cell.downButton.tintColor = UIColor(hexString: "ffaf46")
                                                                                                      
                                          }
                                      }

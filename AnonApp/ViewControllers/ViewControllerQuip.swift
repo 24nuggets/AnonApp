@@ -17,7 +17,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     
 
-    
+    let shareText = "Check out this crack on pnut!"
     var myQuip:Quip?
     var passedReply:Quip?
     weak var myChannel:Channel?
@@ -38,7 +38,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     private var origBottom:CGFloat?
     weak var parentViewFeed:ViewControllerFeed?
     weak var parentViewUser:ViewControllerUser?
-    weak var passedQuipCell:QuipCells?
+  //  weak var passedQuipCell:QuipCells?
     private var myVotes:[String:Any] = [:]
     private var myLikesDislikesMap:[String:Int] = [:]
     private var myNewLikesDislikesMap:[String:Int] = [:]
@@ -51,7 +51,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            launcher.quipController = self
                return launcher
           }()
-    let placeHolderText = "Type Something"
+    let placeHolderText = "Reply To This Crack"
     let blackView = UIView()
     var activityIndicator:UIActivityIndicatorView?
 
@@ -394,7 +394,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         }else if menuItem.name == "Report Quip"{
             displayMsgBoxReport()
         }else if menuItem.name == "Share Quip"{
-            
+            generateDynamicLink(aquip: quip, cell: nil)
         }else if menuItem.name == "Delete Quip"{
             if let aQuipID = quip.quipID{
                            FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
@@ -405,6 +405,125 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         }
         
     }
+    func generateDynamicLink(aquip:Quip, cell: QuipCells?){
+           var components = URLComponents()
+           var eventparentIDQueryItem2:URLQueryItem?
+           components.scheme = "https"
+           components.host = "anonapp.page.link"
+           components.path = "/quips"
+            let eventIDQueryItem3 = URLQueryItem(name: "eventid", value: aquip.channelKey)
+           if let parentEventKey = aquip.parentKey{
+               eventparentIDQueryItem2 = URLQueryItem(name: "parenteventid", value: parentEventKey)
+           }
+           
+           
+           let eventNameQueryItem1 = URLQueryItem(name: "eventname", value: aquip.channel?.encodeUrl())
+           let quipIDQueryItem4 = URLQueryItem(name: "quipid", value: aquip.quipID)
+           if let parentqueryitem = eventparentIDQueryItem2{
+           components.queryItems = [eventNameQueryItem1,parentqueryitem, eventIDQueryItem3,quipIDQueryItem4]
+           }else{
+               components.queryItems = [eventNameQueryItem1, eventIDQueryItem3,quipIDQueryItem4]
+           }
+           guard let linkparam = components.url else {return}
+           print(linkparam)
+           let dynamicLinksDomainURIPrefix = "https://anonapp.page.link"
+           guard let sharelink = DynamicLinkComponents.init(link: linkparam, domainURIPrefix: dynamicLinksDomainURIPrefix) else {return}
+           if let bundleId = Bundle.main.bundleIdentifier {
+               sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
+           }
+           //change to app store id
+           sharelink.iOSParameters?.appStoreID = "962194608"
+           sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+           
+           sharelink.socialMetaTagParameters?.title = aquip.quipText
+           sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
+           if let myImage = aquip.imageRef {
+                FirebaseStorageService.sharedInstance.getDownloadURL(imageRef: myImage, completion: {[weak self] (url) in
+                   print(url)
+                   
+                   sharelink.socialMetaTagParameters?.imageURL = url
+                   guard let longDynamicLink = sharelink.url else { return }
+                    sharelink.shorten {[weak self] (url, warnings, error) in
+                                  if let error = error{
+                                      print(error)
+                                      return
+                                  }
+                                  if let warnings = warnings{
+                                      for warning in warnings{
+                                          print(warning)
+                                      }
+                                  }
+                                  guard let url = url else {return}
+                                   
+                                  self?.showShareViewController(url: url)
+                              }
+               })
+           }else if let myGif = aquip.gifID {
+                   GiphyCore.shared.gifByID(myGif) { (response, error) in
+                       if let media = response?.data {
+                           if let gifURL = media.url(rendition: .fixedWidthStill, fileType: .gif){
+                           print(gifURL)
+                           sharelink.socialMetaTagParameters?.imageURL = URL(string: gifURL)
+                           }
+                       }
+                       guard let longDynamicLink = sharelink.url else { return }
+                       print("The long URL is: \(longDynamicLink)")
+                           sharelink.shorten {[weak self] (url, warnings, error) in
+                               if let error = error{
+                                   print(error)
+                                   return
+                               }
+                               if let warnings = warnings{
+                                   for warning in warnings{
+                                       print(warning)
+                                   }
+                               }
+                               guard let url = url else {return}
+                               print(url)
+                               self?.showShareViewController(url: url)
+                           }
+               }
+               
+           }
+           else {
+               guard let longDynamicLink = sharelink.url else { return }
+               print("The long URL is: \(longDynamicLink)")
+                   sharelink.shorten {[weak self] (url, warnings, error) in
+                       if let error = error{
+                           print(error)
+                           return
+                       }
+                       if let warnings = warnings{
+                           for warning in warnings{
+                               print(warning)
+                           }
+                       }
+                       guard let url = url else {return}
+                       print(url)
+                       self?.showShareViewController(url: url)
+                   }
+           
+           
+               
+           }
+       }
+       
+       func showShareViewController(url:URL){
+           let myactivity1 = shareText
+           let myactivity2 = url
+                                
+                           
+                                  // set up activity view controller
+           let firstactivity = [myactivity1, myactivity2] as [Any]
+                           let activityViewController = UIActivityViewController(activityItems: firstactivity, applicationActivities: nil)
+                                 activityViewController.popoverPresentationController?.sourceView = self.view // so that iPads won't crash
+
+                                  // exclude some activity types from the list (optional)
+                           activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.addToReadingList, UIActivity.ActivityType.assignToContact, UIActivity.ActivityType.markupAsPDF, UIActivity.ActivityType.openInIBooks, UIActivity.ActivityType.print]
+
+                                  // present the view controller
+                                  self.present(activityViewController, animated: true, completion: nil)
+       }
     
     func displayMsgBoxReport(){
        let title = "Report Successful"
@@ -433,9 +552,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         if cell.upButton.isSelected {
             if let aQuipScore = aReply.quipScore{
                 let diff = cell.upToDown(quipScore: aQuipScore, quip: aReply)
-                if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.upToDown2(quipScore: aQuipScore, quip: aReply)
-                }
+                
                 if let aID = aReply.quipID{
                     if let auid = aReply.user{
                                
@@ -448,13 +565,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                 myParent.myNewLikesDislikesMap[aID] = -1
                             myParent.myLikesDislikesMap[aID] = -1
                                                                                
-                            if let aparentIsNew = parentIsNew{
-                                if aparentIsNew{
+                            
                                     myParent.checkHotQuips(myQuipID: aID, isUp: false)
-                                }else{
+                              
                                     myParent.checkNewQuips(myQuipID: aID, isUp: false)
-                                    }
-                            }
+                               
                     }
                     }
                            }
@@ -463,9 +578,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                else if cell.downButton.isSelected {
             if let aQuipScore = aReply.quipScore{
                            let diff = cell.downToNone(quipScore: aQuipScore,quip: aReply)
-                if passedReply?.quipID == aReply.quipID{
-                   passedQuipCell?.downToNone2(quipScore: aQuipScore, quip: aReply)
-                }
+                
                 if let aID = aReply.quipID{
                               if let auid = aReply.user{
                                
@@ -478,13 +591,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                                                myParent.myNewLikesDislikesMap[aID] = 0
                                                            myParent.myLikesDislikesMap[aID] = 0
                                                                                                               
-                                                           if let aparentIsNew = parentIsNew{
-                                                               if aparentIsNew{
+                                                           
                                                                    myParent.checkHotQuips(myQuipID: aID, isUp: false)
-                                                               }else{
+                                                               
                                                                    myParent.checkNewQuips(myQuipID: aID, isUp: false)
-                                                                   }
-                                                           }
+                                                             
                                                    }
                     }
                            }
@@ -494,9 +605,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                else{
             if let aQuipScore = aReply.quipScore{
                        let diff = cell.noneToDown(quipScore: aQuipScore,quip:  aReply)
-                if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.noneToDown2(quipScore: aQuipScore, quip: aReply)
-                }
+               
                 if let aID = aReply.quipID{
                            if let auid = aReply.user{
                           
@@ -509,13 +618,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                                            myParent.myNewLikesDislikesMap[aID] = -1
                                                        myParent.myLikesDislikesMap[aID] = -1
                                                                                                           
-                                                       if let aparentIsNew = parentIsNew{
-                                                           if aparentIsNew{
+                                                       
                                                                myParent.checkHotQuips(myQuipID: aID, isUp: false)
-                                                           }else{
+                                                           
                                                                myParent.checkNewQuips(myQuipID: aID, isUp: false)
-                                                               }
-                                                       }
+                                                            
                                                }
                     }
                        }
@@ -532,9 +639,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         if cell.upButton.isSelected {
             if let aQuipScore = aReply.quipScore{
                        let diff = cell.upToNone(quipScore: aQuipScore,quip:  aReply)
-                if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.upToNone2(quipScore: aQuipScore, quip: aReply)
-                }
+               
                 if let aID = aReply.quipID{
                           if let auid = aReply.user{
                            
@@ -547,13 +652,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                 myParent.myNewLikesDislikesMap[aID]=0
                                 myParent.myLikesDislikesMap[aID]=0
                                 
-                                if let aparentIsNew = parentIsNew{
-                                if aparentIsNew{
+                                
                                     myParent.checkHotQuips(myQuipID: aID, isUp: true)
-                                }else{
+                               
                                     myParent.checkNewQuips(myQuipID: aID, isUp: true)
-                                }
-                                }
+                               
                             }
                     }
                            }
@@ -563,9 +666,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     else if cell.downButton.isSelected {
             if let aQuipScore = aReply.quipScore{
                                let diff = cell.downToUp(quipScore: aQuipScore,quip:  aReply)
-                if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.downToUp2(quipScore: aQuipScore, quip: aReply)
-                               }
+               
                 if let aID = aReply.quipID{
                                    if let auid = aReply.user{
                                    
@@ -578,13 +679,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                                                    myParent.myNewLikesDislikesMap[aID]=1
                                                                    myParent.myLikesDislikesMap[aID]=1
                                                                    
-                                                                   if let aparentIsNew = parentIsNew{
-                                                                   if aparentIsNew{
+                                                                  
                                                                        myParent.checkHotQuips(myQuipID: aID, isUp: true)
-                                                                   }else{
+                                                                  
                                                                        myParent.checkNewQuips(myQuipID: aID, isUp: true)
-                                                                   }
-                                                                   }
+                                                                   
                                                                }
                     }
                                }
@@ -593,9 +692,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     else{
             if let aQuipScore = aReply.quipScore{
                        let diff = cell.noneToUp(quipScore: aQuipScore,quip:  aReply)
-                if passedReply?.quipID == aReply.quipID{
-                    passedQuipCell?.noneToUp2(quipScore: aQuipScore, quip: aReply)
-                }
+               
                 if let aID = aReply.quipID{
                               if let auid = aReply.user{
                                
@@ -608,13 +705,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                                                myParent.myNewLikesDislikesMap[aID]=1
                                                                myParent.myLikesDislikesMap[aID]=1
                                                                
-                                                               if let aparentIsNew = parentIsNew{
-                                                               if aparentIsNew{
+                                                               
                                                                    myParent.checkHotQuips(myQuipID: aID, isUp: true)
-                                                               }else{
+                                                               
                                                                    myParent.checkNewQuips(myQuipID: aID, isUp: true)
-                                                               }
-                                                               }
+                                                              
                                                            }
                     }
                            }
@@ -639,6 +734,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            
            if let aUID = uid {
            myVotes["M/\(aUID)/q/\(replyID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
+            myVotes["M/\(aUID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
            }
         updateFirestoreLikesDislikes()
         FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
@@ -691,9 +787,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                 var diff = 0
                 if let myQuipScore = aQuip.quipScore {
                     diff = cell.upToDown(quipScore: myQuipScore,quip: aQuip)
-                    if let myPassedQuipCell = passedQuipCell{
-                        diff = myPassedQuipCell.upToDown(quipScore: myQuipScore, quip:aQuip)
-                    }
+                  
                 }
              if let aID = aQuip.quipID{
                 if let myParent = parentViewFeed {
@@ -703,13 +797,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                      myParent.myLikesDislikesMap[aID] = -1
                     myParent.myUserMap[aID] = aQuip.user
                         myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
-                        if let aparentIsNew = parentIsNew{
-                        if aparentIsNew{
-                            myParent.checkHotQuips(myQuipID: aID, isUp: false)
-                        }else{
-                            myParent.checkNewQuips(myQuipID: aID, isUp: false)
-                        }
-                        }
+                      
+                            myParent.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
+                       
+                        myParent.checkNewQuips(myQuipID: aID, isUp: false, change: diff)
+                       
                     }
                 }else if let myParent = parentViewUser{
                    
@@ -718,13 +810,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     myParent.myChannelsMap[aID] = aQuip.channelKey
                     myParent.myParentChannelsMap[aID] = aQuip.parentKey
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
-                    if let aparentIsNew = parentIsNew{
-                    if aparentIsNew{
+                    
                         myParent.checkHotQuips(myQuipID: aID, isUp: false)
-                    }else{
+                   
                         myParent.checkNewQuips(myQuipID: aID, isUp: false)
-                    }
-                    }
+                    
                     
                 }
             }
@@ -734,10 +824,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                 var diff = 0
                 if let myQuipScore = aQuip.quipScore {
                     diff = cell.downToNone(quipScore: myQuipScore,quip: aQuip)
-                    if let myPassedQuipCell = passedQuipCell{
-                               diff = myPassedQuipCell.downToNone(quipScore: myQuipScore,quip: aQuip)
-                                
-                               }
+                   
                 }
              if let aID = aQuip.quipID{
                 if let myParent = parentViewFeed {
@@ -747,13 +834,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                      myParent.myLikesDislikesMap[aID]=0
                      myParent.myUserMap[aID] = aQuip.user
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
-                    if let aparentIsNew = parentIsNew{
-                    if aparentIsNew{
-                        myParent.checkHotQuips(myQuipID: aID, isUp: false)
-                    }else{
-                        myParent.checkNewQuips(myQuipID: aID, isUp: false)
-                    }
-                    }
+                    
+                        myParent.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
+                   
+                        myParent.checkNewQuips(myQuipID: aID, isUp: false, change: diff)
+                    
                     }
                 }
                 else if let myParent = parentViewUser{
@@ -763,13 +848,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     myParent.myChannelsMap[aID] = aQuip.channelKey
                     myParent.myParentChannelsMap[aID] = aQuip.parentKey
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
-                    if let aparentIsNew = parentIsNew{
-                    if aparentIsNew{
+                    
                         myParent.checkHotQuips(myQuipID: aID, isUp: false)
-                    }else{
+                    
                         myParent.checkNewQuips(myQuipID: aID, isUp: false)
-                    }
-                    }
+                    
                 }
             }
            }
@@ -777,9 +860,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                 var diff = 0
                 if let myQuipScore = aQuip.quipScore {
                     diff = cell.noneToDown(quipScore: myQuipScore,quip: aQuip)
-                        if let myPassedQuipCell = passedQuipCell{
-                           diff = myPassedQuipCell.noneToDown(quipScore: myQuipScore,quip: aQuip)
-                        }
+                        
                 }
              if let aID = aQuip.quipID{
                 if let myParent = parentViewFeed{
@@ -789,13 +870,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                      myParent.myLikesDislikesMap[aID] = -1
                      myParent.myUserMap[aID] = aQuip.user
                     myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
-                    if let aparentIsNew = parentIsNew{
-                    if aparentIsNew{
-                        myParent.checkHotQuips(myQuipID: aID, isUp: false)
-                    }else{
-                        myParent.checkNewQuips(myQuipID: aID, isUp: false)
-                    }
-                    }
+                   
+                        myParent.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
+                    
+                        myParent.checkNewQuips(myQuipID: aID, isUp: false, change: diff)
+                    
                     }
                 }
                 else if let myParent = parentViewUser{
@@ -822,10 +901,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                 var diff = 0
                 if let myQuipScore = aQuip.quipScore {
                     diff = cell.upToNone(quipScore:myQuipScore,quip: aQuip)
-                        if let myPassedQuipCell = passedQuipCell{
-                           diff = myPassedQuipCell.upToNone(quipScore:myQuipScore,quip: aQuip)
-                                   
-                        }
+                        
                 }
             if let aID = aQuip.quipID{
                 if let myParent = parentViewFeed{
@@ -835,13 +911,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     myParent.myLikesDislikesMap[aID]=0
                      myParent.myUserMap[aID] = aQuip.user
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
-                    if let aparentIsNew = parentIsNew{
-                    if aparentIsNew{
-                        myParent.checkHotQuips(myQuipID: aID, isUp: true)
-                    }else{
-                        myParent.checkNewQuips(myQuipID: aID, isUp: true)
-                    }
-                    }
+                   
+                        myParent.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
+               
+                        myParent.checkNewQuips(myQuipID: aID, isUp: true, change: diff)
+                    
                     }
                 }else if let myParent = parentViewUser{
                    
@@ -864,9 +938,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                 var diff = 0
                 if let myQuipScore = aQuip.quipScore {
                     diff = cell.downToUp(quipScore:myQuipScore,quip: aQuip)
-                    if let myPassedQuipCell = passedQuipCell{
-                      diff = myPassedQuipCell.downToUp(quipScore:myQuipScore,quip: aQuip)
-                    }
+                    
                 }
                 if let aID = aQuip.quipID{
                     if let myParent = parentViewFeed{
@@ -877,13 +949,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                          myParent.myLikesDislikesMap[aID] = 1
                         myParent.myUserMap[aID] = aQuip.user
                              myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
-                            if let aparentIsNew = parentIsNew{
-                                              if aparentIsNew{
-                                                  myParent.checkHotQuips(myQuipID: aID, isUp: true)
-                                              }else{
-                                                  myParent.checkNewQuips(myQuipID: aID, isUp: true)
-                                              }
-                                              }
+                           
+                                                  myParent.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
+                                              
+                                                  myParent.checkNewQuips(myQuipID: aID, isUp: true, change: diff)
+                                              
                         }
                     }else if let myParent = parentViewUser{
                        
@@ -906,9 +976,9 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     var diff = 0
                     if let myQuipScore = aQuip.quipScore {
                             diff = cell.noneToUp(quipScore: myQuipScore,quip: aQuip)
-                            if let myPassedQuipCell = passedQuipCell{
-                               diff = myPassedQuipCell.noneToUp(quipScore: myQuipScore,quip: aQuip)
-                            }
+                          //  if let myPassedQuipCell = passedQuipCell{
+                            //   diff = myPassedQuipCell.noneToUp(quipScore: myQuipScore,quip: aQuip)
+                          //  }
                     }
                     if let aID = aQuip.quipID{
                         if let myParent = parentViewFeed{
@@ -918,13 +988,13 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                             myParent.myLikesDislikesMap[aID] = 1
                                 myParent.myUserMap[aID] = aQuip.user
                                  myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
-                                if let aparentIsNew = parentIsNew{
-                                                  if aparentIsNew{
-                                                      myParent.checkHotQuips(myQuipID: aID, isUp: true)
-                                                  }else{
-                                                      myParent.checkNewQuips(myQuipID: aID, isUp: true)
-                                                  }
-                                                  }
+                              //  if let aparentIsNew = parentIsNew{
+                                                 // if aparentIsNew{
+                                                      myParent.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
+                                                //  }else{
+                                                      myParent.checkNewQuips(myQuipID: aID, isUp: true, change: diff)
+                                               //   }
+                                     //             }
                             }
                         }
                         else if let myParent = parentViewUser{
@@ -934,13 +1004,13 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                             myParent.myChannelsMap[aID] = aQuip.channelKey
                                                myParent.myParentChannelsMap[aID] = aQuip.parentKey
                             myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
-                            if let aparentIsNew = parentIsNew{
-                            if aparentIsNew{
+                        //    if let aparentIsNew = parentIsNew{
+                       //     if aparentIsNew{
                                 myParent.checkHotQuips(myQuipID: aID, isUp: true)
-                            }else{
+                        //    }else{
                                 myParent.checkNewQuips(myQuipID: aID, isUp: true)
-                            }
-                            }
+                       //     }
+                       //     }
                         }
                     }
             }
@@ -1225,10 +1295,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
              }
              if self.quipLikeStatus == true {
                  cell.upButton.isSelected = true
-                  cell.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                  cell.upButton.tintColor = UIColor(hexString: "ffaf46")
              }else if self.quipLikeStatus == false{
                  cell.downButton.isSelected = true
-                  cell.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                  cell.downButton.tintColor = UIColor(hexString: "ffaf46")
              }
                     if let aScore = myQuip?.tempScore{
                     cell.score.text = String(aScore)

@@ -67,13 +67,9 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
         authorizeUser(tabBar: tabBar)
         
         setUpButtons()
-        self.searchBar.layer.borderWidth = 1
-        if #available(iOS 13.0, *) {
-            self.searchBar.layer.borderColor = UIColor.secondarySystemBackground.cgColor
-        } else {
-            // Fallback on earlier versions
-        }    
-        self.searchBar.layoutIfNeeded()
+        selectLive()
+          
+        
         self.searchBar.delegate=self
         if #available(iOS 13.0, *) {
             searchBar.searchTextField.font = .systemFont(ofSize: 16)
@@ -88,20 +84,20 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
        //    if let selectedIndexPath = categoriesTable.indexPathForSelectedRow {
         //       categoriesTable.deselectRow(at: selectedIndexPath, animated: animated)
        //    }
-    
+    self.searchBar.layer.borderWidth = 1
+    if #available(iOS 13.0, *) {
+        self.searchBar.layer.borderColor = UIColor.secondarySystemBackground.cgColor
+    } else {
+        // Fallback on earlier versions
+    }
+        self.searchBar.layoutIfNeeded()
            updateTable()
        }
     func setUpButtons(){
-        sportsBtn.setTitleColor(.black, for: .selected  )
-        liveBtn.setTitleColor(.black, for: .selected  )
-        entertainmentBtn.setTitleColor(.black, for: .selected  )
-        if #available(iOS 13.0, *) {
-            sportsBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-            liveBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-            entertainmentBtn.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(weight: .bold), forImageIn: .selected)
-        } else {
-            // Fallback on earlier versions
-        }
+       let selectedColor = UIColor(hexString: "ffaf46")
+                      liveBtn.setTitleColor(selectedColor, for: .selected  )
+                      sportsBtn.setTitleColor(selectedColor, for: .selected  )
+        entertainmentBtn.setTitleColor(selectedColor, for: .selected  )
         
     }
     func updateTable(){
@@ -128,6 +124,9 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
     
     }
     func selectSports(){
+        sportsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        liveBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        entertainmentBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
        
                        self.liveBtn.isSelected=false
                        self.entertainmentBtn.isSelected=false
@@ -160,6 +159,9 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
         
     }
     func selectLive(){
+        liveBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        sportsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        entertainmentBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
         liveBtn.isSelected=true
                        entertainmentBtn.isSelected=false
                    sportsBtn.isSelected=false
@@ -190,6 +192,9 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
                }
     }
     func selectEntertainment(){
+        entertainmentBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        sportsBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        liveBtn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .regular)
         liveBtn.isSelected=false
                       entertainmentBtn.isSelected=true
                   sportsBtn.isSelected=false
@@ -219,10 +224,10 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
     
     func authorizeUser(tabBar:BaseTabBarController){
               
-              Auth.auth().signInAnonymously() { (authResult, error) in
+              Auth.auth().signInAnonymously() {[weak self] (authResult, error) in
                 // ...
                guard let user = authResult?.user else { return }
-                   self.uid = user.uid
+                   self?.uid = user.uid
                tabBar.userID=user.uid
               }
               
@@ -400,7 +405,7 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
                     if let index = cell?.categoriesTable.indexPathForSelectedRow?.row{
                                                                                          
                         feedVC.myChannel = cell?.myLiveEvents[index]
-                                        
+                        feedVC.isOpen = true
                         feedVC.uid=self.uid
                         let myIndexPath = IndexPath(item: index, section: 0)
                                                     cell?.categoriesTable.deselectRow(at: myIndexPath, animated: true)

@@ -150,6 +150,7 @@ extension GPHMediaView{
             self.layer.cornerRadius = 8.0
             self.clipsToBounds = true
             self.media = media
+            
         //    }
         }
         else {
