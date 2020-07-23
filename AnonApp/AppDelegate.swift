@@ -43,10 +43,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false), let queryItems = components.queryItems else {return}
         let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
-       let tabVC = storyBoard.instantiateViewController(withIdentifier: "BaseTabBarController") as! BaseTabBarController
-        self.window?.rootViewController = tabVC
-        self.window?.makeKeyAndVisible()
-        tabVC.authorizeUser { (uid) in
+        guard let initialVC = window?.rootViewController as? BaseTabBarController else {
+          return
+        }
+     //  let initialVC = storyBoard.instantiateViewController(withIdentifier: "BaseTabBarController") as! BaseTabBarController
+    //    self.window?.rootViewController = initialVC
+     //   self.window?.makeKeyAndVisible()
+       // let tabVC = initialVC.tabBarController as! BaseTabBarController
+        initialVC.authorizeUser { (uid) in
             var eventName:String?
             var parentEventKey:String?
             var eventId:String?
@@ -59,11 +63,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: uid, aKey: eventId!) { (likesDislikes) in
                         
                     
-                    FirestoreService.sharedInstance.getQuip(quipID: quipid) {[weak self] (quip) in
+                    FirestoreService.sharedInstance.getQuip(quipID: quipid) { (quip) in
                         FirebaseService.sharedInstance.getQuipScore(aQuip: quip) { (aquip) in
-                              self?.window = UIWindow(frame: UIScreen.main.bounds)
+                            //  self?.window = UIWindow(frame: UIScreen.main.bounds)
                                             //  self?.window?.rootViewController = tabVC
-                                             //
+                                           
                                               
                                              let quipViewController = storyBoard.instantiateViewController(withIdentifier: "ViewControllerQuip") as! ViewControllerQuip
                                               quipViewController.myQuip = quip
@@ -76,11 +80,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                             }
                             if let score = aquip.quipScore{
                             quipViewController.quipScore = String(score)
-                                if let navVC = feedViewController?.navigationController  {
+                             //   guard let viewControllers = initialVC.viewControllers,
+                              //  let listIndex = viewControllers.firstIndex(where: { $0 is HomeNavigationController }),
+                          //  let navVC = viewControllers[listIndex] as? HomeNavigationController else { return }
+                               // navVC.popToRootViewController(animated: false)
+                              //  initialVC.selectedIndex = listIndex
+                                let navVC = feedViewController?.navigationController
                                     quipViewController.parentViewFeed = feedViewController
                                   //  feedViewController?.definesPresentationContext = true
-                                        navVC.pushViewController(quipViewController, animated: true)
-                                              }
+                                navVC?.pushViewController(quipViewController, animated: true)
+                                    
                             }
                         }
                     }
@@ -95,13 +104,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                             let myChannel = Channel(name: eventName, akey: eventId!, aparent: nil, aparentkey: parentEventKey, apriority: nil, astartDate: nil, aendDate: nil)
                             feedViewController?.myChannel = myChannel
                             feedViewController?.uid = uid
-                            if let navVC = tabVC.viewControllers?[0] as? UINavigationController{
+                            guard let viewControllers = initialVC.viewControllers,
+                            let listIndex = viewControllers.firstIndex(where: { $0 is HomeNavigationController }),
+                            let navVC = viewControllers[listIndex] as? HomeNavigationController else { return }
+                           navVC.popToRootViewController(animated: false)
+                           initialVC.selectedIndex = listIndex
                                 if let feedViewController = feedViewController{
-                                 //   navVC.definesPresentationContext = true
+                                  //  navVC.definesPresentationContext = true
                                 navVC.pushViewController(feedViewController, animated: true)
                                 }
                                 
-                            }
+                            
                         }
                     }
                     
@@ -145,7 +158,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         FirebaseApp.configure()
        Database.database().isPersistenceEnabled=false
-        Giphy.configure(apiKey: "OtEKKo9ALte4EFRcelOCh5QH4b8iMfji", verificationMode: true)
+        Giphy.configure(apiKey: "O0Zwx4poPRvs0g8z4Vv6QMMixDFYP6wi", verificationMode: true)
         
         return true
     }
@@ -165,8 +178,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-        
- 
+      
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {

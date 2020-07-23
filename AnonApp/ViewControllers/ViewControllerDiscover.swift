@@ -81,8 +81,16 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-       
-       
+      if #available(iOS 12.0, *) {
+                 if traitCollection.userInterfaceStyle == .light{
+                    navigationController?.navigationBar.tintColor = UIColor(hexString: "ffaf46")
+                 }else{
+                    navigationController?.navigationBar.tintColor = .darkGray
+                 }
+             } else {
+                 // Fallback on earlier versions
+        navigationController?.navigationBar.tintColor = UIColor(hexString: "ffaf46")
+             }
     }
    
     
@@ -150,18 +158,18 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
 
         if isFavourite {
             if #available(iOS 13.0, *) {
-                btnFavourite.setImage(UIImage(systemName: "star.fill"), for: .normal)
+                btnFavourite.setImage(UIImage(named: "star.fill"), for: .normal)
             } else {
                 // Fallback on earlier versions
             }
-            btnFavourite.tintColor = .orange
+            btnFavourite.tintColor = .white
         }else{
             if #available(iOS 13.0, *) {
-                btnFavourite.setImage(UIImage(systemName: "star"), for: .normal)
+                btnFavourite.setImage(UIImage(named: "star"), for: .normal)
             } else {
                 // Fallback on earlier versions
             }
-            btnFavourite.tintColor = .black
+            btnFavourite.tintColor = .white
         }
         let rightButton = UIBarButtonItem(customView: btnFavourite)
         navBar.setRightBarButtonItems([rightButton], animated: true)

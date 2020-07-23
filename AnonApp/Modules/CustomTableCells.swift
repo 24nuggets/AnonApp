@@ -16,6 +16,7 @@ protocol MyCellDelegate: AnyObject {
     func btnDownTapped(cell: QuipCells)
     func btnSharedTapped(cell: QuipCells)
     func btnEllipsesTapped(cell:QuipCells)
+    func btnRepliesTapped(cell: QuipCells)
     
 }
 
@@ -112,6 +113,11 @@ class QuipCells:UITableViewCell{
                                              
             }
         }
+    }
+    
+    
+    @IBAction func btnRepliesTapped(_ sender: Any) {
+        delegate?.btnRepliesTapped(cell: self)
     }
     
     @IBAction func btnUpTapped(_ sender: Any) {

@@ -24,6 +24,10 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
     
      let shareText = "Check out this crack on pnut!"
     
+    func btnRepliesTapped(cell: QuipCells) {
+        
+    }
+    
     func btnSharedTapped(cell: QuipCells) {
                  
              }
@@ -78,7 +82,7 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
                 print(url)
                 
                 sharelink.socialMetaTagParameters?.imageURL = url
-                guard let longDynamicLink = sharelink.url else { return }
+                guard sharelink.url != nil else { return }
                  sharelink.shorten {[weak self] (url, warnings, error) in
                                if let error = error{
                                    print(error)
@@ -418,6 +422,10 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
          
          }
     }
+    
+    override func btnRepliesTapped(cell: QuipCells) {
+         userQuipsTable.selectRow(at: userQuipsTable.indexPath(for: cell), animated: true, scrollPosition: .none)
+    }
       
       @objc func refreshData(){
         myUserController?.getUserScore()
@@ -649,6 +657,10 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
                     
                    
                    }
+    }
+    
+    override func btnRepliesTapped(cell: QuipCells) {
+         userQuipsTable.selectRow(at: userQuipsTable.indexPath(for: cell), animated: true, scrollPosition: .none)
     }
       
       @objc func refreshData(){

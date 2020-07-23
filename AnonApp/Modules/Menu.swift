@@ -200,7 +200,7 @@ class addFavsMenu:Menu{
 
    
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"Add Teams And Leagues", imageName: "plus.circle"), MenuItem(name:"Add Entertainment", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        menuItems = [MenuItem(name:"Add Teams And Leagues", imageName: "plus.circle"), MenuItem(name:"Add Shows", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
            
        }
   

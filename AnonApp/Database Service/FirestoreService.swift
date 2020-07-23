@@ -807,6 +807,7 @@ class FirestoreService: NSObject {
                         return event1.priority! < event2.priority!
                     }else{
                         return event1.endDate! < event2.endDate!
+                        
                     }
                 }
                 completion(aLiveEvents)

@@ -25,7 +25,9 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
              return launcher
         }()
     
-    
+    func btnRepliesTapped(cell: QuipCells) {
+        
+    }
    
     func btnDownTapped(cell: QuipCells) {
         
@@ -80,7 +82,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                 print(url)
                 
                 sharelink.socialMetaTagParameters?.imageURL = url
-                guard let longDynamicLink = sharelink.url else { return }
+                guard sharelink.url != nil else { return }
                  sharelink.shorten {[weak self] (url, warnings, error) in
                                if let error = error{
                                    print(error)
@@ -558,7 +560,9 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
         
     }
     
-    
+    override func btnRepliesTapped(cell: QuipCells) {
+         feedTable.selectRow(at: feedTable.indexPath(for: cell), animated: true, scrollPosition: .none)
+    }
     
     override func btnUpTapped(cell: QuipCells) {
            //Get the indexpath of cell where button was tapped
@@ -807,6 +811,9 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
           }
           
       }
+    override func btnRepliesTapped(cell: QuipCells) {
+         feedTable.selectRow(at: feedTable.indexPath(for: cell), animated: true, scrollPosition: .none)
+    }
     
     override func btnUpTapped(cell: QuipCells) {
            //Get the indexpath of cell where button was tapped

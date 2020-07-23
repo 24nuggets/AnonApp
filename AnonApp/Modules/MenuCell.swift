@@ -35,7 +35,7 @@ class MenuCellWithIcon: BaseCell{
     override var isHighlighted: Bool{
         didSet{
             backgroundColor = isHighlighted ? .darkGray : .white
-            nameLabel.textColor = isHighlighted ? .white : .black
+            nameLabel.textColor = isHighlighted ? .white : .darkGray
             iconImageView.tintColor = isHighlighted ? .white : .darkGray
         }
     }
@@ -43,6 +43,7 @@ class MenuCellWithIcon: BaseCell{
     var MenuItem:MenuItem? {
         didSet{
             nameLabel.text = MenuItem?.name
+            nameLabel.textColor = .darkGray
             if let imageName = MenuItem?.imageName{
                 let image = UIImage(named: imageName)
                 

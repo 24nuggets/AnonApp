@@ -139,7 +139,10 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
         }
         if menuItem.name == "Add Teams And Leagues"{
             nextViewController.isAddSports = true
-            
+            nextViewController.title = "Add Teams and Leagues"
+        }else{
+            nextViewController.isAddSports = false
+            nextViewController.title = "Add Shows"
         }
         navigationController?.showDetailViewController(nextViewController, sender: nil)
           

@@ -369,6 +369,9 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     func btnSharedTapped(cell: QuipCells) {
         
     }
+    func btnRepliesTapped(cell: QuipCells) {
+        
+    }
     
     func btnEllipsesTapped(cell: QuipCells) {
         
@@ -442,7 +445,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                    print(url)
                    
                    sharelink.socialMetaTagParameters?.imageURL = url
-                   guard let longDynamicLink = sharelink.url else { return }
+                    guard sharelink.url != nil else { return }
                     sharelink.shorten {[weak self] (url, warnings, error) in
                                   if let error = error{
                                       print(error)

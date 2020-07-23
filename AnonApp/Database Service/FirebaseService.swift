@@ -303,8 +303,7 @@ class FirebaseService: NSObject {
                        let count = snapshot.childrenCount
                           let enumerator = snapshot.children
                        var i = 0
-                       var tempLastHotKeyFirebase:String?
-                       var tempHotScore:Int?
+                       
                        var aHotQuips:[Quip] = []
                        var aHotIDs:[String] = []
                        
@@ -380,8 +379,7 @@ class FirebaseService: NSObject {
         var currentTime:Double = 0
         var myTopScores:[Quip] = []
         var myHotIDs:[String]=[]
-        var tempLastHotKeyFirebase:String?
-        var tempHotScore:Int?
+       
         var moreHotQuipsUserFirebase = false
         let query1 = ref.child("M/\(uid)/q").queryOrdered(byChild: "s").queryLimited(toLast: 11)
         

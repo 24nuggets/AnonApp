@@ -107,11 +107,11 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
             
         }else if liveBtn.isSelected{
             searchBar.text = ""
-            searchBar.placeholder = "Search Current Events"
+            searchBar.placeholder = "Search Live Events"
            
         }else if entertainmentBtn.isSelected{
             searchBar.text = ""
-            searchBar.placeholder = "Search T.V. Shows and Entertainment"
+            searchBar.placeholder = "Search Shows"
            
         }
     }

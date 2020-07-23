@@ -348,10 +348,21 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         nameTextView.isSelectable = true
         bioTextView.isSelectable = true
         bioTextView.isEditable = true
-        nameTextView.backgroundColor = .white
-        bioTextView.backgroundColor = .white
+        if #available(iOS 12.0, *) {
+            if traitCollection.userInterfaceStyle == .light{
+                nameTextView.backgroundColor = .white
+                bioTextView.backgroundColor = .white
+            }else{
+                nameTextView.backgroundColor = .darkGray
+                bioTextView.backgroundColor = .darkGray
+            }
+        } else {
+            // Fallback on earlier versions
+            nameTextView.backgroundColor = .white
+            bioTextView.backgroundColor = .white
+        }
         self.navigationItem.leftBarButtonItem?.title = "Done"
-        self.navigationItem.title = "EDIT PROFILE"
+        self.navigationItem.title = "Edit Profile"
         self.navigationItem.rightBarButtonItem?.isEnabled = false
        
     }
@@ -380,7 +391,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         
         
         self.navigationItem.leftBarButtonItem?.title = "Edit"
-        self.navigationItem.title = "PROFILE"
+        self.navigationItem.title = "Profile"
         self.navigationItem.rightBarButtonItem?.isEnabled = true
     }
     func saveChanges(){
