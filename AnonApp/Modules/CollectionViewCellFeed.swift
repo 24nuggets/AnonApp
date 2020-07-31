@@ -72,9 +72,9 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
             sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
         }
         //change to app store id
-        sharelink.iOSParameters?.appStoreID = "962194608"
+        sharelink.iOSParameters?.appStoreID = appStoreID
         sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
-        
+        sharelink.socialMetaTagParameters?.imageURL = logoURL
         sharelink.socialMetaTagParameters?.title = aquip.quipText
         sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
         if let myImage = aquip.imageRef {
@@ -146,6 +146,10 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
         
             
         }
+        Analytics.logEvent(AnalyticsEventShare, parameters:
+            [AnalyticsParameterItemID:"id- \(aquip.quipID ?? "Other")",
+                AnalyticsParameterItemName: aquip.quipText ?? "None",
+                AnalyticsParameterContentType: "quip"])
     }
     
     func showShareViewController(url:URL){
@@ -217,7 +221,12 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                             myFeedController?.myNewLikesDislikesMap[aID] = -1
                           myFeedController?.myLikesDislikesMap[aID] = -1
                          myFeedController?.myUserMap[aID]=aQuip.user
-                              myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                            if aQuip.channelKey != myFeedController?.myChannel?.key{
+                                                          myFeedController?.childChannelMap[aID] = aQuip.channelKey
+                                                      }
+                            myFeedController?.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aAuthor)
+                          
+                            
                             if checkHot{
                             myFeedController?.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
                             } else{
@@ -237,7 +246,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                           myFeedController?.myNewLikesDislikesMap[aID]=0
                           myFeedController?.myLikesDislikesMap[aID]=0
                           myFeedController?.myUserMap[aID]=aQuip.user
-                              myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                            if aQuip.channelKey != myFeedController?.myChannel?.key{
+                                                           myFeedController?.childChannelMap[aID] = aQuip.channelKey
+                                                       }
+                              myFeedController?.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aAuthor)
+                           
                             if checkHot{
                             myFeedController?.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
                             } else{
@@ -257,7 +270,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                       myFeedController?.myNewLikesDislikesMap[aID] = -1
                       myFeedController?.myLikesDislikesMap[aID] = -1
                       myFeedController?.myUserMap[aID]=aQuip.user
-                          myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                        
+                        if aQuip.channelKey != myFeedController?.myChannel?.key{
+                            myFeedController?.childChannelMap[aID] = aQuip.channelKey
+                        }
+                          myFeedController?.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aAuthor)
                         if checkHot{
                         myFeedController?.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
                         } else{
@@ -280,7 +297,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                         myFeedController?.myNewLikesDislikesMap[aID]=0
                         myFeedController?.myLikesDislikesMap[aID]=0
                       myFeedController?.myUserMap[aID]=aQuip.user
-                          myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                        if aQuip.channelKey != myFeedController?.myChannel?.key{
+                                                  myFeedController?.childChannelMap[aID] = aQuip.channelKey
+                                              }
+                          myFeedController?.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aAuthor)
+                      
                         if checkHot{
                          myFeedController?.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
                         }else{
@@ -300,7 +321,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                               myFeedController?.myNewLikesDislikesMap[aID] = 1
                               myFeedController?.myLikesDislikesMap[aID] = 1
                               myFeedController?.myUserMap[aID]=aQuip.user
-                                  myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                                if aQuip.channelKey != myFeedController?.myChannel?.key{
+                                                                   myFeedController?.childChannelMap[aID] = aQuip.channelKey
+                                                               }
+                                  myFeedController?.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aAuthor)
+                               
                                 if checkHot{
                                  myFeedController?.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
                                 }else{
@@ -319,7 +344,11 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
                           myFeedController?.myNewLikesDislikesMap[aID] = 1
                           myFeedController?.myLikesDislikesMap[aID] = 1
                           myFeedController?.myUserMap[aID]=aQuip.user
-                          myFeedController?.updateVotesFirebase(diff: diff, quipID: aID, aUID: aAuthor)
+                            if aQuip.channelKey != myFeedController?.myChannel?.key{
+                                myFeedController?.childChannelMap[aID] = aQuip.channelKey
+                            }
+                          myFeedController?.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aAuthor)
+                            
                             if checkHot{
                              myFeedController?.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
                             }else{
@@ -489,8 +518,8 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                 if newQuips.count > 0 {
                 
                     if let myQuip = self.newQuips[indexPath.row]{
-                        myQuip.channel = myFeedController?.myChannel?.channelName
-                        myQuip.parentKey = myFeedController?.myChannel?.parentKey
+                     //   myQuip.channel = myFeedController?.myChannel?.channelName
+                     //   myQuip.parentKey = myFeedController?.myChannel?.parentKey
                         cell?.aQuip = myQuip
                            if let myImageRef = myQuip.imageRef  {
                                
@@ -511,6 +540,11 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                         cell?.timePosted.text = timeSincePost(timePosted: Double(milliTimePost), currentTime: aCurrentTime)
                                                }
                                            }
+                        if myQuip.parentKey == myFeedController?.myChannel?.key{
+                            cell?.categoryLabel.text = myQuip.channel
+                        }else{
+                        cell?.categoryLabel.text = ""
+                        }
                 if let aID = myQuip.quipID{
                 if self.myFeedController?.myLikesDislikesMap[aID] == 1{
                     cell?.upButton.isSelected=true
@@ -692,6 +726,7 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                           myQuip.timePosted = quipData["d"] as? Timestamp
                          myQuip.gifID = quipData["g"] as? String
                          myQuip.imageRef = quipData["i"] as? String
+                        myQuip.parentKey = quipData["pk"] as? String
                       
                   }
                   }
@@ -758,7 +793,11 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                                                                                                        
                                }
                               
-                               
+                               if myQuip.parentKey == myFeedController?.myChannel?.key{
+                                   cell.categoryLabel.text = myQuip.channel
+                               }else{
+                                cell.categoryLabel.text = ""
+                                }
                               
                                if let dateVal = myQuip.timePosted?.seconds{
                                    let milliTimePost = dateVal * 1000

@@ -12,6 +12,7 @@ import Firebase
 class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
    
     
+    @IBOutlet weak var progressDot: UIView!
     @IBOutlet weak var nameTextView: UITextView!
     @IBOutlet weak var bioTextView: UITextView!
     @IBOutlet weak var levelLable: UILabel!
@@ -40,7 +41,9 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
    var myParentChannelsMap:[String:String] = [:]
    var myParentQuipsMap:[String:String] = [:]
     let bioPlaceholderText = "Insert Bio"
-
+    var progressBarLength:CGFloat = 0
+    var progress:Float = 0
+    
    
     
  
@@ -74,9 +77,15 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         nameTextView.textContainer.lineBreakMode = .byClipping
         bioTextView.textContainer.maximumNumberOfLines = 5
         bioTextView.textContainer.lineBreakMode = .byClipping
+        bioTextView.tintColorDidChange()
+        nameTextView.tintColorDidChange()
+        bioTextView.textContainerInset = .zero
+        nameTextView.textContainerInset = .zero
         loadUserProfile()
         getUserScore()
-        
+        progressDot.layer.zPosition = 1
+        progressDot.layer.cornerRadius = 4
+        progressDot.clipsToBounds = true
         
         
             collectionView.delegate = self
@@ -136,12 +145,13 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     }
     
     func adjustScoreLogic(score:Int){
-        let progressBarLength = progressBar.bounds.width
+        
         if score < 0 {
             userScoreLabel.text = "0"
             levelLable.text = "Level 1"
             firstRangeLabel.text = "0"
             secondRangeLabel.text = "100"
+            progressBarLength = progressBar.bounds.width
             progressBar.progress = 0.0
             leadingScoreBarConstraint.constant = 0
             
@@ -152,8 +162,10 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         levelLable.text = "Level 1"
         firstRangeLabel.text = "0"
         secondRangeLabel.text = "100"
+            self.view.layoutIfNeeded()
             let progress = Float(score) / 100.0
         progressBar.progress = progress
+            progressBarLength = progressBar.bounds.width
             leadingScoreBarConstraint.constant = progressBarLength * CGFloat(progress)
         }
         else if score < 1000{
@@ -161,8 +173,10 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                    levelLable.text = "Level 2"
                    firstRangeLabel.text = "100"
                    secondRangeLabel.text = "1000"
+            self.view.layoutIfNeeded()
                        let progress = (Float(score) - 100) / 900.0
                    progressBar.progress = progress
+             progressBarLength = progressBar.bounds.width
                        leadingScoreBarConstraint.constant = progressBarLength * CGFloat(progress)
         }
         else if score < 10000{
@@ -170,8 +184,10 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                           levelLable.text = "Level 3"
                           firstRangeLabel.text = "1000"
                           secondRangeLabel.text = "10000"
+                self.view.layoutIfNeeded()
                               let progress = (Float(score) - 1000) / 9000.0
                           progressBar.progress = progress
+             progressBarLength = progressBar.bounds.width
                               leadingScoreBarConstraint.constant = progressBarLength * CGFloat(progress)
                }
         
@@ -275,12 +291,12 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
             let nextViewController = storyBoard.instantiateViewController(withIdentifier: "PrivacyController") as! myUIViewController
             navigationController?.pushViewController(nextViewController, animated: true)
         }else if menuItem.name == "Report a Problem"{
-            let email = "quipitinc@gmail.com"
+            let email = supportEmail
             if let url = URL(string: "mailto:\(email)") {
                  UIApplication.shared.open(url)
             }
         }else if menuItem.name == "Contact Us"{
-            let email = "quipitinc@gmail.com"
+            let email = supportEmail
                        if let url = URL(string: "mailto:\(email)") {
                             UIApplication.shared.open(url)
                        }
@@ -311,7 +327,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     
     func displayMsgBox(){
     let title = "Report Successful"
-    let message = "The user has been reported. If you want to give us more details on this incident please email us at quipitinc@gmail.com"
+    let message = "The user has been reported. If you want to give us more details on this incident please email us at \(supportEmail)"
     let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
           switch action.style{
@@ -415,7 +431,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         if let aParentChannelKey = myQuip.parentKey{
               myVotes["A/\(aParentChannelKey)/Q/\(quipID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
            }
-        if let aUID = uid {
+        if let aUID = uidProfile {
            myVotes["M/\(aUID)/q/\(quipID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
             myVotes["M/\(aUID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
            }
@@ -427,9 +443,9 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     func updateFirestoreLikesDislikes(){
         if myNewLikesDislikesMap.count>0{
            if let aUID = uid {
-               if let bUId = uid{
+               if let bUId = uidProfile{
                 
-                FirestoreService.sharedInstance.updateLikesDislikes(myNewLikesDislikesMap: myNewLikesDislikesMap, aChannelOrUserKey: bUId, myMap: myChannelsMap, aUID: aUID, parentChannelKey: nil, parentChannelMap: myParentQuipsMap)
+                FirestoreService.sharedInstance.updateLikesDislikes(myNewLikesDislikesMap: myNewLikesDislikesMap, aChannelOrUserKey: bUId, myMap: myChannelsMap, aUID: aUID, parentChannelKey: nil, parentChannelMap: myParentChannelsMap,parentQuipsMap: myParentQuipsMap)
                 
             }
         }
@@ -518,6 +534,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                    if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellUserNew {
                    if let index = cell.userQuipsTable.indexPathForSelectedRow?.row {
                        passedQuip = cell.newUserQuips[index]
+                    passedQuip?.user = uidProfile
                     if passedQuip?.isReply ?? false{
                         quipVC.passedReply = passedQuip
                         
@@ -553,6 +570,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                    if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellUserTop{
                    if let index = cell.userQuipsTable.indexPathForSelectedRow?.row {
                        passedQuip = cell.topUserQuips[index]
+                    passedQuip?.user = uidProfile
                     if passedQuip?.isReply ?? false{
                         quipVC.passedReply = passedQuip
                         
@@ -591,7 +609,8 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                        
             quipVC.myQuip = self.passedQuip
          
-            quipVC.uid=self.uid
+            quipVC.uid = uid
+            
             
             
             quipVC.parentViewUser = self

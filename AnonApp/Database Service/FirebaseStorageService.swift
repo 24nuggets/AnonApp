@@ -21,6 +21,7 @@ class FirebaseStorageService: NSObject {
         uploadref.putData(imageData, metadata: nil) { (metaData, error) in
             if let error = error{
                 print(error)
+                completion(false)
                 return
             }
             cloudFunctionManager.sharedInstance.functions.httpsCallable("filterOffensiveImages").call(["imageRef": imageRef]) { (result, error) in

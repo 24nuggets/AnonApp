@@ -12,7 +12,7 @@ import GiphyUISDK
 import GiphyCoreSDK
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
 
     var window: UIWindow?
 
@@ -154,12 +154,50 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       return false
     }
     
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
        Database.database().isPersistenceEnabled=false
-        Giphy.configure(apiKey: "O0Zwx4poPRvs0g8z4Vv6QMMixDFYP6wi", verificationMode: true)
-        
+        Giphy.configure(apiKey: "5Wj0tBPL6cAW7zUJenU6lF0TG7febmp1", verificationMode: true)
+        if #available(iOS 10.0, *) {
+          // For iOS 10 display notification (sent via APNS)
+          UNUserNotificationCenter.current().delegate = self
+
+          let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+          UNUserNotificationCenter.current().requestAuthorization(
+            options: authOptions,
+            completionHandler: {_, _ in })
+        } else {
+          let settings: UIUserNotificationSettings =
+          UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+          application.registerUserNotificationSettings(settings)
+        }
+       
+
+        application.registerForRemoteNotifications()
+       Messaging.messaging().delegate = self
+        if #available(iOS 13.0, *) {
+           // if UITraitCollection.current.userInterfaceStyle == .light{
+            //    UINavigationBar.appearance().barTintColor = UIColor(hexString: "ffaf46")
+           //      UITabBar.appearance().barTintColor = .secondarySystemBackground
+            //    UITableViewCell.appearance().backgroundColor = .systemBackground
+           //      UITableView.appearance().backgroundColor = .systemBackground
+            //     UICollectionViewCell.appearance().backgroundColor = .systemBackground
+            //    UICollectionView.appearance().backgroundColor = .systemBackground
+            //     }else{
+              //       UINavigationBar.appearance().barTintColor = UIColor(hexString: "1C150A")
+             //   UITabBar.appearance().barTintColor = UIColor(hexString: "1C150A")
+               UITableViewCell.appearance().backgroundColor = darktint
+                UITableView.appearance().backgroundColor = darktint
+                UICollectionViewCell.appearance().backgroundColor = darktint
+               UICollectionView.appearance().backgroundColor = darktint
+            //     }
+          
+             } else {
+                 // Fallback on earlier versions
+     //  UINavigationBar.appearance().barTintColor = UIColor(hexString: "ffaf46")
+             }
         return true
     }
 
@@ -178,12 +216,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-      
+        Analytics.logEvent(AnalyticsEventAppOpen, parameters: nil)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        
+       
     
     }
 
@@ -192,7 +230,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
 
+        InstanceID.instanceID().instanceID { (result, error) in
+            if let error = error {
+                print("Error fetching remote instance ID: \(error)")
+            } else if let result = result {
+                print("Remote instance ID token: \(result.token)")
+                //  self.instanceIDTokenMessage.text  = "Remote InstanceID token: \(result.token)"
+            }
+        }
 
+        print(userInfo)
+    }
+    
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
+      print("Firebase registration token: \(fcmToken)")
+
+      let dataDict:[String: String] = ["token": fcmToken]
+      NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
+      // TODO: If necessary send token to application server.
+      // Note: This callback is fired at each app startup and whenever a new token is generated.
+    }
+  
 }
 

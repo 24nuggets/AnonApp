@@ -38,7 +38,7 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
     }
     func getLive(){
         refreshControl.beginRefreshing()
-          self.myLiveEvents=[]
+         // self.myLiveEvents=[]
           FirestoreService.sharedInstance.getLiveEvents {[weak self] (myLiveEvents) in
             self?.myLiveEvents = myLiveEvents
             self?.categoriesTable.reloadData()
@@ -107,8 +107,8 @@ class collectionCellSportsCategories:UICollectionViewCell, UITableViewDelegate, 
     
     func getSports(){
         refreshControl.beginRefreshing()
-        self.allSports = []
-        self.mySports = []
+      //  self.allSports = []
+      //  self.mySports = []
         FirestoreService.sharedInstance.getSports {[weak self] (mySports, allSports) in
             self?.mySports = mySports
             self?.allSports = allSports
@@ -186,8 +186,8 @@ class collectionCellEntertainmentCategories:UICollectionViewCell, UITableViewDel
  
     func getEntertainment(){
         refreshControl.beginRefreshing()
-           allEntertainment = []
-              self.myEntertainment=[]
+        //   allEntertainment = []
+         //     self.myEntertainment=[]
            FirestoreService.sharedInstance.getEntertainment { [weak self] (myEntertainment, allEntertainment) in
                self?.myEntertainment = myEntertainment
                self?.allEntertainment = allEntertainment

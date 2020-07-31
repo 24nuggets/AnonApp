@@ -29,7 +29,12 @@ class Menu: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UICo
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            cv.backgroundColor = .secondarySystemBackground
+        } else {
+            // Fallback on earlier versions
+            cv.backgroundColor = .white
+        }
         cv.isScrollEnabled = false
         return cv
     }()
@@ -200,7 +205,7 @@ class addFavsMenu:Menu{
 
    
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"Add Teams And Leagues", imageName: "plus.circle"), MenuItem(name:"Add Shows", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+        menuItems = [MenuItem(name:"Add Teams and Leagues", imageName: "plus.circle"), MenuItem(name:"Add Shows", imageName:"plus.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
            
        }
   

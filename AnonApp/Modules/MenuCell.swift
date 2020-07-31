@@ -34,21 +34,39 @@ class MenuCellWithIcon: BaseCell{
     
     override var isHighlighted: Bool{
         didSet{
-            backgroundColor = isHighlighted ? .darkGray : .white
-            nameLabel.textColor = isHighlighted ? .white : .darkGray
-            iconImageView.tintColor = isHighlighted ? .white : .darkGray
+            if #available(iOS 13.0, *) {
+                backgroundColor = isHighlighted ? .darkGray : .secondarySystemBackground
+                nameLabel.textColor = isHighlighted ? .white : .label
+                           iconImageView.tintColor = isHighlighted ? .white : .label
+            } else {
+                // Fallback on earlier versions
+                backgroundColor = isHighlighted ? .darkGray : .white
+                               nameLabel.textColor = isHighlighted ? .white : .darkGray
+                                          iconImageView.tintColor = isHighlighted ? .white : .darkGray
+            }
+           
         }
     }
     
     var MenuItem:MenuItem? {
         didSet{
             nameLabel.text = MenuItem?.name
-            nameLabel.textColor = .darkGray
+            if #available(iOS 13.0, *) {
+                nameLabel.textColor = .label
+            } else {
+                // Fallback on earlier versions
+                nameLabel.textColor = .darkGray
+            }
             if let imageName = MenuItem?.imageName{
                 let image = UIImage(named: imageName)
                 
                 iconImageView.image = image?.withRenderingMode(.alwaysTemplate)
-                iconImageView.tintColor = .darkGray
+                if #available(iOS 13.0, *) {
+                    iconImageView.tintColor = .label
+                } else {
+                    // Fallback on earlier versions
+                    iconImageView.tintColor = .darkGray
+                }
             }
         }
     }
@@ -71,7 +89,12 @@ class MenuCellWithIcon: BaseCell{
         
         addSubview(nameLabel)
         addSubview(iconImageView)
-        
+        if #available(iOS 13.0, *) {
+            backgroundColor = .secondarySystemBackground
+        } else {
+            // Fallback on earlier versions
+            backgroundColor = .white
+        }
         addConstraintWithFormat(format: "H:|-10-[v0(20)]-8-[v1]|", views: iconImageView,nameLabel)
         addConstraintWithFormat(format: "V:|[v0]|", views: nameLabel)
         addConstraintWithFormat(format: "V:[v0(20)]", views: iconImageView)

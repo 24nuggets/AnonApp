@@ -51,7 +51,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            launcher.quipController = self
                return launcher
           }()
-    let placeHolderText = "Reply To This Crack"
+    let placeHolderText = "Reply to this crack"
     let blackView = UIView()
     var activityIndicator:UIActivityIndicatorView?
 
@@ -85,7 +85,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         textView.delegate = self
         textView.textColor = UIColor.lightGray
         textView.translatesAutoresizingMaskIntoConstraints = true
-      
+        textView.tintColorDidChange()
         textView.isScrollEnabled = false
         textView.textContainer.maximumNumberOfLines = 10
         textView.textContainer.lineBreakMode = .byClipping
@@ -230,18 +230,23 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-         
+        
              DispatchQueue.main.async {
-               textView.selectedRange = NSMakeRange(0, 0);
+               textView.selectedRange = NSMakeRange(0, 0)
+               
              
          }
+        
+        
            textView.inputAccessoryView = toolBar
            return true
        }
+   
     
     
        
        func textViewDidChange(_ textView: UITextView) {
+      //  print(textView.tintColor)
            if textView.text.isEmpty {
                textView.text = placeHolderText
                textView.textColor = .gray
@@ -250,14 +255,18 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             if textView.text == placeHolderText{
                 textView.textColor = .gray
             }else{
-               textView.textColor = .black
+                if #available(iOS 13.0, *) {
+                    textView.textColor = .label
+                } else {
+                    // Fallback on earlier versions
+                    textView.textColor = .black
+                }
             }
                self.adjustTextViewHeight()
            }
        }
        func adjustTextViewHeight() {
-        print(self.stackView.frame.minY)
-        print(self.view.safeAreaInsets.top)
+       
         if self.stackView.frame.minY - self.view.safeAreaInsets.top < 20 {
             
             textView.isScrollEnabled = true
@@ -301,7 +310,12 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                }
                
                
-               textView.textColor = .black
+             if #available(iOS 13.0, *) {
+                   textView.textColor = .label
+               } else {
+                   // Fallback on earlier versions
+                   textView.textColor = .black
+               }
                
                return textView.text.count < 141
                
@@ -435,9 +449,9 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
            }
            //change to app store id
-           sharelink.iOSParameters?.appStoreID = "962194608"
+           sharelink.iOSParameters?.appStoreID = appStoreID
            sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
-           
+        sharelink.socialMetaTagParameters?.imageURL = logoURL
            sharelink.socialMetaTagParameters?.title = aquip.quipText
            sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
            if let myImage = aquip.imageRef {
@@ -509,6 +523,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            
                
            }
+        Analytics.logEvent(AnalyticsEventShare, parameters:
+                  [AnalyticsParameterItemID:"id- \(aquip.quipID ?? "Other")",
+                      AnalyticsParameterItemName: aquip.quipText ?? "None",
+                      AnalyticsParameterContentType: "quip"])
        }
        
        func showShareViewController(url:URL){
@@ -750,7 +768,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             if let quipKey = myQuip?.quipID {
                 
                 
-                FirestoreService.sharedInstance.updateLikesDislikes(myNewLikesDislikesMap: myNewLikesDislikesMap, aChannelOrUserKey: quipKey, myMap: myUserMap, aUID: aUID, parentChannelKey: nil, parentChannelMap: nil)
+                FirestoreService.sharedInstance.updateLikesDislikes(myNewLikesDislikesMap: myNewLikesDislikesMap, aChannelOrUserKey: quipKey, myMap: myUserMap, aUID: aUID, parentChannelKey: nil, parentChannelMap: nil, parentQuipsMap: nil)
                   
             }
         }
@@ -799,7 +817,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     myParent.myNewLikesDislikesMap[aID] = -1
                      myParent.myLikesDislikesMap[aID] = -1
                     myParent.myUserMap[aID] = aQuip.user
-                        myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                        if aQuip.channelKey != myParent.myChannel?.key{
+                                    myParent.childChannelMap[aID] = aQuip.channelKey
+                            }
+                        myParent.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aQuipUser)
                       
                             myParent.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
                        
@@ -812,6 +833,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     myParent.myLikesDislikesMap[aID] = -1
                     myParent.myChannelsMap[aID] = aQuip.channelKey
                     myParent.myParentChannelsMap[aID] = aQuip.parentKey
+                
                      myParent.updateVotesFirebase(diff: diff, quipID: aID, myQuip: aQuip)
                     
                         myParent.checkHotQuips(myQuipID: aID, isUp: false)
@@ -836,7 +858,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     myParent.myNewLikesDislikesMap[aID]=0
                      myParent.myLikesDislikesMap[aID]=0
                      myParent.myUserMap[aID] = aQuip.user
-                     myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                    if aQuip.channelKey != myParent.myChannel?.key{
+                            myParent.childChannelMap[aID] = aQuip.channelKey
+                    }
+                     myParent.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aQuipUser)
                     
                         myParent.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
                    
@@ -872,7 +897,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     myParent.myNewLikesDislikesMap[aID] = -1
                      myParent.myLikesDislikesMap[aID] = -1
                      myParent.myUserMap[aID] = aQuip.user
-                    myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                    if aQuip.channelKey != myParent.myChannel?.key{
+                            myParent.childChannelMap[aID] = aQuip.channelKey
+                    }
+                    myParent.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aQuipUser)
                    
                         myParent.checkHotQuips(myQuipID: aID, isUp: false, change: diff)
                     
@@ -913,7 +941,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                     myParent.myNewLikesDislikesMap[aID]=0
                     myParent.myLikesDislikesMap[aID]=0
                      myParent.myUserMap[aID] = aQuip.user
-                     myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                    if aQuip.channelKey != myParent.myChannel?.key{
+                            myParent.childChannelMap[aID] = aQuip.channelKey
+                    }
+                     myParent.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aQuipUser)
                    
                         myParent.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
                
@@ -951,7 +982,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                         myParent.myNewLikesDislikesMap[aID] = 1
                          myParent.myLikesDislikesMap[aID] = 1
                         myParent.myUserMap[aID] = aQuip.user
-                             myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                            if aQuip.channelKey != myParent.myChannel?.key{
+                                    myParent.childChannelMap[aID] = aQuip.channelKey
+                            }
+                             myParent.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aQuipUser)
                            
                                                   myParent.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
                                               
@@ -990,7 +1024,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                 myParent.myNewLikesDislikesMap[aID] = 1
                             myParent.myLikesDislikesMap[aID] = 1
                                 myParent.myUserMap[aID] = aQuip.user
-                                 myParent.updateVotesFirebase(diff: diff, quipID: aID, aUID: aQuipUser)
+                                if aQuip.channelKey != myParent.myChannel?.key{
+                                        myParent.childChannelMap[aID] = aQuip.channelKey
+                                }
+                                 myParent.updateVotesFirebase(diff: diff, quip: aQuip, aUID: aQuipUser)
                               //  if let aparentIsNew = parentIsNew{
                                                  // if aparentIsNew{
                                                       myParent.checkHotQuips(myQuipID: aID, isUp: true, change: diff)
@@ -1226,11 +1263,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         if myChannel != nil{
                  childUpdates = ["/Q/\(myQuip!.quipID ?? "Other")/R/\(key)":reply1,
                                     "/M/\(uid ?? "Other")/q/\(key)":reply1,
-                                    "A/\(myChannel?.key ?? "Other")/Q/\(myQuip?.quipID ?? "Other")/r": ServerValue.increment(1),
+                                    "A/\(myQuip?.channelKey ?? "Other")/Q/\(myQuip?.quipID ?? "Other")/r": ServerValue.increment(1),
                                     "M/\(myQuip?.user ?? "Other")/q/\(myQuip?.quipID ?? "Other")/r":ServerValue.increment(1)] as [String : Any]
                  
                   
-                  if myChannel?.parentKey != nil{
+                  if myQuip?.parentKey != nil{
                     childUpdates["A/\(myChannel?.parentKey ?? "Other")/Q/\(myQuip?.quipID ?? "Other")/r"]=ServerValue.increment(1)
                   }
               }
@@ -1247,8 +1284,14 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                    
         FirebaseService.sharedInstance.updateChildValues(myUpdates: childUpdates)
         textView.text = placeHolderText
+        let fixedWidth = textView.frame.size.width
+        let initialHeight = textView.frame.size.height
+        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        let diffHeight = newSize.height - initialHeight
+        textView.frame.size = CGSize(width: fixedWidth, height: newSize.height)
         textView.textColor = .gray
         textView.resignFirstResponder()
+        adjustStackViewHeigt(height: diffHeight)
         if imageView?.image != nil || mediaView?.media != nil{
             adjustStackViewHeigt(height: -210)
         }
@@ -1352,11 +1395,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                      cell.upButton.isSelected=true
                             
                             
-                             cell.upButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                             cell.upButton.tintColor = UIColor(hexString: "ffaf46")
                          }
                          else if self.myLikesDislikesMap[aID] == -1{
                                      cell.downButton.isSelected=true
-                                           cell.downButton.tintColor = UIColor(red: 152.0/255.0, green: 212.0/255.0, blue: 186.0/255.0, alpha: 1.0)
+                                           cell.downButton.tintColor = UIColor(hexString: "ffaf46")
                          }
                  }
                  }

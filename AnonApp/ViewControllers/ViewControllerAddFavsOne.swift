@@ -25,6 +25,7 @@ class ViewControllerAddFavsOne: UIViewController, UITableViewDelegate, UITableVi
     
     @IBOutlet weak var searchBar: UISearchBar!
     
+    @IBOutlet weak var navBar: UINavigationBar!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,12 +44,12 @@ class ViewControllerAddFavsOne: UIViewController, UITableViewDelegate, UITableVi
     }
     func loadUI(){
         if isAddSports{
-            self.title = "Add Teams/Leagues"
+            navBar.topItem?.title = "Add Teams and Leagues"
             searchBar.placeholder = "Search Teams and Leagues"
             getSportsCategories()
         }else{
-            self.title = "Add Entertainment"
-            searchBar.placeholder = "Search Entertainment"
+            navBar.topItem?.title = "Add Shows"
+            searchBar.placeholder = "Search Shows"
            getEntertainmentCategories()
         }
     }

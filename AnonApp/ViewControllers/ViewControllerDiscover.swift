@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 
 class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource{
@@ -81,16 +82,15 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-      if #available(iOS 12.0, *) {
-                 if traitCollection.userInterfaceStyle == .light{
-                    navigationController?.navigationBar.tintColor = UIColor(hexString: "ffaf46")
-                 }else{
-                    navigationController?.navigationBar.tintColor = .darkGray
-                 }
-             } else {
-                 // Fallback on earlier versions
-        navigationController?.navigationBar.tintColor = UIColor(hexString: "ffaf46")
-             }
+    
+    }
+    
+    
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+      
+                    
+                
     }
    
     
@@ -386,8 +386,11 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
             passedChannel = cell?.activeChannels[index]
             let myIndexPath = IndexPath(item: index, section: 0)
                                         cell?.channelTable.deselectRow(at: myIndexPath, animated: true)
+            Analytics.logEvent(AnalyticsEventViewItem, parameters: [AnalyticsParameterGroupID:cell?.activeChannels[index].channelName ?? "Other",
+            AnalyticsParameterContentType:"viewEvent"])
             }
             feedVC.isOpen = true
+            
         }
         else if pastBtn.isSelected{
              let indexPath = IndexPath(item: 1, section: 0)
@@ -397,8 +400,11 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
                         passedChannel = cell?.pastChannels[index]
                         let myIndexPath = IndexPath(item: index, section: 0)
                                                     cell?.channelTable.deselectRow(at: myIndexPath, animated: true)
+                        Analytics.logEvent(AnalyticsEventViewItem, parameters: [AnalyticsParameterGroupID:cell?.pastChannels[index].channelName ?? "Other",
+                                   AnalyticsParameterContentType:"viewPastEvent"])
+                                   feedVC.isOpen = false
                         }
-            feedVC.isOpen = false
+           
         }
             
             feedVC.myChannel = passedChannel

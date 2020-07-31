@@ -72,9 +72,9 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
             sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
         }
         //change to app store id
-        sharelink.iOSParameters?.appStoreID = "962194608"
+        sharelink.iOSParameters?.appStoreID = appStoreID
         sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
-        
+        sharelink.socialMetaTagParameters?.imageURL = logoURL
         sharelink.socialMetaTagParameters?.title = aquip.quipText
         sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
         if let myImage = aquip.imageRef {
@@ -146,6 +146,10 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
         
             
         }
+        Analytics.logEvent(AnalyticsEventShare, parameters:
+                  [AnalyticsParameterItemID:"id- \(aquip.quipID ?? "Other")",
+                      AnalyticsParameterItemName: aquip.quipText ?? "None",
+                      AnalyticsParameterContentType: "quip"])
     }
     
     func showShareViewController(url:URL){
@@ -329,7 +333,7 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
           myUserController?.myLikesDislikesMap = [:]
           if let aUID = myUserController?.uidProfile {
               if let bUId = myUserController?.uid{
-                FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUID, aKey: bUId) {[weak self] (myLikesDislikesMap) in
+                FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: bUId, aKey: aUID) {[weak self] (myLikesDislikesMap) in
                       self?.myUserController?.myLikesDislikesMap = myLikesDislikesMap
                       
                       completion()
@@ -516,10 +520,10 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
                                               if myQuip.isReply{
                                                   cell.replyButton.isHidden = true
                                                 cell.shareButton.isHidden = true
-                                              }
-                                                                      
-                                          cell.categoryLabel.text = String(indexPath.row)
-                                          cell.categoryLabel.font = UIFont.boldSystemFont(ofSize: 14.0)
+                                                 cell.categoryLabel.text = ""
+                                              }else if let aChannel = myQuip.channel{
+                                              cell.categoryLabel.text = aChannel
+                                          }
                                           
                                           if let dateVal = myQuip.timePosted?.seconds{
                                               let milliTimePost = dateVal * 1000
@@ -754,11 +758,12 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
                                      if myQuip.isReply{
                                              cell.replyButton.isHidden = true
                                         cell.shareButton.isHidden = true
-                                     }
-                                                                         
-                                                                    
-                                        cell.categoryLabel.text = String(indexPath.row)
-                                        cell.categoryLabel.font = UIFont.boldSystemFont(ofSize: 14.0)
+                                        cell.categoryLabel.text = ""
+                                     }else if let aChannel = myQuip.channel{
+                                            
+                                            cell.categoryLabel.text = aChannel
+                                            
+                                        }
                                        
                                                                                                                              
                                      if let aID = myQuip.quipID{

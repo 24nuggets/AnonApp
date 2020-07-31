@@ -25,7 +25,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     var mediaView:GPHMediaView?
     var giphyBottomSpaceConstraint:NSLayoutConstraint?
     var giphyTrailingSpace:NSLayoutConstraint?
-    let placeholderText = "Get Cracking"
+    let placeholderText = "Get cracking"
     var activityIndicator:UIActivityIndicatorView?
     let blackView = UIView()
     
@@ -165,7 +165,12 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
             textView.textColor = .gray
             self.adjustTextViewHeight()
         } else {
-            textView.textColor = .black
+            if #available(iOS 13.0, *) {
+                textView.textColor = .label
+            } else {
+                // Fallback on earlier versions
+                textView.textColor = .black
+            }
             self.adjustTextViewHeight()
         }
     }
@@ -191,7 +196,12 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
             }
             
             
-            textView.textColor = .black
+            if #available(iOS 13.0, *) {
+                textView.textColor = .label
+            } else {
+                // Fallback on earlier versions
+                textView.textColor = .black
+            }
             
             return textView.text.count < 141
             
@@ -248,7 +258,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     
     func displayMsgBox(){
         let title = "Inappropriate Image"
-        let message = "We could not post your image becuase we have identified it has having inappropriate content.  If you want more information on this please email us at quipitinc@gmail.com"
+        let message = "We could not post your image becuase we have identified it has having inappropriate content.  If you want more information on this please email us at \(supportEmail)"
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
               switch action.style{
@@ -301,7 +311,9 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     
     func generatePost(hasImage:Bool, hasGif:Bool, imageRef:String?, gifID:String?){
         guard let key = FirebaseService.sharedInstance.generatePostKey() else { return }
-                     
+        Analytics.logEvent(AnalyticsEventSelectItem, parameters: [AnalyticsParameterItemID : "id- \(myChannel?.channelName ?? "Other")",
+            AnalyticsParameterContentType: "PostToEvent"])
+        Analytics.setUserProperty("true", forName: "Creator")
               var post2:[String:Any]=[:]
                 var post3:[String:Any]=[:]
                 var post4:[String:Any]=[:]
@@ -318,9 +330,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
               
                if let auid = uid{
                    
-                   post3 = ["a": auid,
-                           "t": quipText,
-                           "d": FieldValue.serverTimestamp()]
+                  
                
                if let myChannelKey = myChannel?.key{
                    if let myChannelName = myChannel?.channelName{
@@ -328,6 +338,12 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
               
                    if let myParentChannelKey = myChannel?.parentKey {
                        if let myParentChannelName = myChannel?.parent{
+                        post3 = ["a": auid,
+                                                  "t": quipText,
+                                                  "c": myChannelName,
+                                                  "k": myChannelKey,
+                                                  "pk": myParentChannelKey,
+                                                  "d": FieldValue.serverTimestamp()]
                        post2 = [   "t": quipText,
                                     "k": myChannelKey,
                                     "c": myChannelName,
@@ -349,6 +365,10 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                        }
                    }
                    else{
+                    post3 = ["a": auid,
+                                              "t": quipText,
+                                              "k": myChannelKey,
+                                              "d": FieldValue.serverTimestamp()]
                        post2 = [        "t": quipText,
                                          "c": myChannelName,
                                          "k": myChannelKey,

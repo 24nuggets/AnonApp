@@ -44,7 +44,12 @@ class ChannelCells: UITableViewCell {
     
     @IBOutlet weak var date: UILabel!
     
+    @IBOutlet weak var arrowBtn: UIButton!
     weak var delegate: MyCellDelegate3?
+    
+    override func awakeFromNib() {
+           super.awakeFromNib()
+        arrowBtn.setTitleColor(darktint, for: .normal)    }
     
     @IBAction func arrowTap(_ sender: Any) {
         delegate?.arrowTap(cell: self)
@@ -54,7 +59,15 @@ class ChannelCells: UITableViewCell {
 }
 class CategoryCells:UITableViewCell{
     @IBOutlet weak var categoryName: UILabel!
+    
+    @IBOutlet weak var arrowBtn: UIButton!
+    
+    
     weak var delegate: MyCellDelegate2?
+    
+    override func awakeFromNib() {
+       super.awakeFromNib()
+    arrowBtn.setTitleColor(darktint, for: .normal)    }
     
     @IBAction func arrowTapped(_ sender: Any) {
         delegate?.arrowTapped(cell: self)
@@ -91,8 +104,8 @@ class QuipCells:UITableViewCell{
         didSet{
             if let myQuip = aQuip{
                                          
-                self.categoryLabel.text = "Catagory"
-                self.categoryLabel.font = UIFont.boldSystemFont(ofSize: 14.0)
+                
+               // self.categoryLabel.font = UIFont.boldSystemFont(ofSize: 14.0)
                 self.quipText?.text = myQuip.quipText
                 
                 if let numOfReplies = myQuip.quipReplies {

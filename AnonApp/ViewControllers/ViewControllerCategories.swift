@@ -8,6 +8,8 @@
 
 import UIKit
 import FirebaseAuth
+import Firebase
+
 
 class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
   
@@ -87,12 +89,28 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
     self.searchBar.layer.borderWidth = 1
     if #available(iOS 13.0, *) {
         self.searchBar.layer.borderColor = UIColor.secondarySystemBackground.cgColor
+        
     } else {
         // Fallback on earlier versions
     }
-        self.searchBar.layoutIfNeeded()
+    self.searchBar.layoutIfNeeded()
            updateTable()
+        
+        
+        
        }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        self.searchBar.layer.borderWidth = 1
+        if #available(iOS 13.0, *) {
+            self.searchBar.layer.borderColor = UIColor.secondarySystemBackground.cgColor
+            
+        } else {
+            // Fallback on earlier versions
+        }
+        self.searchBar.layoutIfNeeded()
+    }
     func setUpButtons(){
        let selectedColor = UIColor(hexString: "ffaf46")
                       liveBtn.setTitleColor(selectedColor, for: .selected  )
@@ -409,6 +427,10 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
                         feedVC.uid=self.uid
                         let myIndexPath = IndexPath(item: index, section: 0)
                                                     cell?.categoriesTable.deselectRow(at: myIndexPath, animated: true)
+                       
+                        
+                        Analytics.logEvent(AnalyticsEventViewItem, parameters: [AnalyticsParameterGroupID:cell?.myLiveEvents[index].channelName ?? "Other",
+                        AnalyticsParameterContentType:"viewEvent"])
                     }
                     
                 

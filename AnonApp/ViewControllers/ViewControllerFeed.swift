@@ -30,6 +30,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
            var myLikesDislikesMap:[String:Int] = [:]
            var myNewLikesDislikesMap:[String:Int] = [:]
           var myUserMap:[String:String] = [:]
+    var childChannelMap:[String:String] = [:]
     lazy var ellipeseMenuLauncher:EllipsesMenuEvent = {
                     let launcher = EllipsesMenuEvent()
                  launcher.feedController = self
@@ -43,6 +44,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     @IBOutlet weak var newBtn: UIButton!
     
+    @IBOutlet weak var topView: UIView!
     @IBOutlet weak var bottomBar: UIView!
     @IBOutlet weak var collectionView: UICollectionView!
    
@@ -55,7 +57,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         //gets rid of border between the two navigation bars on top
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.layoutIfNeeded()
-     
+        topView.backgroundColor = darktint
        self.title =  myChannel?.channelName
         
            if isOpen ?? false{
@@ -63,7 +65,23 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                   }else{
                       self.navigationItem.rightBarButtonItem = nil
                   }
-        
+        if let channelKey = myChannel?.key{
+        FirestoreService.sharedInstance.getEvent(eventID: channelKey) {[weak self] (stage, parentKey, parentName) in
+            if let aStage = stage{
+                if aStage == 2{
+                    self?.navigationItem.rightBarButtonItem = self?.writeQuipBtn
+                }else{
+                    self?.navigationItem.rightBarButtonItem = nil
+                }
+            }
+            if let aparentKey = parentKey{
+                self?.myChannel?.parentKey = aparentKey
+            }
+            if let aparentName = parentName{
+                self?.myChannel?.parent = aparentName
+            }
+        }
+        }
         
         
         //notification when app will enter foreground
@@ -123,15 +141,16 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     // MARK: - putVotesToDatabase
       
-      func updateVotesFirebase(diff:Int, quipID:String, aUID:String){
+      func updateVotesFirebase(diff:Int, quip:Quip, aUID:String){
           //increment value has to be double or long or it wont work properly
           let myDiff2 = Double(diff)
           let myDiff = NSNumber(value: myDiff2)
         var myVotes:[String:Any] = [:]
-         if let aChannelKey = myChannel?.key {
+        if let quipID = quip.quipID{
+            if let aChannelKey = quip.channelKey {
               myVotes["A/\(aChannelKey)/Q/\(quipID)/s"] = ServerValue.increment(myDiff)
           }
-          if let aParentChannelKey = myChannel?.parentKey {
+            if let aParentChannelKey = quip.parentKey {
               myVotes["A/\(aParentChannelKey)/Q/\(quipID)/s"] = ServerValue.increment(myDiff)
           }
          
@@ -141,6 +160,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
               updateFirestoreLikesDislikes()
                FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
               resetVars()
+        }
           
       }
       
@@ -148,7 +168,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
           if myNewLikesDislikesMap.count>0{
               if let aUID = uid {
                   if let aChannelKey = myChannel?.key{
-                      FirestoreService.sharedInstance.updateLikesDislikes(myNewLikesDislikesMap: myNewLikesDislikesMap, aChannelOrUserKey: aChannelKey, myMap: myUserMap, aUID: aUID, parentChannelKey: myChannel?.parentKey, parentChannelMap: nil)
+                      FirestoreService.sharedInstance.updateLikesDislikes(myNewLikesDislikesMap: myNewLikesDislikesMap, aChannelOrUserKey: aChannelKey, myMap: myUserMap, aUID: aUID, parentChannelKey: myChannel?.parentKey, parentChannelMap: childChannelMap, parentQuipsMap: nil)
                       
                   myNewLikesDislikesMap = [:]
                   }
@@ -159,6 +179,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     func resetVars(){
            myUserMap=[:]
            myNewLikesDislikesMap=[:]
+        childChannelMap = [:]
        }
     
     @IBAction func eventEllipsesClicked(_ sender: Any) {
@@ -223,9 +244,9 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
             sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
         }
         //change to app store id
-        sharelink.iOSParameters?.appStoreID = "962194608"
+        sharelink.iOSParameters?.appStoreID = appStoreID
         sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
-        
+        sharelink.socialMetaTagParameters?.imageURL = logoURL
         sharelink.socialMetaTagParameters?.title = myChannel?.channelName
        // sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
        
@@ -247,7 +268,10 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                 }
         
         
-            
+            Analytics.logEvent(AnalyticsEventShare, parameters:
+                [AnalyticsParameterItemID:"id- \(myChannel?.key ?? "Other")",
+                    AnalyticsParameterItemName: myChannel?.channelName ?? "None",
+                          AnalyticsParameterContentType: "event"])
         
     }
     
@@ -420,7 +444,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     func displayMsgBox(){
     let title = "Report Successful"
-    let message = "The user has been reported. If you want to give us more details on this incident please email us at quipitinc@gmail.com"
+    let message = "The user has been reported. If you want to give us more details on this incident please email us at \(supportEmail)"
     let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
           switch action.style{

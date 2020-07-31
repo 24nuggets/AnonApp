@@ -61,8 +61,9 @@ class FirestoreService: NSObject {
                            let atimePosted = myInfo["d"] as? Timestamp
                            let aQuipText = myInfo["t"] as? String
                            let myAuthor = myInfo["a"] as? String
-                           
-                           
+                           let channelkey = myInfo["k"] as? String
+                        let parentChannelkey = myInfo["pk"] as? String
+                        let aChannelName = myInfo["c"] as? String ?? myChannelName
                           
                            
                         let aQuipScore = 0
@@ -71,8 +72,9 @@ class FirestoreService: NSObject {
                            
                            
                            let myGifRef = myInfo["g"] as? String
-                           let myQuip = Quip(text: aQuipText!, bowl: myChannelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef)
-                        myQuip.channelKey = myChannelKey
+                           let myQuip = Quip(text: aQuipText!, bowl: aChannelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef)
+                        myQuip.channelKey = channelkey
+                        myQuip.parentKey = parentChannelkey
                          
                             newQuips.append(myQuip)
                          
@@ -142,14 +144,16 @@ class FirestoreService: NSObject {
                                     let atimePosted = myInfo["d"] as? Timestamp
                                     let aQuipText = myInfo["t"] as? String
                                     let myAuthor = myInfo["a"] as? String
-                                   
-                                   
+                                   let channelkey = myInfo["k"] as? String
+                                    let parentChannelKey = myInfo["pk"] as? String
+                                    let aChannelName = myInfo["c"] as? String ?? channelName
                                     let aQuipScore = 0
                                     let aReplies = 0
                                     let myImageRef = myInfo["i"] as? String
                                    let myGifRef = myInfo["g"] as? String
-                                   let myQuip = Quip(text: aQuipText!, bowl: channelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef)
-                                     myQuip.channelKey = myChannelKey
+                                   let myQuip = Quip(text: aQuipText!, bowl: aChannelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef)
+                                     myQuip.channelKey = channelkey
+                                    myQuip.parentKey = parentChannelKey
                                     newQuips.append(myQuip)
                                     
                                 }
@@ -409,7 +413,7 @@ class FirestoreService: NSObject {
             
          }
          }
-    func updateLikesDislikes(myNewLikesDislikesMap:[String:Int], aChannelOrUserKey:String, myMap:[String:String], aUID:String, parentChannelKey:String?, parentChannelMap:[String:String]?){
+    func updateLikesDislikes(myNewLikesDislikesMap:[String:Int], aChannelOrUserKey:String, myMap:[String:String], aUID:String, parentChannelKey:String?, parentChannelMap:[String:String]?, parentQuipsMap:[String:String]?){
         let batch = self.db.batch()
         
             let docRef = db.collection("/Users/\(aUID)/LikesDislikes").document(aChannelOrUserKey)
@@ -429,6 +433,10 @@ class FirestoreService: NSObject {
             if let myParentChannel = parentChannelKey {
                 let docRefChannel = db.collection("/Users/\(aUID)/LikesDislikes").document(myParentChannel)
                 batch.setData([aKey:myNewLikesDislikesMap[aKey]  as Any], forDocument: docRefChannel, merge: true)
+            }
+            if let myParentQuip = parentQuipsMap?[aKey]{
+                let docRefChannel = db.collection("/Users/\(aUID)/LikesDislikes").document(myParentQuip)
+                                           batch.setData([aKey:myNewLikesDislikesMap[aKey]  as Any], forDocument: docRefChannel, merge: true)
             }
         }
             batch.commit()
@@ -589,7 +597,8 @@ class FirestoreService: NSObject {
         let myData = ["n":myCatName,
                       "b":bigCategory]
         favdoc.setData(["favs":FieldValue.arrayUnion([myData])], merge:true)
-       
+        Analytics.logEvent(AnalyticsEventJoinGroup, parameters: [AnalyticsParameterGroupID:myCatName,
+            AnalyticsParameterContentType:"favorite"])
     }
     
     func unfavoriteCatagory(aUid:String, myCatName:String, bigCategory:String){
@@ -1172,7 +1181,7 @@ class FirestoreService: NSObject {
         getQuip(quipID: quipID) { (quip) in
             if let eventID = quip.channelKey{
                     if let author = quip.user{
-                        self.removeQuip(eventID: eventID, author: author, quipID: quipID, quip: quip,parentEventID: quip.quipParent){
+                        self.removeQuip(eventID: eventID, author: author, quipID: quipID, quip: quip,parentEventID: quip.parentKey){
                             completion()
                         }
                 }
@@ -1320,6 +1329,19 @@ class FirestoreService: NSObject {
                 completion(false)
             }
             }
+            }
+        }
+    }
+    func getEvent(eventID:String, completion: @escaping (Int?, String?, String?)->()){
+        db.collection("Channels").document(eventID).getDocument { (snapshot, error) in
+            if let error = error{
+                print(error)
+            }
+            if let data = snapshot?.data(){
+             let parentKey = data["pk"] as? String
+            let parentName = data["p"] as? String
+              let stage = data["a"] as? Int
+                completion(stage,parentKey,parentName)
             }
         }
     }
