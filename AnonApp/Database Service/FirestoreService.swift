@@ -571,7 +571,7 @@ class FirestoreService: NSObject {
                                                 }else if event1.priority != nil && event2.priority != nil{
                                                     return event1.priority! < event2.priority!
                                                 }else{
-                                                    return event1.endDate! < event2.endDate!
+                                                    return event1.endDate! > event2.endDate!
                                                 }
                                             }
                                             completion(pastChannels)

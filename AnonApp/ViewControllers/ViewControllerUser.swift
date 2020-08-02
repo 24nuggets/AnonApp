@@ -435,6 +435,11 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
            myVotes["M/\(aUID)/q/\(quipID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
             myVotes["M/\(aUID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
            }
+        if myQuip.isReply {
+            if let quipParent = myQuip.quipParent{
+            myVotes["Q/\(quipParent)/R/\(quipID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
+            }
+        }
         updateFirestoreLikesDislikes()
                FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
                  resetVars()

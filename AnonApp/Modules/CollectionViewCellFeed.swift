@@ -696,7 +696,9 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
          
          moreHotQuipsFirebase = false
          if let myChannelKey = myFeedController?.myChannel?.key{
-             
+             if let aUid = myFeedController?.uid {
+             FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { [weak self](myLikesDislikesMap) in
+                        self?.myFeedController?.myLikesDislikesMap = myLikesDislikesMap
              FirebaseService.sharedInstance.getHotFeed(myChannelKey: myChannelKey) {[weak self] (myHotQuips, myHotQuipIDs, moreHotQuipsFirebase, currentTime)  in
                  self?.hotQuips = myHotQuips
                  self?.myHotIDs = myHotQuipIDs
@@ -710,7 +712,8 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
              }
              
          }
-         
+        }
+        }
      }
     
      

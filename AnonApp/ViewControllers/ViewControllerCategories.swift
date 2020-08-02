@@ -94,7 +94,7 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
         // Fallback on earlier versions
     }
     self.searchBar.layoutIfNeeded()
-           updateTable()
+          // updateTable()
         
         
         
