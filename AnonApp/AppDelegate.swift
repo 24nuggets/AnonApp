@@ -104,9 +104,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             let myChannel = Channel(name: eventName, akey: eventId!, aparent: nil, aparentkey: parentEventKey, apriority: nil, astartDate: nil, aendDate: nil)
                             feedViewController?.myChannel = myChannel
                             feedViewController?.uid = uid
+                            let listIndex = 0
                             guard let viewControllers = initialVC.viewControllers,
-                            let listIndex = viewControllers.firstIndex(where: { $0 is HomeNavigationController }),
-                            let navVC = viewControllers[listIndex] as? HomeNavigationController else { return }
+                            let navVC = viewControllers[listIndex] as? UINavigationController else { return }
+                             
                            navVC.popToRootViewController(animated: false)
                            initialVC.selectedIndex = listIndex
                                 if let feedViewController = feedViewController{
@@ -159,7 +160,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Override point for customization after application launch.
         FirebaseApp.configure()
        Database.database().isPersistenceEnabled=false
-        Giphy.configure(apiKey: "5Wj0tBPL6cAW7zUJenU6lF0TG7febmp1", verificationMode: true)
+        Giphy.configure(apiKey: "5Wj0tBPL6cAW7zUJenU6lF0TG7febmp1")
         if #available(iOS 10.0, *) {
           // For iOS 10 display notification (sent via APNS)
           UNUserNotificationCenter.current().delegate = self

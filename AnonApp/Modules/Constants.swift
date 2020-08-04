@@ -9,5 +9,5 @@
 import Foundation
 
 let supportEmail = "headnutcracker@thatpnutapp.com"
-let logoURL = URL(string: "")
+let logoURL = URL(string: "https://storage.googleapis.com/pnutapplogo/Revised%20Pnut%20Icon.png")
 let appStoreID = "1523301939"
