@@ -18,6 +18,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
     var myFeedController:ViewControllerFeed?
      var newQuips:[Quip?] = []
      var hotQuips:[Quip?] = []
+    var hiddenPosts:[String:Bool] = [:]
    
     lazy var MenuLauncher:ellipsesMenuFeed = {
             let launcher = ellipsesMenuFeed()
@@ -405,6 +406,9 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
         self.moreRecentQuipsFirebase = false
         if let myChannelKey = myFeedController?.myChannel?.key{
             if let aUid = myFeedController?.uid {
+                FirestoreService.sharedInstance.getHiddenPosts(uid: aUid, key: myChannelKey) {[weak self] (hiddenPosts) in
+                    self?.hiddenPosts = hiddenPosts
+                }
             FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { [weak self](myLikesDislikesMap) in
             self?.myFeedController?.myLikesDislikesMap = myLikesDislikesMap
             
@@ -495,7 +499,14 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                guard let myQuipInfo = myScores[aQuip?.quipID ?? ""] as? [String:Int] else {continue}
                aQuip?.setScore(aScore:myQuipInfo["s"] ?? 0)
                aQuip?.quipReplies = myQuipInfo["r"]
+            if hiddenPosts[aQuip?.quipID ?? "Other"]  == true{
+                
+            }else if blockedUsers[aQuip?.user ?? "Other"] == true{
+               
+            }
+            else{
                newQuips.append(aQuip)
+            }
            }
            
        }
@@ -520,6 +531,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                     if let myQuip = self.newQuips[indexPath.row]{
                      //   myQuip.channel = myFeedController?.myChannel?.channelName
                      //   myQuip.parentKey = myFeedController?.myChannel?.parentKey
+                       
                         cell?.aQuip = myQuip
                            if let myImageRef = myQuip.imageRef  {
                                
@@ -575,6 +587,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
    
 
    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+       
        cellHeights[indexPath] = cell.frame.size.height
    }
 
@@ -697,6 +710,9 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
          moreHotQuipsFirebase = false
          if let myChannelKey = myFeedController?.myChannel?.key{
              if let aUid = myFeedController?.uid {
+                FirestoreService.sharedInstance.getHiddenPosts(uid: aUid, key: myChannelKey) {[weak self] (hiddenPosts) in
+                    self?.hiddenPosts = hiddenPosts
+                
              FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { [weak self](myLikesDislikesMap) in
                         self?.myFeedController?.myLikesDislikesMap = myLikesDislikesMap
              FirebaseService.sharedInstance.getHotFeed(myChannelKey: myChannelKey) {[weak self] (myHotQuips, myHotQuipIDs, moreHotQuipsFirebase, currentTime)  in
@@ -710,14 +726,15 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                     completion()
                  }
              }
-             
+                    }
          }
         }
         }
      }
     
      
-     func populateHotQuipsArr(data:[String:Any], aHotQuips:[Quip?], more:Bool){
+    func populateHotQuipsArr(data:[String:Any], aHotQuips: [Quip?], more:Bool){
+        
               for aQuip in aHotQuips{
                   if let myQuip = aQuip{
                       if let myID = myQuip.quipID{
@@ -732,18 +749,35 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                         myQuip.parentKey = quipData["pk"] as? String
                       
                   }
-                  }
+                }
                   
               }
               if more{
                   self.hotQuips = self.hotQuips + aHotQuips
               }
+            checkForHiddenPosts()
               self.feedTable.reloadData()
               
               
           }
      
-     
+    func checkForHiddenPosts(){
+        var i = 0
+        for aQuip in hotQuips{
+            if let myID = aQuip?.quipID{
+                if hiddenPosts[myID] == true{
+                    hotQuips.remove(at: i)
+                }else if blockedUsers[aQuip?.user ?? "Other"] == true{
+                    hotQuips.remove(at: i)
+                }
+                else{
+                    i = i + 1
+                }
+            
+            }
+            
+        }
+    }
     
      
     

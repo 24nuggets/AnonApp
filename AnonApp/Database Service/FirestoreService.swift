@@ -1346,4 +1346,98 @@ class FirestoreService: NSObject {
         }
     }
     
+    func reportQuip(quip:Quip){
+        let quipID = quip.quipID
+        let quipText = quip.quipText
+       // let quipIsReply = quip.isReply
+       // let quipAuthor = quip.user
+       // let quipParent = quip.quipParent
+       // let quipParentChannel = quip.parentKey
+       // let quipChannel = quip.channelKey
+        let imageRef = quip.imageRef
+       /* let data = ["id" : quipID as Any,
+                    "text": quipText as Any,
+                    "isReply": quipIsReply,
+                    "author": quipAuthor as Any,
+                    "quipParent": quipParent as Any,
+                    "parentChannelKey": quipParentChannel as Any,
+                    "channelKey": quipChannel as Any,
+                    "image": imageRef as Any,
+                    "t":FieldValue.serverTimestamp()] as [String : Any]
+ */
+     let data = [
+          "to": supportEmail,
+          "message": [
+            "subject": "User Reported Quip",
+            "text": "QuipID: \(quipID ?? "None")\nText: \(quipText ?? "None")\nImageRef: \(imageRef ?? "None")"
+          ]
+        ] as [String : Any]
+        if let aquipId = quipID{
+        db.collection("Reports").document(aquipId).setData(data)
+        }
+    }
+    
+    func addQuipToUsersHiddenPost(quipID:String, uid:String, channelkey:String?, parentChannelKey:String?, quipParentKey:String?, quipAuthoruid:String?, completion: @escaping ()->()){
+       let batch = self.db.batch()
+        if let achannelkey = channelkey{
+            let docRef = db.collection("/Users/\(uid)/HiddenPosts").document(achannelkey)
+            batch.setData([quipID:true], forDocument: docRef,merge: true)
+        }
+        if let aparentChannelKey = parentChannelKey{
+            let docRef = db.collection("/Users/\(uid)/HiddenPosts").document(aparentChannelKey)
+            batch.setData([quipID:true], forDocument: docRef,merge: true)
+        }
+        if let aquipParentKey = quipParentKey{
+            let docRef = db.collection("/Users/\(uid)/HiddenPosts").document(aquipParentKey)
+            batch.setData([quipID:true], forDocument: docRef,merge: true)
+        }
+        if let aquipAuthor = quipAuthoruid{
+            let docRef = db.collection("/Users/\(uid)/HiddenPosts").document(aquipAuthor)
+            batch.setData([quipID:true], forDocument: docRef,merge: true)
+        }
+            batch.commit()
+            completion()
+    }
+    
+    func getHiddenPosts(uid:String, key:String, completion: @escaping ([String:Bool])->()){
+        var myHiddenPosts:[String:Bool] = [:]
+               let docRef = db.collection("/Users/\(uid)/HiddenPosts").document(key)
+                                
+                            
+                                docRef.getDocument{(document, error) in
+                                    if let document = document, document.exists {
+                                      if let myMap = document.data() as? [String:Bool]{
+                                          myHiddenPosts=myMap
+                                      }
+                                      
+                                    
+                                     
+                                    }
+                                  completion(myHiddenPosts)
+                                }
+    }
+    
+    func addBlockedUser(uid:String, blockedUid: String){
+        let docRef = db.collection("/Users/\(uid)/HiddenPosts").document("BlockedUsers")
+        docRef.setData([blockedUid:true],merge: true)
+        blockedUsers[blockedUid] = true
+    }
+    
+    func getBlockedUsers(uid:String, completion: @escaping ([String:Bool])->()){
+        var myBlockedUsers:[String:Bool] = [:]
+                      let docRef = db.collection("/Users/\(uid)/HiddenPosts").document("BlockedUsers")
+                                       
+                                   
+                                       docRef.getDocument{(document, error) in
+                                           if let document = document, document.exists {
+                                             if let myMap = document.data() as? [String:Bool]{
+                                                 myBlockedUsers=myMap
+                                             }
+                                             
+                                           
+                                            
+                                           }
+                                         completion(myBlockedUsers)
+                                       }
+    }
 }

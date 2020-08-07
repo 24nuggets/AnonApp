@@ -8,8 +8,7 @@
 
 import Foundation
 import Firebase
-import GiphyUISDK
-import GiphyCoreSDK
+
 
 class Quip{
     

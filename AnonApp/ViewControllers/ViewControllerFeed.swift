@@ -427,6 +427,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
             nextViewController.uidProfile = quip.user
             navigationController?.pushViewController(nextViewController, animated: true)
         }else if menuItem.name == "Report Quip"{
+            FirestoreService.sharedInstance.reportQuip(quip: quip)
             displayMsgBox()
         }else if menuItem.name == "Share Quip"{
             if let collectionViewCell = collectionView.visibleCells[0] as? CollectionCellFeed{
@@ -436,6 +437,28 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
             if let aQuipID = quip.quipID{
                 FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
                     self.collectionView.reloadData()
+                }
+            }
+        }else if menuItem.name == "Hide This Post From Me"{
+            if let aQuipID = quip.quipID{
+                if let auid = uid {
+                    if let channelKey = quip.channelKey{
+                        let parentChannelKey = quip.parentKey
+                            if let quipAuthor = quip.user{
+                                FirestoreService.sharedInstance.addQuipToUsersHiddenPost(quipID: aQuipID, uid: auid, channelkey: channelKey, parentChannelKey: parentChannelKey, quipParentKey: nil, quipAuthoruid: quipAuthor) {
+                                    self.collectionView.reloadData()
+                                }
+                               
+                
+                }
+                }
+                }
+                }
+            
+        }else if menuItem.name == "Block This User"{
+            if let ablockID = quip.user{
+                           if let auid = uid {
+            FirestoreService.sharedInstance.addBlockedUser(uid: auid, blockedUid: ablockID)
                 }
             }
         }

@@ -161,6 +161,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         FirebaseApp.configure()
        Database.database().isPersistenceEnabled=false
         Giphy.configure(apiKey: "5Wj0tBPL6cAW7zUJenU6lF0TG7febmp1")
+        
         if #available(iOS 10.0, *) {
           // For iOS 10 display notification (sent via APNS)
           UNUserNotificationCenter.current().delegate = self
@@ -178,6 +179,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         application.registerForRemoteNotifications()
        Messaging.messaging().delegate = self
+        
+        if !isAppAlreadyLaunchedOnce() {
+            displayLicenAgreement()
+        }
         if #available(iOS 13.0, *) {
            // if UITraitCollection.current.userInterfaceStyle == .light{
             //    UINavigationBar.appearance().barTintColor = UIColor(hexString: "ffaf46")
@@ -200,6 +205,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
      //  UINavigationBar.appearance().barTintColor = UIColor(hexString: "ffaf46")
              }
         return true
+    }
+    func isAppAlreadyLaunchedOnce()->Bool{
+        let defaults = UserDefaults.standard
+
+        if let isAppAlreadyLaunchedOnce = defaults.string(forKey: "isAppAlreadyLaunchedOnce"){
+            print("App already launched : \(isAppAlreadyLaunchedOnce)")
+            return true
+        }else{
+            defaults.set(true, forKey: "isAppAlreadyLaunchedOnce")
+            print("App launched first time")
+            return false
+        }
+    }
+    
+    func displayLicenAgreement(){
+        let message = "We use Apple's Standard End User License Agreement and to use this app you must agree to the terms outlined in the EULA."
+        //create alert
+        let alert = UIAlertController(title: "License Agreement", message: message, preferredStyle: .alert)
+        
+        //create Decline button
+        let declineAction = UIAlertAction(title: "Decline" , style: .destructive){ (action) -> Void in
+            //DECLINE LOGIC GOES HERE
+            self.displayLicenAgreement()
+             let defaults = UserDefaults.standard
+            defaults.set(false, forKey: "isAppAlreadyLaunchedOnce")
+        }
+        
+        //create Accept button
+        let acceptAction = UIAlertAction(title: "Accept", style: .default) { (action) -> Void in
+            //ACCEPT LOGIC GOES HERE
+        }
+        
+        //add task to tableview buttons
+        alert.addAction(declineAction)
+        alert.addAction(acceptAction)
+        
+        let root = window?.rootViewController as? BaseTabBarController
+        let navContoller = root?.viewControllers?[0] as? UINavigationController
+        let firstController = navContoller?.viewControllers[0]
+        DispatchQueue.main.async {
+        firstController?.present(alert, animated: true, completion: nil)
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

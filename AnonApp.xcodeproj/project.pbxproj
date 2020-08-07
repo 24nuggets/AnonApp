@@ -16,6 +16,7 @@
 		C73AA0CB2453BC66000C27B9 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CA2453BC66000C27B9 /* Category.swift */; };
 		C73AA0CD2454B451000C27B9 /* ViewControllerUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CC2454B451000C27B9 /* ViewControllerUser.swift */; };
 		C73AA0CF2454CB43000C27B9 /* ViewControllerQuip.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73AA0CE2454CB43000C27B9 /* ViewControllerQuip.swift */; };
+		C754EE6124DCE0F00047F669 /* GlobalVars.swift in Sources */ = {isa = PBXBuildFile; fileRef = C754EE6024DCE0F00047F669 /* GlobalVars.swift */; };
 		C756A1242495581B0066208D /* ViewControllerAddFavsOne.swift in Sources */ = {isa = PBXBuildFile; fileRef = C756A1232495581B0066208D /* ViewControllerAddFavsOne.swift */; };
 		C756A1262495584A0066208D /* ViewControllerAddFavsTwo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C756A1252495584A0066208D /* ViewControllerAddFavsTwo.swift */; };
 		C7575C2B24C3330C003BFF1E /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7575C2A24C3330C003BFF1E /* UIColorExtension.swift */; };
@@ -87,6 +88,7 @@
 		C73AA0CA2453BC66000C27B9 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		C73AA0CC2454B451000C27B9 /* ViewControllerUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerUser.swift; sourceTree = "<group>"; };
 		C73AA0CE2454CB43000C27B9 /* ViewControllerQuip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerQuip.swift; sourceTree = "<group>"; };
+		C754EE6024DCE0F00047F669 /* GlobalVars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVars.swift; sourceTree = "<group>"; };
 		C756A1232495581B0066208D /* ViewControllerAddFavsOne.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerAddFavsOne.swift; sourceTree = "<group>"; };
 		C756A1252495584A0066208D /* ViewControllerAddFavsTwo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerAddFavsTwo.swift; sourceTree = "<group>"; };
 		C7575C2924C107CF003BFF1E /* AnonApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AnonApp.entitlements; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				C7B1890F24C499E90066D583 /* StringExtension.swift */,
 				C76C374624CBC992001777BF /* Colors.swift */,
 				C76C623124D3956700FA7A69 /* Constants.swift */,
+				C754EE6024DCE0F00047F669 /* GlobalVars.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -634,6 +637,7 @@
 				C788018824A96F250094BEC9 /* SlideAnimatingTransition.swift in Sources */,
 				C788018A24AA16AC0094BEC9 /* UIScrollViewExtensions.swift in Sources */,
 				C75942C0247CA46300ED8223 /* ViewControllerExtensions.swift in Sources */,
+				C754EE6124DCE0F00047F669 /* GlobalVars.swift in Sources */,
 				C7EC25B42442A98B00827719 /* ImageFunctions.swift in Sources */,
 				C7E7B1E724512C6F00D7847C /* BaseTabBarController.swift in Sources */,
 				C70C8E3324B66D1200E73741 /* ViewControllerPrivacyPolicy.swift in Sources */,
@@ -833,11 +837,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6S44ZYGMUY;
 				INFOPLIST_FILE = AnonApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11;
+				MARKETING_VERSION = 1.13;
 				PRODUCT_BUNDLE_IDENTIFIER = HundredMillion.AnonApp;
 				PRODUCT_NAME = Pnut;
 				SWIFT_VERSION = 5.0;
@@ -854,11 +859,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6S44ZYGMUY;
 				INFOPLIST_FILE = AnonApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.11;
+				MARKETING_VERSION = 1.13;
 				PRODUCT_BUNDLE_IDENTIFIER = HundredMillion.AnonApp;
 				PRODUCT_NAME = Pnut;
 				SWIFT_VERSION = 5.0;

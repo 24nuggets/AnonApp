@@ -42,6 +42,7 @@ class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
          guard let user = authResult?.user else { return }
             self?.userID = user.uid
             completion(user.uid)
+            
         }
         
        

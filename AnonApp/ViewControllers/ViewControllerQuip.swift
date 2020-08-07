@@ -54,6 +54,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     let placeHolderText = "Reply to this crack"
     let blackView = UIView()
     var activityIndicator:UIActivityIndicatorView?
+    var hiddenPosts:[String:Bool] = [:]
 
     @IBOutlet weak var replyTable: UITableView!
     @IBOutlet weak var stackView: UIStackView!
@@ -328,6 +329,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         if let aQuipID = myQuip?.quipID{
             FirestoreService.sharedInstance.getReplies(quipID: aQuipID, replyScores: replyScores) {[weak self] (myReplies) in
                 self?.myReplies = myReplies
+                self?.checkForHiddenPosts()
                 self?.replyTable.reloadData()
                 self?.refreshControl.endRefreshing()
             }
@@ -336,6 +338,24 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         
         
         
+    }
+    
+    func checkForHiddenPosts(){
+        var i = 0
+        for aQuip in myReplies{
+            if let myID = aQuip?.quipID{
+                if hiddenPosts[myID] == true{
+                    myReplies.remove(at: i)
+                }else if blockedUsers[aQuip?.user ?? "Other"] == true{
+                    myReplies.remove(at: i)
+                }
+                else{
+                    i = i + 1
+                }
+            
+            }
+            
+        }
     }
        
        
@@ -409,6 +429,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             nextViewController.uidProfile = quip.user
             navigationController?.pushViewController(nextViewController, animated: true)
         }else if menuItem.name == "Report Quip"{
+            FirestoreService.sharedInstance.reportQuip(quip: quip)
             displayMsgBoxReport()
         }else if menuItem.name == "Share Quip"{
             generateDynamicLink(aquip: quip, cell: nil)
@@ -419,6 +440,29 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                self.updateReplies()
                            }
                        }
+        }else if menuItem.name == "Hide This Post From Me"{
+            if let aQuipID = quip.quipID{
+                if let auid = uid {
+                    let quipParent = quip.quipParent
+                        let channelkey = quip.channelKey
+                        let parentChannelKey = quip.parentKey
+                            if let quipAuthor = quip.user{
+                                FirestoreService.sharedInstance.addQuipToUsersHiddenPost(quipID: aQuipID, uid: auid, channelkey: channelkey, parentChannelKey: parentChannelKey, quipParentKey: quipParent, quipAuthoruid: quipAuthor) {
+                                    self.updateReplies()
+                                }
+                               
+                
+                
+                }
+                }
+                }
+            
+        }else if menuItem.name == "Block This User"{
+            if let ablockID = quip.user{
+                           if let auid = uid {
+            FirestoreService.sharedInstance.addBlockedUser(uid: auid, blockedUid: ablockID)
+                }
+            }
         }
         
     }
@@ -794,7 +838,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     func getUserLikesDislikesForQuip(){
           // let myRef = "Users/\(uid ?? "Other")/LikesDislikes"
+        
         if let aUID = uid, let aQuipKey = myQuip?.quipID {
+            FirestoreService.sharedInstance.getHiddenPosts(uid: aUID, key: aQuipKey) {[weak self] (hiddenPosts) in
+                self?.hiddenPosts = hiddenPosts
+            }
             FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUID, aKey: aQuipKey) { [weak self](myLikesDislikesMap) in
                 self?.myLikesDislikesMap = myLikesDislikesMap
                 self?.updateReplies()

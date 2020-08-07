@@ -308,6 +308,10 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         if menuItem.name == "View Event Feed"{
             
         }else if menuItem.name == "Report Quip"{
+            if let aquip = quip{
+            FirestoreService.sharedInstance.reportQuip(quip: aquip)
+            
+            }
             displayMsgBox()
         }else if menuItem.name == "Share Quip"{
             if let aquip = quip{
