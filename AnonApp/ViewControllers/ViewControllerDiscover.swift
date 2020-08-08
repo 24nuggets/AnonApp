@@ -55,8 +55,7 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
        // NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.detachlisteners), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
         
         //notification for when user reopens app after being in the background, appWillEnterForeground is called
-        NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification
-        , object: nil)
+       // NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         
        
         catName.text = myCategory?.categoryName
@@ -82,23 +81,18 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-    
+        collectionView.reloadData()
     }
     
     
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-      
-                    
-                
-    }
    
     
     //deinitializer for notification center
-    deinit {
+   /* deinit {
            NotificationCenter.default.removeObserver(self)
        }
-    
+    */
     func setUpButtons(){
             let selectedColor = UIColor(hexString: "ffaf46")
                        pastBtn.setTitleColor(selectedColor, for: .selected  )
@@ -111,17 +105,7 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
     
  
     
-    // MARK: - NotificationCenter Functions
-       
-    //called when app goes from background to active
-    @objc func appWillEnterForeground() {
-       //checks if this view controller is the first one visible
-        if self.viewIfLoaded?.window != nil {
-            // viewController is visible
-            
-            
-        }
-    }
+   
     
    
    /*

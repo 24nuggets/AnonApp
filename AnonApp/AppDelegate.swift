@@ -223,18 +223,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let message = "We use Apple's Standard End User License Agreement and to use this app you must agree to the terms outlined in the EULA."
         //create alert
         let alert = UIAlertController(title: "License Agreement", message: message, preferredStyle: .alert)
-        
+         let defaults = UserDefaults.standard
         //create Decline button
         let declineAction = UIAlertAction(title: "Decline" , style: .destructive){ (action) -> Void in
             //DECLINE LOGIC GOES HERE
             self.displayLicenAgreement()
-             let defaults = UserDefaults.standard
+            
             defaults.set(false, forKey: "isAppAlreadyLaunchedOnce")
         }
         
         //create Accept button
         let acceptAction = UIAlertAction(title: "Accept", style: .default) { (action) -> Void in
             //ACCEPT LOGIC GOES HERE
+            defaults.set(true, forKey: "isAppAlreadyLaunchedOnce")
         }
         
         //add task to tableview buttons

@@ -96,7 +96,7 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
     self.searchBar.layoutIfNeeded()
           // updateTable()
         
-        
+        collectionView.reloadData()
         
        }
     

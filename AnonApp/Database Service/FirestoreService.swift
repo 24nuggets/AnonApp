@@ -188,7 +188,7 @@ class FirestoreService: NSObject {
                                                    
                      }else{
                         mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
-                        if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                        if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs, docRef: querySnapshot.documents[0])==false{
                             self?.lastHotDocumentFeed = querySnapshot.documents[0]
                             self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: false) { (myData, aHotQuips, more) in
                                 completion(myData, aHotQuips, more)
@@ -234,7 +234,7 @@ class FirestoreService: NSObject {
                                                                                 
                                 }else{
                                      mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
-                                if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                                    if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs, docRef: querySnapshot.documents[0])==false{
                                     self?.lastHotDocumentFeed = querySnapshot.documents[0]
                                     self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: true) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)
@@ -280,7 +280,7 @@ class FirestoreService: NSObject {
                                                       
                         }else{
                            mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
-                            if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                            if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs, docRef: querySnapshot.documents[0])==false{
                                 self?.lastHotDocUser = querySnapshot.documents[0]
                                 self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: false) { (myData, aHotQuips, more) in
                                    completion(myData, aHotQuips, more)
@@ -306,7 +306,7 @@ class FirestoreService: NSObject {
                  }
        }
     
-    func compareHotQuips(myData:[String:Any], aHotIDs:[String])->Bool{
+    func compareHotQuips(myData:[String:Any], aHotIDs:[String], docRef:DocumentSnapshot)->Bool{
         hotQuipAdds = []
         
         myNewHotQuipData = [:]
@@ -322,7 +322,22 @@ class FirestoreService: NSObject {
                
                     }
             }
-        
+        if !isSame{
+        var deletes:[String:Any] = [:]
+        for currentHotID in myData.keys{
+            if currentHotID == "t"{
+                continue
+            }else{
+                
+                if aHotIDs.contains(currentHotID){
+                    
+                }else{
+                    deletes[currentHotID] = FieldValue.delete()
+                }
+            }
+        }
+            docRef.reference.updateData(deletes)
+        }
         
         return isSame
     }
@@ -1043,7 +1058,7 @@ class FirestoreService: NSObject {
                                                                                 
                                 }else{
                                      mydata = querySnapshot.documents[0].data(with: .estimate) as [String:Any]
-                                if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs)==false{
+                                if self?.compareHotQuips(myData: mydata, aHotIDs: aHotIDs, docRef: querySnapshot.documents[0])==false{
                                     self?.lastHotDocumentFeed = querySnapshot.documents[0]
                                     self?.updateHotQuipsDoc(doc: querySnapshot.documents[0], aHotQuips: hotQuips, more: true) { (myData, aHotQuips, more) in
                                             completion(myData, aHotQuips, more)

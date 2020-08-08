@@ -85,7 +85,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         
         
         //notification when app will enter foreground
-        NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+      //  NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
          
        
         addGesture()
@@ -125,7 +125,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     //resets all arrays haveing to do with new user likes/dislikes
     
-    
+ /*
     @objc func appWillEnterForeground() {
           //checks if this view controller is the first one visible
           
@@ -137,7 +137,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
            NotificationCenter.default.removeObserver(self)
        }
     
-  
+  */
     
     // MARK: - putVotesToDatabase
       
@@ -428,7 +428,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
             navigationController?.pushViewController(nextViewController, animated: true)
         }else if menuItem.name == "Report Quip"{
             FirestoreService.sharedInstance.reportQuip(quip: quip)
-            displayMsgBox()
+            displayMsgBoxReport()
         }else if menuItem.name == "Share Quip"{
             if let collectionViewCell = collectionView.visibleCells[0] as? CollectionCellFeed{
                 collectionViewCell.generateDynamicLink(aquip: quip, cell: nil)
@@ -440,32 +440,79 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                 }
             }
         }else if menuItem.name == "Hide This Post From Me"{
-            if let aQuipID = quip.quipID{
-                if let auid = uid {
-                    if let channelKey = quip.channelKey{
-                        let parentChannelKey = quip.parentKey
-                            if let quipAuthor = quip.user{
-                                FirestoreService.sharedInstance.addQuipToUsersHiddenPost(quipID: aQuipID, uid: auid, channelkey: channelKey, parentChannelKey: parentChannelKey, quipParentKey: nil, quipAuthoruid: quipAuthor) {
-                                    self.collectionView.reloadData()
-                                }
-                               
-                
-                }
-                }
-                }
-                }
+           displayHidePost(quip: quip)
             
         }else if menuItem.name == "Block This User"{
-            if let ablockID = quip.user{
-                           if let auid = uid {
-            FirestoreService.sharedInstance.addBlockedUser(uid: auid, blockedUid: ablockID)
-                }
-            }
+            displayBlockUser(quip: quip)
         }
         
     }
     
-    func displayMsgBox(){
+    func displayHidePost(quip:Quip){
+          let message = "Are you sure you want to hide this post? This action cannot be undone."
+          //create alert
+          let alert = UIAlertController(title: "Hide Post", message: message, preferredStyle: .alert)
+          
+          //create Decline button
+          let declineAction = UIAlertAction(title: "Hide Post" , style: .destructive){ (action) -> Void in
+              //DECLINE LOGIC GOES HERE
+             if let aQuipID = quip.quipID{
+                if let auid = self.uid {
+                                if let channelKey = quip.channelKey{
+                                    let parentChannelKey = quip.parentKey
+                                        if let quipAuthor = quip.user{
+                                            FirestoreService.sharedInstance.addQuipToUsersHiddenPost(quipID: aQuipID, uid: auid, channelkey: channelKey, parentChannelKey: parentChannelKey, quipParentKey: nil, quipAuthoruid: quipAuthor) {
+                                                self.collectionView.reloadData()
+                                            }
+                                           
+                            
+                            }
+                            }
+                            }
+                            }
+          }
+          
+          //create Accept button
+          let acceptAction = UIAlertAction(title: "Cancel", style: .default) { (action) -> Void in
+              //ACCEPT LOGIC GOES HERE
+          }
+          
+          //add task to tableview buttons
+          alert.addAction(declineAction)
+          alert.addAction(acceptAction)
+    
+          self.present(alert, animated: true, completion: nil)
+          
+      }
+    func displayBlockUser(quip:Quip){
+          let message = "Are you sure you want to block this user? You will not be able to view any past or future posts from this user. This action cannot be undone."
+          //create alert
+          let alert = UIAlertController(title: "Block User", message: message, preferredStyle: .alert)
+          
+          //create Decline button
+          let declineAction = UIAlertAction(title: "Block User" , style: .destructive){ (action) -> Void in
+              //DECLINE LOGIC GOES HERE
+            if let ablockID = quip.user{
+                if let auid = self.uid {
+            FirestoreService.sharedInstance.addBlockedUser(uid: auid, blockedUid: ablockID)
+                }
+            }
+          }
+          
+          //create Accept button
+          let acceptAction = UIAlertAction(title: "Cancel", style: .default) { (action) -> Void in
+              //ACCEPT LOGIC GOES HERE
+          }
+          
+          //add task to tableview buttons
+          alert.addAction(declineAction)
+          alert.addAction(acceptAction)
+    
+          self.present(alert, animated: true, completion: nil)
+          
+      }
+    
+    func displayMsgBoxReport(){
     let title = "Report Successful"
     let message = "The user has been reported. If you want to give us more details on this incident please email us at \(supportEmail)"
     let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
