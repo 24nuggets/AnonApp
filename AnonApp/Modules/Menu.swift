@@ -237,12 +237,12 @@ class ellipsesMenuFeed:Menu{
     override func populateMenuItems(){
         if feedController?.uid == myQuip?.user{
         
-     menuItems = [MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"),MenuItem(name:"Delete Quip", imageName: "trash.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+     menuItems = [MenuItem(name:"Share Crack", imageName:"arrowshape.turn.up.right.circle"),MenuItem(name:"Delete Crack", imageName: "trash.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
     
         }else{
             
           // menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"),MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Quip", imageName: "flag.circle"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
-            menuItems = [MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Quip", imageName: "flag.circle"), MenuItem(name:"Hide This Post From Me", imageName: "eye.slash"), MenuItem(name:"Block This User", imageName: "person.crop.circle.badge.xmark"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
+            menuItems = [MenuItem(name:"Share Crack", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Crack", imageName: "flag.circle"), MenuItem(name:"Hide This Post From Me", imageName: "eye.slash"), MenuItem(name:"Block This User", imageName: "person.crop.circle.badge.xmark"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
             
             }
         collectionView.reloadData()
@@ -268,10 +268,10 @@ class ellipsesMenuUser:Menu{
     
     override func populateMenuItems(){
         if userController?.uid == userController?.uidProfile{
-           menuItems = [MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"),MenuItem(name:"Delete Quip", imageName: "trash.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+           menuItems = [MenuItem(name:"Share Crack", imageName:"arrowshape.turn.up.right.circle"),MenuItem(name:"Delete Crack", imageName: "trash.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
              
         }else{
-           menuItems = [MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Quip", imageName: "flag.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+           menuItems = [MenuItem(name:"Share Crack", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Crack", imageName: "flag.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
              
         }
        collectionView.reloadData()
@@ -301,11 +301,11 @@ class ellipsesMenuQuip:Menu{
 
     override func populateMenuItems(){
         if quipController?.uid == myQuip?.user{
-       menuItems = [MenuItem(name:"Share Quip", imageName:"plus.circle"),MenuItem(name: "Delete Quip", imageName: "trash.circle"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
+       menuItems = [MenuItem(name:"Share Crack", imageName:"plus.circle"),MenuItem(name: "Delete Crack", imageName: "trash.circle"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
            
         }else{
          //  menuItems = [MenuItem(name:"View User's Profile", imageName: "person.circle"),MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Quip", imageName: "flag.circle"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
-             menuItems = [MenuItem(name:"Share Quip", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Quip", imageName: "flag.circle"),MenuItem(name:"Hide This Post From Me", imageName: "eye.slash"), MenuItem(name:"Block This User", imageName: "person.crop.circle.badge.xmark"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
+             menuItems = [MenuItem(name:"Share Crack", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name: "Report Crack", imageName: "flag.circle"),MenuItem(name:"Hide This Crack From Me", imageName: "eye.slash"), MenuItem(name:"Block This User", imageName: "person.crop.circle.badge.xmark"),  MenuItem(name:"Cancel", imageName: "multiply.circle")]
            
         }
         collectionView.reloadData()

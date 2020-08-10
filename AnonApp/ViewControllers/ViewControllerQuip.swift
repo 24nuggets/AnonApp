@@ -672,7 +672,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                myNewLikesDislikesMap[aID] = -1
                     myLikesDislikesMap[aID] = -1
                     myUserMap[aID]=aReply.user
-                        updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                        updateVotesFirebase(diff: diff, reply: aReply, aUID: auid)
                  if let myParent = parentViewUser{
                                                                               
                                 myParent.myNewLikesDislikesMap[aID] = -1
@@ -698,7 +698,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                myNewLikesDislikesMap[aID]=0
                                 myLikesDislikesMap[aID]=0
                               myUserMap[aID]=aReply.user
-                                updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                                updateVotesFirebase(diff: diff, reply: aReply, aUID: auid)
                                 if let myParent = parentViewUser{
                                                                                                              
                                                                myParent.myNewLikesDislikesMap[aID] = 0
@@ -725,7 +725,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                            myNewLikesDislikesMap[aID] = -1
                      myLikesDislikesMap[aID] = -1
                            myUserMap[aID]=aReply.user
-                             updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                             updateVotesFirebase(diff: diff, reply: aReply, aUID: auid)
                             if let myParent = parentViewUser{
                                                                                                          
                                                            myParent.myNewLikesDislikesMap[aID] = -1
@@ -759,7 +759,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                            myNewLikesDislikesMap[aID]=0
                             myLikesDislikesMap[aID]=0
                           myUserMap[aID]=aReply.user
-                            updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                            updateVotesFirebase(diff: diff, reply: aReply, aUID: auid)
                             if let myParent = parentViewUser{
                                
                                 myParent.myNewLikesDislikesMap[aID]=0
@@ -786,7 +786,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                    myNewLikesDislikesMap[aID] = 1
                                     myLikesDislikesMap[aID] = 1
                                   myUserMap[aID]=aReply.user
-                                    updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                                    updateVotesFirebase(diff: diff, reply: aReply, aUID: auid)
                                     if let myParent = parentViewUser{
                                                                   
                                                                    myParent.myNewLikesDislikesMap[aID]=1
@@ -812,7 +812,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                myNewLikesDislikesMap[aID] = 1
                                 myLikesDislikesMap[aID] = 1
                               myUserMap[aID]=aReply.user
-                                updateVotesFirebase(diff: diff, replyID: aID, aUID: auid)
+                                updateVotesFirebase(diff: diff, reply: aReply, aUID: auid)
                                 if let myParent = parentViewUser{
                                                               
                                                                myParent.myNewLikesDislikesMap[aID]=1
@@ -838,17 +838,20 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
           return cellHeights[indexPath] ?? UITableView.automaticDimension
       }
     
-    func updateVotesFirebase(diff:Int, replyID:String, aUID:String){
+    func updateVotesFirebase(diff:Int, reply:Quip, aUID:String){
         //increment value has to be double or long or it wont work properly
         let myDiff = Double(diff)
         if let aQuipKey = myQuip?.quipID {
+            if let replyID = reply.quipID{
            myVotes["Q/\(aQuipKey)/R/\(replyID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
            }
-           
-           if let aUID = uid {
+        }
+        if let aUID = reply.user {
+            if let replyID = reply.quipID{
            myVotes["M/\(aUID)/q/\(replyID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
             myVotes["M/\(aUID)/s"] = ServerValue.increment(NSNumber(value: myDiff))
            }
+        }
         updateFirestoreLikesDislikes()
         FirebaseService.sharedInstance.updateChildValues(myUpdates: myVotes)
         resetVars()

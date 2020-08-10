@@ -681,6 +681,10 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
             self?.topUserQuips = myTopScores
             self?.currentTime = currentTime
             self?.myHotIDs = myHotIDs
+            if myHotIDs.count == 0 {
+                self?.refreshControl.endRefreshing()
+                return
+            }
             FirestoreService.sharedInstance.getHotQuipsUser(myUid: auid, aHotIDs: myHotIDs, hotQuips: myTopScores) {[weak self] (myData, aHotQuips, more) in
                 self?.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
                 self?.moreTopUserQuipsFirebase = moreTopFirebaseQuips
