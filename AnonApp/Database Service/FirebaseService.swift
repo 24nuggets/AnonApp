@@ -612,7 +612,17 @@ class FirebaseService: NSObject {
     func deleteQuip(quipID:String, eventID: String, author:String, parentEventID:String?, completion: @escaping ()->()){
         
         ref.child("A/\(eventID)/Q/\(quipID)").removeValue()
-        ref.child("M/\(author)/q/\(quipID)").removeValue()
+        ref.child("M/\(author)/q/\(quipID)").observeSingleEvent(of: .value) {[weak self] (snapshot) in
+            
+                if let scores = snapshot.value as? [String:Int]{
+                    let score = scores["s"]
+                    let diff = score! * -1
+                    self?.ref.child("M/\(author)").updateChildValues(["s":ServerValue.increment(NSNumber(value: diff))])
+                }
+                self?.ref.child("M/\(author)/q/\(quipID)").removeValue()
+            
+        }
+       // ref.child("M/\(author)/q/\(quipID)").removeValue()
         if let aparentID = parentEventID{
            ref.child("A/\(aparentID)/Q/\(quipID)").removeValue()
         }
@@ -627,7 +637,17 @@ class FirebaseService: NSObject {
     }
     
     func deleteReply(parentQuipID:String, author:String, replyID:String, completion: @escaping ()->()){
-        ref.child("M/\(author)/q/\(replyID)").removeValue()
+        
+        ref.child("M/\(author)/q/\(replyID)").observeSingleEvent(of: .value) {[weak self] (snapshot) in
+            
+                if let scores = snapshot.value as? [String:Int]{
+                    let score = scores["s"]
+                    let diff = score! * -1
+                    self?.ref.child("M/\(author)").updateChildValues(["s":ServerValue.increment(NSNumber(value: diff))])
+                }
+                self?.ref.child("M/\(author)/q/\(replyID)").removeValue()
+            
+        }
         
         ref.child("Q/\(parentQuipID)/R/\(replyID)").removeValue { (error, databaseRef) in
             

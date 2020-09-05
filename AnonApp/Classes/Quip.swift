@@ -28,14 +28,14 @@ class Quip{
    var tempScore:Int?
     var isReply = false
  var quipParent:String?
- 
+    var aemail:String?
     
     
     
   
     
     //loading quip to user page
-    init(text:String, bowl:String, time:Timestamp, score:Int, myQuipID:String, replies:Int, myImageRef:String?, myGifID:String?, myChannelKey:String?, myParentChannelKey:String?, isReply:Bool?, aquipParent:String?){
+    init(text:String, bowl:String, time:Timestamp, score:Int, myQuipID:String, replies:Int, myImageRef:String?, myGifID:String?, myChannelKey:String?, myParentChannelKey:String?, isReply:Bool?, aquipParent:String?, email:String?){
         quipText = text
         channel = bowl
         timePosted = time
@@ -50,6 +50,7 @@ class Quip{
         if let aReply = isReply{
         self.isReply=aReply
         quipParent=aquipParent
+        aemail = email
         }
     }
     

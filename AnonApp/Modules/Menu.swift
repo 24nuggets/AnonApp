@@ -355,7 +355,8 @@ class SettingsMenuQuip:Menu{
     }
 
     override func populateMenuItems(){
-        menuItems = [MenuItem(name:"Edit Profile", imageName: "wrench"), MenuItem(name: "Privacy Policy", imageName: "doc.text"), MenuItem(name:"Report a Problem", imageName:"flag"), MenuItem(name:"Contact Us", imageName:"envelope"), MenuItem(name:"Cancel", imageName: "multiply")]
+        //menuItems = [MenuItem(name:"Edit Profile", imageName: "wrench"), MenuItem(name: "Privacy Policy", imageName: "doc.text"), MenuItem(name:"Report a Problem", imageName:"flag"), MenuItem(name:"Contact Us", imageName:"envelope"), MenuItem(name:"Cancel", imageName: "multiply")]
+        menuItems = [MenuItem(name: "Link Email", imageName: "doc.text"), MenuItem(name: "Privacy Policy", imageName: "doc.text"), MenuItem(name:"Report a Problem", imageName:"flag"), MenuItem(name:"Contact Us", imageName:"envelope"), MenuItem(name:"Cancel", imageName: "multiply")]
            
        }
 }

@@ -25,6 +25,8 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     private weak var passedQuip:Quip?
     private weak var quipVC:ViewControllerQuip?
     var isOpen:Bool?
+    var emailEnding:String?
+    var hasAccess = false
   
    
            var myLikesDislikesMap:[String:Int] = [:]
@@ -65,6 +67,10 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                   }else{
                       self.navigationItem.rightBarButtonItem = nil
                   }
+        if let schoolEmail = myChannel?.aemail{
+            emailEnding = schoolEmail
+            checkIfViewOnly(emailEnd: schoolEmail)
+        }
         if let channelKey = myChannel?.key{
         FirestoreService.sharedInstance.getEvent(eventID: channelKey) {[weak self] (stage, parentKey, parentName) in
             if let aStage = stage{
@@ -95,6 +101,18 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
        selectNew()
     }
     
+    func checkIfViewOnly(emailEnd:String){
+        let length = emailEnd.count
+        let userEmail = UserDefaults.standard.string(forKey: "EmailConfirmed")
+        let userEmailEnd = String(userEmail?.suffix(length) ?? "")
+        if emailEnd == userEmailEnd || userEmail == "matthewcapriotti4@gmail.com" || userEmail == "jmichaelthompson96@gmail.com"{
+           hasAccess = true
+        }else{
+           hasAccess = false
+        }
+        
+    }
+    
     func setUpButtons(){
         let selectedColor = UIColor(hexString: "ffaf46")
              newBtn.setTitleColor(selectedColor, for: .selected  )
@@ -119,7 +137,12 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     //updates firestore and firebase with likes when view is dismissed
     override func viewWillDisappear(_ animated: Bool){
            super.viewWillDisappear(animated)
-
+        let indexPath = IndexPath(item: 0, section: 0)
+                     let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellFeedRecent
+              cell?.refreshControl.endRefreshing()
+                          let indexPath2 = IndexPath(item: 1, section: 0)
+                                 let cell2 = collectionView.cellForItem(at: indexPath2) as? CollectionViewCellFeedTop
+              cell2?.refreshControl.endRefreshing()
          
     }
     
@@ -196,6 +219,57 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     @IBAction func topClicked(_ sender: Any) {
         selectTop()
         scrollToItemAtIndexPath(index: 1)
+    }
+    
+    
+    @IBAction func writeClicked(_ sender: Any) {
+        
+        if hasAccess{
+           let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+            let nextViewController = storyBoard.instantiateViewController(withIdentifier: "ViewControllerWriteQuip") as! ViewControllerWriteQuip
+            self.navigationController?.pushViewController(nextViewController, animated: true)
+        }else{
+            displayMsgBoxAccess()
+        }
+    }
+    
+    func displayMsgBoxAccess(){
+        let title = "Link Email"
+        let message = "Link your \(emailEnding ?? "") email to post to this feed."
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { action in
+          switch action.style{
+          case .default:
+                print("default")
+           
+          case .cancel:
+                print("cancel")
+
+          case .destructive:
+                print("destructive")
+
+
+          @unknown default:
+            print("unknown action")
+        }}))
+        alert.addAction(UIAlertAction(title: "Link Email", style: .default, handler: { action in
+              switch action.style{
+              case .default:
+                    print("default")
+                let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+                           let nextViewController = storyBoard.instantiateViewController(withIdentifier: "CreateAccount") as! ViewControllerCreateAccount
+                    self.navigationController?.pushViewController(nextViewController, animated: true)
+              case .cancel:
+                    print("cancel")
+
+              case .destructive:
+                    print("destructive")
+
+
+              @unknown default:
+                print("unknown action")
+            }}))
+        self.present(alert, animated: true, completion: nil)
     }
     
     func selectNew(){
@@ -426,14 +500,14 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
             nextViewController.uid = uid
             nextViewController.uidProfile = quip.user
             navigationController?.pushViewController(nextViewController, animated: true)
-        }else if menuItem.name == "Report Quip"{
+        }else if menuItem.name == "Report Crack"{
             FirestoreService.sharedInstance.reportQuip(quip: quip)
             displayMsgBoxReport()
-        }else if menuItem.name == "Share Quip"{
+        }else if menuItem.name == "Share Crack"{
             if let collectionViewCell = collectionView.visibleCells[0] as? CollectionCellFeed{
                 collectionViewCell.generateDynamicLink(aquip: quip, cell: nil)
             }
-        }else if menuItem.name == "Delete Quip"{
+        }else if menuItem.name == "Delete Crack"{
             if let aQuipID = quip.quipID{
                 FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
                     self.collectionView.reloadData()
@@ -592,7 +666,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
             
             quipVC.myChannel=self.myChannel
             
-           
+            quipVC.emailEnding = emailEnding
             quipVC.parentViewFeed = self
             
            
@@ -602,6 +676,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         
         writeQuip.myChannel = self.myChannel
             writeQuip.feedVC = self
+            writeQuip.emailEnding = emailEnding
         writeQuip.uid=self.uid
         //select new quips tab before leaving
             

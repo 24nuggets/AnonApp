@@ -325,9 +325,10 @@ class QuipCells:UITableViewCell{
           let leadingContraint = NSLayoutConstraint(item: self.myGifView, attribute: .leading, relatedBy: .equal, toItem: self.contentView, attribute: .leading, multiplier: 1, constant: 10)
           let trailingConstraint = NSLayoutConstraint(item: self.contentView, attribute: .trailing, relatedBy: .equal, toItem: self.myGifView, attribute: .trailing, multiplier: 1, constant: 77)
           let topConstraint = NSLayoutConstraint(item: self.myGifView, attribute: .top, relatedBy: .equal, toItem: self.quipText, attribute: .bottom, multiplier: 1, constant: 4)
-                      
+        self.myGifView.heightAnchor.constraint(equalToConstant: 250).isActive = true
+            
           self.contentView.addConstraints([bottomConstraint,leadingContraint,trailingConstraint, topConstraint])
-                      
+        self.myGifView.addActivityIndicator()
       }
   
     

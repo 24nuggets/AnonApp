@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dRl-eW-jfI">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dRl-eW-jfI">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -18,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Z3p-gE-c2p">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="590"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="639"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="categoryCell" rowHeight="85" id="Ahe-5s-9lG" customClass="CategoryCells" customModule="Pnut" customModuleProvider="target">
@@ -187,6 +186,83 @@
             </objects>
             <point key="canvasLocation" x="2852" y="949.47526236881572"/>
         </scene>
+        <!--View Controller Sign In-->
+        <scene sceneID="Zeb-X5-Tif">
+            <objects>
+                <viewController id="w2C-gm-wKa" customClass="ViewControllerSignIn" customModule="Pnut" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wik-8B-m7H">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qcv-cb-Sha">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="zLy-XZ-U8b"/>
+                                </constraints>
+                                <color key="barTintColor" red="1" green="0.68627450980000004" blue="0.27450980390000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <textAttributes key="titleTextAttributes">
+                                    <fontDescription key="fontDescription" name="ArialRoundedMTBold" family="Arial Rounded MT Bold" pointSize="18"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </textAttributes>
+                                <textAttributes key="largeTitleTextAttributes">
+                                    <fontDescription key="fontDescription" name="ArialRoundedMTBold" family="Arial Rounded MT Bold" pointSize="18"/>
+                                </textAttributes>
+                                <items>
+                                    <navigationItem title="Sign-In" id="8cp-L8-ebZ"/>
+                                </items>
+                            </navigationBar>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Email:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k7P-Tx-H9t">
+                                <rect key="frame" x="58" y="156" width="46" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Aif-I3-gKP">
+                                <rect key="frame" x="162" y="258" width="50" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Sign-In"/>
+                                <connections>
+                                    <action selector="signInClick:" destination="w2C-gm-wKa" eventType="touchUpInside" id="3Dh-Q4-doy"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="t3K-50-fTE">
+                                <rect key="frame" x="113" y="149" width="183" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" textContentType="email"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="U1Q-77-uKz">
+                                <rect key="frame" x="113" y="206" width="183" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" textContentType="password"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Password:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TDU-m5-dPY">
+                                <rect key="frame" x="25" y="211" width="79" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="Qcv-cb-Sha" firstAttribute="leading" secondItem="N0c-n5-xMP" secondAttribute="leading" id="06F-rm-fEu"/>
+                            <constraint firstItem="Qcv-cb-Sha" firstAttribute="top" secondItem="N0c-n5-xMP" secondAttribute="top" id="3gF-el-Qd0"/>
+                            <constraint firstItem="N0c-n5-xMP" firstAttribute="trailing" secondItem="Qcv-cb-Sha" secondAttribute="trailing" id="qSb-PO-q3L"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="N0c-n5-xMP"/>
+                    </view>
+                    <connections>
+                        <outlet property="emailTextField" destination="t3K-50-fTE" id="OhA-dG-uGt"/>
+                        <outlet property="passwordTextField" destination="U1Q-77-uKz" id="1mv-hZ-H12"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Y8W-PR-Yzy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3757.5999999999999" y="765.96701649175418"/>
+        </scene>
         <!--Pnut Gallery-->
         <scene sceneID="zAw-Qf-LFh">
             <objects>
@@ -207,7 +283,7 @@
                                 </scopeButtonTitles>
                             </searchBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="5Lr-rI-djo">
-                                <rect key="frame" x="0.0" y="96" width="375" height="478"/>
+                                <rect key="frame" x="0.0" y="96" width="375" height="527"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="MnU-nL-37r">
                                     <size key="itemSize" width="128" height="128"/>
@@ -298,7 +374,7 @@
                                         </connections>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="myCollectionCellSportsCategories" id="aEw-Ab-zcg" customClass="collectionCellSportsCategories" customModule="Pnut" customModuleProvider="target">
-                                        <rect key="frame" x="118.5" y="350" width="128" height="128"/>
+                                        <rect key="frame" x="118.5" y="267" width="128" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Esf-Ke-Z7V">
                                             <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
@@ -368,7 +444,7 @@
                                         </connections>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="myCollectionCellEntertainmentCategories" id="p7i-Yq-F6J" customClass="collectionCellEntertainmentCategories" customModule="Pnut" customModuleProvider="target">
-                                        <rect key="frame" x="365" y="0.0" width="128" height="128"/>
+                                        <rect key="frame" x="118.5" y="395" width="128" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="42y-Tt-7ZM">
                                             <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
@@ -543,7 +619,108 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nJX-mN-PmT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2848.8000000000002" y="-549.17541229385313"/>
+            <point key="canvasLocation" x="2849" y="-1308"/>
+        </scene>
+        <!--Student Sections-->
+        <scene sceneID="4ki-OR-qOA">
+            <objects>
+                <tableViewController id="AYE-e3-gtx" customClass="ViewControllerStudentSections" customModule="Pnut" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="b0r-vz-pOA">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="zld-ub-PYP">
+                                <rect key="frame" x="0.0" y="28" width="375" height="43.5"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="zld-ub-PYP" id="fzy-0E-im6">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="categoryCell" rowHeight="85" id="CZk-Rd-hcu" customClass="CategoryCells" customModule="Pnut" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="71.5" width="375" height="85"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="CZk-Rd-hcu" id="wpZ-1L-p2w">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="85"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CategoryName" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MH4-SJ-FXV">
+                                            <rect key="frame" x="20" y="20" width="109.5" height="45"/>
+                                            <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="16"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ybQ-rK-lWN">
+                                            <rect key="frame" x="336" y="29" width="15" height="27"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="15" id="261-ew-0nV"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                            <color key="tintColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <state key="normal" title="Button" image="chevron.right">
+                                                <color key="titleColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="medium" weight="medium"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="arrowTapped:" destination="CZk-Rd-hcu" eventType="touchUpInside" id="XaS-TQ-WgR"/>
+                                                <segue destination="oG1-cO-yjC" kind="show" id="a0p-IM-1dQ"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="ybQ-rK-lWN" firstAttribute="centerY" secondItem="MH4-SJ-FXV" secondAttribute="centerY" id="9hp-2P-VMQ"/>
+                                        <constraint firstItem="ybQ-rK-lWN" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="MH4-SJ-FXV" secondAttribute="trailing" constant="20" id="F14-dM-rrR"/>
+                                        <constraint firstAttribute="trailing" secondItem="ybQ-rK-lWN" secondAttribute="trailing" constant="24" id="Ie9-P0-Zi0"/>
+                                        <constraint firstItem="MH4-SJ-FXV" firstAttribute="top" secondItem="wpZ-1L-p2w" secondAttribute="top" constant="20" id="KO8-7W-oFQ"/>
+                                        <constraint firstAttribute="bottom" secondItem="MH4-SJ-FXV" secondAttribute="bottom" constant="20" id="bdg-u3-uLp"/>
+                                        <constraint firstItem="MH4-SJ-FXV" firstAttribute="leading" secondItem="wpZ-1L-p2w" secondAttribute="leading" constant="20" id="k71-xe-dsx"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="arrowBtn" destination="ybQ-rK-lWN" id="dh4-pw-RyM"/>
+                                    <outlet property="categoryName" destination="MH4-SJ-FXV" id="2vg-GI-R6b"/>
+                                    <segue destination="oG1-cO-yjC" kind="show" id="NB8-lY-Ebi"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="AYE-e3-gtx" id="88O-28-D9E"/>
+                            <outlet property="delegate" destination="AYE-e3-gtx" id="jw3-aD-l8f"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Student Sections" id="GWz-iy-Xhi">
+                        <barButtonItem key="backBarButtonItem" title=" " id="17i-L3-TUp"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="studentSectionsTableView" destination="b0r-vz-pOA" id="2EM-bA-Djg"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dZ7-jn-nPm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2879" y="-519"/>
+        </scene>
+        <!--Gallery-->
+        <scene sceneID="aG6-WY-D6Y">
+            <objects>
+                <navigationController id="9aZ-rV-EYW" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Gallery" image="person.3.fill" id="Ege-Dj-4lF"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="gwO-Fb-ldE">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" red="1" green="0.68627450980392157" blue="0.27450980392156865" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="AYE-e3-gtx" kind="relationship" relationship="rootViewController" id="hVO-hp-r7M"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="UK8-3J-AlU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1927" y="-519"/>
         </scene>
         <!--View Controller Discover-->
         <scene sceneID="lNH-NW-q4H">
@@ -625,7 +802,7 @@
                                 </constraints>
                             </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="XsS-vg-FTY">
-                                <rect key="frame" x="0.0" y="109" width="375" height="416"/>
+                                <rect key="frame" x="0.0" y="109" width="375" height="465"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="noF-a5-T6n">
                                     <size key="itemSize" width="128" height="128"/>
@@ -716,7 +893,7 @@
                                         </connections>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="pastCell" id="bbA-Ho-6y4" customClass="CollectionViewCellChannelPast" customModule="Pnut" customModuleProvider="target">
-                                        <rect key="frame" x="100" y="288" width="128" height="128"/>
+                                        <rect key="frame" x="100" y="337" width="128" height="128"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="YV6-AY-SSs">
                                             <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
@@ -726,23 +903,23 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                     <prototypes>
-                                                        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="channelCell" rowHeight="85" id="ild-8s-jV4" customClass="ChannelCells" customModule="Pnut" customModuleProvider="target">
+                                                        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="channelCell" rowHeight="85" id="M64-Z7-8fQ" customClass="ChannelCells" customModule="Pnut" customModuleProvider="target">
                                                             <rect key="frame" x="0.0" y="28" width="128" height="85"/>
                                                             <autoresizingMask key="autoresizingMask"/>
-                                                            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ild-8s-jV4" id="HN7-QU-uyK">
+                                                            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="M64-Z7-8fQ" id="h5Z-3a-ZXk">
                                                                 <rect key="frame" x="0.0" y="0.0" width="128" height="85"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="channelName" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cfA-Hh-zy7">
-                                                                        <rect key="frame" x="20" y="31" width="49" height="23"/>
-                                                                        <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="channelName" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4p5-D8-5Oj">
+                                                                        <rect key="frame" x="20" y="31" width="49" height="19.5"/>
+                                                                        <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="16"/>
                                                                         <nil key="textColor"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
-                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GCq-To-qBA">
+                                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Sl-P0-5R2">
                                                                         <rect key="frame" x="89" y="29" width="15" height="27"/>
                                                                         <constraints>
-                                                                            <constraint firstAttribute="width" constant="15" id="MnV-he-9BU"/>
+                                                                            <constraint firstAttribute="width" constant="15" id="6Np-Fi-uhc"/>
                                                                         </constraints>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                                                         <color key="tintColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
@@ -751,24 +928,34 @@
                                                                             <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="medium" weight="medium"/>
                                                                         </state>
                                                                         <connections>
-                                                                            <action selector="arrowTap:" destination="ild-8s-jV4" eventType="touchUpInside" id="QQJ-vN-t7r"/>
-                                                                            <segue destination="oG1-cO-yjC" kind="show" id="xcZ-fs-ikD"/>
+                                                                            <action selector="arrowTap:" destination="M64-Z7-8fQ" eventType="touchUpInside" id="G9R-a2-20M"/>
+                                                                            <segue destination="oG1-cO-yjC" kind="show" id="PGu-cn-Lc2"/>
                                                                         </connections>
                                                                     </button>
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n79-ek-lJv">
+                                                                        <rect key="frame" x="20" y="54.5" width="31" height="10.5"/>
+                                                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                                        <nil key="textColor"/>
+                                                                        <nil key="highlightedColor"/>
+                                                                    </label>
                                                                 </subviews>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="bottomMargin" secondItem="cfA-Hh-zy7" secondAttribute="bottom" constant="20" id="5Kv-37-t1U"/>
-                                                                    <constraint firstItem="cfA-Hh-zy7" firstAttribute="top" secondItem="HN7-QU-uyK" secondAttribute="topMargin" constant="20" id="DT8-rO-iLW"/>
-                                                                    <constraint firstItem="GCq-To-qBA" firstAttribute="centerY" secondItem="cfA-Hh-zy7" secondAttribute="centerY" id="DoE-rN-QNf"/>
-                                                                    <constraint firstItem="cfA-Hh-zy7" firstAttribute="leading" secondItem="HN7-QU-uyK" secondAttribute="leading" constant="20" id="LzU-xc-bWu"/>
-                                                                    <constraint firstAttribute="trailing" secondItem="GCq-To-qBA" secondAttribute="trailing" constant="24" id="YJs-f7-9BM"/>
-                                                                    <constraint firstItem="GCq-To-qBA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cfA-Hh-zy7" secondAttribute="trailing" constant="20" id="rEu-YT-9nx"/>
+                                                                    <constraint firstItem="4p5-D8-5Oj" firstAttribute="leading" secondItem="h5Z-3a-ZXk" secondAttribute="leading" constant="20" id="2cz-eX-9IG"/>
+                                                                    <constraint firstItem="2Sl-P0-5R2" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="4p5-D8-5Oj" secondAttribute="trailing" constant="20" id="Bld-gY-Q4k"/>
+                                                                    <constraint firstItem="n79-ek-lJv" firstAttribute="top" secondItem="4p5-D8-5Oj" secondAttribute="bottom" constant="4" id="D6N-Q1-N9G"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="2Sl-P0-5R2" secondAttribute="trailing" constant="24" id="Ptd-KV-dtq"/>
+                                                                    <constraint firstItem="2Sl-P0-5R2" firstAttribute="centerY" secondItem="h5Z-3a-ZXk" secondAttribute="centerY" id="bqH-a5-3c2"/>
+                                                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="n79-ek-lJv" secondAttribute="trailing" constant="30" id="eBO-fy-yTz"/>
+                                                                    <constraint firstItem="4p5-D8-5Oj" firstAttribute="top" secondItem="h5Z-3a-ZXk" secondAttribute="topMargin" constant="20" id="gRX-jK-GET"/>
+                                                                    <constraint firstItem="n79-ek-lJv" firstAttribute="leading" secondItem="4p5-D8-5Oj" secondAttribute="leading" id="mut-y3-aK2"/>
+                                                                    <constraint firstAttribute="bottom" secondItem="n79-ek-lJv" secondAttribute="bottom" constant="20" id="oWY-5H-PHO"/>
                                                                 </constraints>
                                                             </tableViewCellContentView>
                                                             <connections>
-                                                                <outlet property="arrowBtn" destination="GCq-To-qBA" id="7po-Nk-VlX"/>
-                                                                <outlet property="channelName" destination="cfA-Hh-zy7" id="roG-Bv-txy"/>
-                                                                <segue destination="oG1-cO-yjC" kind="show" id="2JY-4e-8xt"/>
+                                                                <outlet property="arrowBtn" destination="2Sl-P0-5R2" id="dX4-eR-aEn"/>
+                                                                <outlet property="channelName" destination="4p5-D8-5Oj" id="pD1-Im-PFc"/>
+                                                                <outlet property="date" destination="n79-ek-lJv" id="Oey-iq-bZk"/>
+                                                                <segue destination="oG1-cO-yjC" kind="show" id="J69-zS-sSd"/>
                                                             </connections>
                                                         </tableViewCell>
                                                     </prototypes>
@@ -936,7 +1123,7 @@
                                 </constraints>
                             </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="GhD-Fs-H7c">
-                                <rect key="frame" x="0.0" y="40" width="375" height="485"/>
+                                <rect key="frame" x="0.0" y="40" width="375" height="534"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" automaticEstimatedItemSize="YES" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="Bp7-In-hK9">
                                     <size key="itemSize" width="128" height="128"/>
@@ -1341,7 +1528,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" image="square.and.pencil" id="Ede-dA-UN8">
                             <connections>
-                                <segue destination="Mce-Ny-dXb" kind="showDetail" id="mF7-Hw-Fjv"/>
+                                <action selector="writeClicked:" destination="oG1-cO-yjC" id="X3h-rw-DAk"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -1679,7 +1866,7 @@
             <objects>
                 <viewController storyboardIdentifier="ViewControllerWriteQuip" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Mce-Ny-dXb" customClass="ViewControllerWriteQuip" customModule="Pnut" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="4bP-Za-O31">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SSQ-sK-msO">
@@ -1701,7 +1888,7 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" keyboardType="twitter"/>
                             </textView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ip5-Fo-hMC">
-                                <rect key="frame" x="0.0" y="530" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="574" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
                                     <barButtonItem image="photo" id="FzT-pb-E1u">
@@ -1719,7 +1906,7 @@
                                 </items>
                             </toolbar>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kPS-oX-bCg">
-                                <rect key="frame" x="15" y="141" width="320" height="364"/>
+                                <rect key="frame" x="15" y="141" width="320" height="457"/>
                             </imageView>
                             <button hidden="YES" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iir-HW-e6A">
                                 <rect key="frame" x="305" y="151" width="20" height="20"/>
@@ -2290,11 +2477,6 @@
                     </view>
                     <navigationItem key="navigationItem" title="Profile" id="Fae-SG-Z1p">
                         <barButtonItem key="backBarButtonItem" title=" " id="McQ-lq-EEs"/>
-                        <barButtonItem key="leftBarButtonItem" title="Edit" id="ic4-Jx-opG">
-                            <connections>
-                                <action selector="editBtnClicked:" destination="Dw3-D5-vbd" id="u2B-cI-5Oi"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Item" image="gear" id="V2b-on-jZk">
                             <connections>
                                 <action selector="settingsBtnClicked:" destination="Dw3-D5-vbd" id="6aw-1R-tzq"/>
@@ -2656,10 +2838,10 @@ Cg
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content"> is any information that relates to an identified or identifiable individual.
+                                        <string key="content"> is any information that relates to an identified or identifiable individual.
 For the purposes for GDPR, Personal Data means any information relating to You such as a name, an identification number, location data, online identifier or to one or more factors specific to the physical, physiological, genetic, mental, economic, cultural or social identity.
 For the purposes of the CCPA, Personal Data means any information that identifies, relates to, describes or is capable of being associated with, or could reasonably be linked, directly or indirectly, with You.
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -2902,11 +3084,11 @@ Usage Data
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">Usage Data is collected automatically when using the Service.
+                                        <string key="content">Usage Data is collected automatically when using the Service.
 Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.
 When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.
 We may also collect information that Your browser sends whenever You visit our Service or when You access the Service by or through a mobile device.
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -2928,9 +3110,9 @@ We may also collect information that Your browser sends whenever You visit our S
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">We use Cookies and similar tracking technologies to track the activity on Our Service and store certain information. Tracking technologies used are beacons, tags, and scripts to collect and track information and to improve and analyze Our Service.
+                                        <string key="content">We use Cookies and similar tracking technologies to track the activity on Our Service and store certain information. Tracking technologies used are beacons, tags, and scripts to collect and track information and to improve and analyze Our Service.
 You can instruct Your browser to refuse all Cookies or to indicate when a Cookie is being sent. However, if You do not accept Cookies, You may not be able to use some parts of our Service.
-Cookies can be "Persistent" or "Session" Cookies. Persistent Cookies remain on your personal computer or mobile device when You go offline, while Session Cookies are deleted as soon as You close your web browser. Learn more about cookies: </mutableString>
+Cookies can be "Persistent" or "Session" Cookies. Persistent Cookies remain on your personal computer or mobile device when You go offline, while Session Cookies are deleted as soon as You close your web browser. Learn more about cookies: </string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -3040,11 +3222,11 @@ Purpose: These Cookies allow us to remember choices You make when You use the We
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 Type: Persistent Cookies
 Administered by: Third-Parties
 Purpose: These Cookies are used to track information about traffic to the Website and how users use the Website. The information gathered via these Cookies may directly or indirectly identify you as an individual visitor. This is because the information collected is typically linked to a pseudonymous identifier associated with the device you use to access the Website. We may also use these Cookies to test new advertisements, pages, features or new functionality of the Website to see how our users react to them.
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -3392,8 +3574,8 @@ Purpose: These Cookies are used to track information about traffic to the Websit
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content"> when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside. If You interact with other users or register through a Third-Party Social Media Service, Your contacts on the Third-Party Social Media Service may see Your name, profile, pictures and description of Your activity. Similarly, other users will be able to view descriptions of Your activity, communicate with You and view Your profile.
-</mutableString>
+                                        <string key="content"> when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside. If You interact with other users or register through a Third-Party Social Media Service, Your contacts on the Third-Party Social Media Service may see Your name, profile, pictures and description of Your activity. Similarly, other users will be able to view descriptions of Your activity, communicate with You and view Your profile.
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -3419,9 +3601,9 @@ Purpose: These Cookies are used to track information about traffic to the Websit
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations (for example, if we are required to retain your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.
+                                        <string key="content">The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations (for example, if we are required to retain your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.
 The Company will also retain Usage Data for internal analysis purposes. Usage Data is generally retained for a shorter period of time, except when this data is used to strengthen the security or to improve the functionality of Our Service, or We are legally obligated to retain this data for longer time periods.
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -3443,10 +3625,10 @@ The Company will also retain Usage Data for internal analysis purposes. Usage Da
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">Your information, including Personal Data, is processed at the Company's operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ than those from Your jurisdiction.
+                                        <string key="content">Your information, including Personal Data, is processed at the Company's operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ than those from Your jurisdiction.
 Your consent to this Privacy Policy followed by Your submission of such information represents Your agreement to that transfer.
 The Company will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy and no transfer of Your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of Your data and other personal information.
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -3634,10 +3816,10 @@ Protect against legal liability
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">
+                                        <string key="content">
 Google Analytics is a web analytics service offered by Google that tracks and reports website traffic. Google uses the data collected to track and monitor the use of our Service. This data is shared with other Google services. Google may use the collected data to contextualize and personalize the ads of its own advertising network.
 You can opt-out of having made your activity on the Service available to Google Analytics by installing the Google Analytics opt-out browser add-on. The add-on prevents the Google Analytics JavaScript (ga.js, analytics.js and dc.js) from sharing information with Google Analytics about visits activity.
-For more information on the privacy practices of Google, please visit the Google Privacy &amp; Terms web page: </mutableString>
+For more information on the privacy practices of Google, please visit the Google Privacy &amp; Terms web page: </string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -4172,9 +4354,9 @@ You have the right under this Privacy Policy, and by law if You are within the E
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">You may exercise Your rights of access, rectification, cancellation and opposition by contacting Us. Please note that we may ask You to verify Your identity before responding to such requests. If You make a request, We will try our best to respond to You as soon as possible.
+                                        <string key="content">You may exercise Your rights of access, rectification, cancellation and opposition by contacting Us. Please note that we may ask You to verify Your identity before responding to such requests. If You make a request, We will try our best to respond to You as soon as possible.
 You have the right to complain to a Data Protection Authority about Our collection and use of Your Personal Data. For more information, if You are in the European Economic Area (EEA), please contact Your local data protection authority in the EEA.
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -4293,10 +4475,10 @@ Visit the Facebook Privacy Policy </string>
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">We use the Facebook Insights function in connection with the operation of the Facebook Fan Page and on the basis of the GDPR, in order to obtain anonymized statistical data about Our users.
+                                        <string key="content">We use the Facebook Insights function in connection with the operation of the Facebook Fan Page and on the basis of the GDPR, in order to obtain anonymized statistical data about Our users.
 For this purpose, Facebook places a Cookie on the device of the user visiting Our Facebook Fan Page. Each Cookie contains a unique identifier code and remains active for a period of two years, except when it is deleted before the end of this period.
 Facebook receives, records and processes the information stored in the Cookie, especially when the user visits the Facebook services, services that are provided by other members of the Facebook Fan Page and services by other companies that use Facebook services.
-For more information on the privacy practices of Facebook, please visit Facebook Privacy Policy here: </mutableString>
+For more information on the privacy practices of Facebook, please visit Facebook Privacy Policy here: </string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -4604,10 +4786,10 @@ The Company will disclose and deliver the required information free of charge wi
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">We do not sell personal information. However, the Service Providers we partner with (for example, our advertising partners) may use technology on the Service that "sells" personal information as defined by the CCPA law.
+                                        <string key="content">We do not sell personal information. However, the Service Providers we partner with (for example, our advertising partners) may use technology on the Service that "sells" personal information as defined by the CCPA law.
 If you wish to opt out of the use of your personal information for interest-based advertising purposes and these potential sales as defined under CCPA law, you may do so by following the instructions below.
 Please note that any opt out is specific to the browser You use. You may need to opt out on every browser that you use.
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -4755,10 +4937,10 @@ However, some third party websites do keep track of Your browsing activities. If
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">The Service may contain content appropriate for children under the age of 13. As a parent, you should know that through the Service children under the age of 13 may participate in activities that involve the collection or use of personal information. We use reasonable efforts to ensure that before we collect any personal information from a child, the child's parent receives notice of and consents to our personal information practices.
+                                        <string key="content">The Service may contain content appropriate for children under the age of 13. As a parent, you should know that through the Service children under the age of 13 may participate in activities that involve the collection or use of personal information. We use reasonable efforts to ensure that before we collect any personal information from a child, the child's parent receives notice of and consents to our personal information practices.
 We also may limit how We collect, use, and store some of the information of Users between 13 and 18 years old. In some cases, this means We will be unable to provide certain functionality of the Service to these Users. If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent's consent before We collect and use that information.
 We may ask a User to verify its date of birth before collecting any personal information from them. If the User is under the age of 13, the Service will be either blocked or redirected to a parental consent process.
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -4780,10 +4962,10 @@ We may ask a User to verify its date of birth before collecting any personal inf
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">The Company may collect and store persistent identifiers such as cookies or IP addresses from Children without parental consent for the purpose of supporting the internal operation of the Service.
+                                        <string key="content">The Company may collect and store persistent identifiers such as cookies or IP addresses from Children without parental consent for the purpose of supporting the internal operation of the Service.
 We may collect and store other personal information about children if this information is submitted by a child with prior parent consent or by the parent or guardian of the child.
 The Company may collect and store the following types of personal information about a child when submitted by a child with prior parental consent or by the parent or guardian of the child:
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -4912,10 +5094,10 @@ If you'd like to request more information under the California Shine the Light l
                                         </attributes>
                                     </fragment>
                                     <fragment>
-                                        <mutableString key="content">California Business and Professions Code section 22581 allow California residents under the age of 18 who are registered users of online sites, services or applications to request and obtain removal of content or information they have publicly posted.
+                                        <string key="content">California Business and Professions Code section 22581 allow California residents under the age of 18 who are registered users of online sites, services or applications to request and obtain removal of content or information they have publicly posted.
 To request removal of such data, and if you are a California resident, You can contact Us using the contact information provided below, and include the email address associated with Your account.
 Be aware that Your request does not guarantee complete or comprehensive removal of content or information posted online and that the law may not permit or require removal in certain circumstances.
-</mutableString>
+</string>
                                         <attributes>
                                             <font key="NSFont" size="11" name="Times-Roman"/>
                                             <real key="NSKern" value="0.25"/>
@@ -5060,8 +5242,7 @@ Cg
                         <color key="selectedImageTintColor" red="1" green="0.68627450980000004" blue="0.27450980390000002" alpha="1" colorSpace="calibratedRGB"/>
                     </tabBar>
                     <connections>
-                        <segue destination="8hw-uq-HNt" kind="relationship" relationship="viewControllers" id="eAc-vU-vSR"/>
-                        <segue destination="49B-gx-kH5" kind="relationship" relationship="viewControllers" id="twe-zu-pLN"/>
+                        <segue destination="9aZ-rV-EYW" kind="relationship" relationship="viewControllers" id="CPP-ej-ApG"/>
                         <segue destination="3FH-rh-1N3" kind="relationship" relationship="viewControllers" id="tA3-gE-BaL"/>
                     </connections>
                 </tabBarController>
@@ -5120,7 +5301,7 @@ Cg
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k7l-12-7Iz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1986" y="-549"/>
+            <point key="canvasLocation" x="1985" y="-1308"/>
         </scene>
         <!--Profile-->
         <scene sceneID="fl4-XB-twk">
@@ -5147,10 +5328,61 @@ Cg
             </objects>
             <point key="canvasLocation" x="1985" y="1531"/>
         </scene>
+        <!--View Controller Create Account-->
+        <scene sceneID="hqa-GO-HSQ">
+            <objects>
+                <viewController storyboardIdentifier="CreateAccount" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Nab-T5-4pM" customClass="ViewControllerCreateAccount" customModule="Pnut" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qBM-Vu-gd5">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yPk-vJ-I5k">
+                                <rect key="frame" x="42" y="62" width="46" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="r8Y-EZ-vvK">
+                                <rect key="frame" x="96" y="55.5" width="239" height="34"/>
+                                <color key="tintColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" textContentType="email"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DYM-hS-UQK">
+                                <rect key="frame" x="145" y="97" width="85" height="34"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                <state key="normal" title="Link Email">
+                                    <color key="titleColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="createAccountClicked:" destination="Nab-T5-4pM" eventType="touchUpInside" id="GeF-3w-2sK"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="DYM-hS-UQK" firstAttribute="top" secondItem="r8Y-EZ-vvK" secondAttribute="bottom" constant="7.5" id="8zw-Mb-AwI"/>
+                            <constraint firstItem="yPk-vJ-I5k" firstAttribute="leading" secondItem="fyP-s5-nTd" secondAttribute="leading" constant="42" id="Gix-4S-S6z"/>
+                            <constraint firstItem="DYM-hS-UQK" firstAttribute="centerX" secondItem="fyP-s5-nTd" secondAttribute="centerX" id="ZU0-NC-2R5"/>
+                            <constraint firstItem="yPk-vJ-I5k" firstAttribute="top" secondItem="fyP-s5-nTd" secondAttribute="top" constant="62" id="aMg-iA-cT9"/>
+                            <constraint firstItem="fyP-s5-nTd" firstAttribute="trailing" secondItem="r8Y-EZ-vvK" secondAttribute="trailing" constant="40" id="gfe-s8-Rxf"/>
+                            <constraint firstItem="r8Y-EZ-vvK" firstAttribute="centerY" secondItem="yPk-vJ-I5k" secondAttribute="centerY" id="iAA-Rm-M3L"/>
+                            <constraint firstItem="r8Y-EZ-vvK" firstAttribute="leading" secondItem="yPk-vJ-I5k" secondAttribute="trailing" constant="8" id="xLN-nm-HwP"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="fyP-s5-nTd"/>
+                    </view>
+                    <connections>
+                        <outlet property="emailTextField" destination="r8Y-EZ-vvK" id="1Lo-VL-095"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lLw-65-cDb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5446" y="766"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="ihN-6V-qV5"/>
-        <segue reference="xcZ-fs-ikD"/>
+        <segue reference="bc4-II-TC8"/>
+        <segue reference="NB8-lY-Ebi"/>
         <segue reference="0Bk-yL-E3w"/>
     </inferredMetricsTieBreakers>
     <resources>

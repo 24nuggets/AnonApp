@@ -55,6 +55,8 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     let blackView = UIView()
     var activityIndicator:UIActivityIndicatorView?
     var hiddenPosts:[String:Bool] = [:]
+    var emailEnding:String?
+    var hasAccess = false
 
     @IBOutlet weak var replyTable: UITableView!
     @IBOutlet weak var stackView: UIStackView!
@@ -92,7 +94,15 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         textView.textContainer.lineBreakMode = .byClipping
        // hideKeyboardWhenTappedAround()
         hideKeyboardWhenTappedAround()
-        
+        if let schoolEmail = emailEnding{
+            checkIfViewOnly(emailEnd: schoolEmail)
+        }else if let schoolEmail = myQuip?.aemail{
+            emailEnding = schoolEmail
+            checkIfViewOnly(emailEnd: schoolEmail)
+        }else if let schoolEmail = passedReply?.aemail{
+            emailEnding = schoolEmail
+            checkIfViewOnly(emailEnd: schoolEmail)
+        }
         resetVars()
         refreshData()
         
@@ -109,9 +119,20 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     override func viewWillDisappear(_ animated: Bool){
       super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self)
-        
+        refreshControl.endRefreshing() 
       
     }
+    func checkIfViewOnly(emailEnd:String){
+           let length = emailEnd.count
+           let userEmail = UserDefaults.standard.string(forKey: "EmailConfirmed")
+           let userEmailEnd = String(userEmail?.suffix(length) ?? "")
+           if emailEnd == userEmailEnd || userEmail == "matthewcapriotti4@gmail.com" || userEmail == "jmichaelthompson96@gmail.com"{
+              hasAccess = true
+           }else{
+              hasAccess = false
+           }
+           
+       }
     func resetVars(){
         myUserMap=[:]
            myNewLikesDislikesMap=[:]
@@ -184,6 +205,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     
     @IBAction func postButtonClicked(_ sender: UIButton) {
+        if hasAccess{
         refreshControl.beginRefreshing()
         postBtn.isEnabled = false
         if #available(iOS 13.0, *) {
@@ -198,6 +220,47 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                }
                makeViewFade()
         saveReply()
+        }else{
+            displayMsgBoxAccess()
+        }
+    }
+    func displayMsgBoxAccess(){
+        let title = "Link Email"
+        let message = "Link your \(emailEnding ?? "") email to post to this feed."
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { action in
+          switch action.style{
+          case .default:
+                print("default")
+           
+          case .cancel:
+                print("cancel")
+
+          case .destructive:
+                print("destructive")
+
+
+          @unknown default:
+            print("unknown action")
+        }}))
+        alert.addAction(UIAlertAction(title: "Link Email", style: .default, handler: { action in
+              switch action.style{
+              case .default:
+                    print("default")
+                let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+                           let nextViewController = storyBoard.instantiateViewController(withIdentifier: "CreateAccount") as! ViewControllerCreateAccount
+                    self.navigationController?.pushViewController(nextViewController, animated: true)
+              case .cancel:
+                    print("cancel")
+
+              case .destructive:
+                    print("destructive")
+
+
+              @unknown default:
+                print("unknown action")
+            }}))
+        self.present(alert, animated: true, completion: nil)
     }
     
     @IBAction func ellipsesBarButtonClicked(_ sender: Any) {
@@ -428,12 +491,12 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             nextViewController.uid = uid
             nextViewController.uidProfile = quip.user
             navigationController?.pushViewController(nextViewController, animated: true)
-        }else if menuItem.name == "Report Quip"{
+        }else if menuItem.name == "Report Crack"{
             FirestoreService.sharedInstance.reportQuip(quip: quip)
             displayMsgBoxReport()
-        }else if menuItem.name == "Share Quip"{
+        }else if menuItem.name == "Share Crack"{
             generateDynamicLink(aquip: quip, cell: nil)
-        }else if menuItem.name == "Delete Quip"{
+        }else if menuItem.name == "Delete Crack"{
             if let aQuipID = quip.quipID{
                            FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
                         
@@ -1310,6 +1373,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                "a": uid ?? "Other",
                                "d": FieldValue.serverTimestamp(),
                                "r": true,
+                               "email": emailEnding as Any,
                                "p": myQuip?.quipID as Any] as [String : Any]
                           
                       if hasImage {

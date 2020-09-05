@@ -28,6 +28,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     let placeholderText = "Get cracking"
     var activityIndicator:UIActivityIndicatorView?
     let blackView = UIView()
+    var emailEnding:String?
     
     @IBOutlet weak var textView: UITextView!
     
@@ -217,7 +218,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         
         var gifID:String?
         var hasGif:Bool=false
-        if imageView.image != nil  && imageView.isHidden==false{
+        if imageView.image != nil  && imageView.isHidden==false {
            checkIfImageIsClean()
             return
         }
@@ -343,6 +344,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                                                   "c": myChannelName,
                                                   "k": myChannelKey,
                                                   "pk": myParentChannelKey,
+                                                  "email": emailEnding as Any,
                                                   "d": FieldValue.serverTimestamp()]
                        post2 = [   "t": quipText,
                                     "k": myChannelKey,
@@ -350,11 +352,13 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                                     "pk": myParentChannelKey,
                                     "p": myParentChannelName,
                                      "a": auid,
+                                     "email": emailEnding as Any,
                                      "d": FieldValue.serverTimestamp()]
                        
                        post4 = ["c": myChannel?.channelName ?? "Other",
                                        "t": quipText,
                                       "d": FieldValue.serverTimestamp(),
+                                      "email": emailEnding as Any,
                                       "k": myChannelKey,
                                       "pk":myParentChannelKey]
                        
@@ -367,16 +371,19 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                    else{
                     post3 = ["a": auid,
                                               "t": quipText,
+                                              "email": emailEnding as Any,
                                               "k": myChannelKey,
                                               "d": FieldValue.serverTimestamp()]
                        post2 = [        "t": quipText,
                                          "c": myChannelName,
                                          "k": myChannelKey,
                                          "a": auid,
+                                         "email": emailEnding as Any,
                                          "d": FieldValue.serverTimestamp()]
                        
                            post4 = ["c": myChannelName,
                             "t": quipText,
+                            "email": emailEnding as Any,
                            "d": FieldValue.serverTimestamp(),
                            "k": myChannelKey]
                      
@@ -458,6 +465,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         deleteBtn?.removeFromSuperview()
         mediaView = GPHMediaView()
         view.addSubview(mediaView!)
+        mediaView?.isHidden = false
         mediaView?.translatesAutoresizingMaskIntoConstraints = false
         let leadingSpace = NSLayoutConstraint(item: mediaView!, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1, constant: 15)
       giphyBottomSpaceConstraint = NSLayoutConstraint(item: self.view!, attribute: .bottom, relatedBy: .equal, toItem: mediaView!, attribute: .bottom, multiplier: 1, constant: 40)
@@ -496,6 +504,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     }
     
     @objc func deleteImage(){
+        mediaView?.isHidden = true
         mediaView?.removeFromSuperview()
         deleteBtn?.removeFromSuperview()
              

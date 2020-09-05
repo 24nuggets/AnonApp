@@ -15,7 +15,7 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
     var myLiveEvents:[Channel]=[]
    weak var categoryController:ViewControllerCategories?
     var isFiltered = false
-    private var refreshControl=UIRefreshControl()
+    var refreshControl=UIRefreshControl()
     lazy var dateFormatter:DateFormatter = {
            let dateForm = DateFormatter()
            dateForm.dateFormat = "MMM d, h:mm a"
@@ -83,7 +83,7 @@ class collectionCellLiveCategories:UICollectionViewCell, UITableViewDelegate, UI
 class collectionCellSportsCategories:UICollectionViewCell, UITableViewDelegate, UITableViewDataSource, MyCellDelegate2{
    
     
-   private var refreshControl = UIRefreshControl()
+   var refreshControl = UIRefreshControl()
     var mySports:[Category]=[]
        private var allSports:[Category]=[]
     var filteredCats:[Category]=[]
@@ -166,7 +166,7 @@ class collectionCellEntertainmentCategories:UICollectionViewCell, UITableViewDel
    var filteredCats:[Category]=[]
     var isFiltered:Bool = false
     weak var categoryController:ViewControllerCategories?
-    private var refreshControl = UIRefreshControl()
+    var refreshControl = UIRefreshControl()
     
     @IBOutlet weak var categoriesTable: UITableView!
     

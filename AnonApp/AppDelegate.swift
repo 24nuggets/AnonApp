@@ -18,7 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, continue userActivity: NSUserActivity,
                      restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+       
         if let webURL = userActivity.webpageURL{
+            if handlePasswordlessSignIn(withURL: webURL) {
+                     return true
+                   }
       let handled = DynamicLinks.dynamicLinks().handleUniversalLink(webURL) {[weak self] (dynamiclink, error) in
         guard error == nil else {
             print(error?.localizedDescription ?? "error")
@@ -145,6 +149,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        if handlePasswordlessSignIn(withURL: url) {
+          return true
+        }
       if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
         handleDynamicLink(dynamicLink: dynamicLink)
         // Handle the deep link. For example, show the deep-linked content or
@@ -248,6 +255,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         DispatchQueue.main.async {
         firstController?.present(alert, animated: true, completion: nil)
         }
+    }
+    
+    func handlePasswordlessSignIn(withURL url: URL) -> Bool {
+      let link = url.absoluteString
+      // [START is_signin_link]
+      if Auth.auth().isSignIn(withEmailLink: link) {
+        // [END is_signin_link]
+        UserDefaults.standard.set(link, forKey: "Link")
+        guard let email = UserDefaults.standard.string(forKey: "Email") else {return true}
+        guard let uid = UserDefaults.standard.string(forKey: "UID") else { return true }
+        UserDefaults.standard.set(email, forKey: "EmailConfirmed")
+        FirestoreService.sharedInstance.linkEmail(uid: uid, email: email) {
+            
+        }
+        (window?.rootViewController as? UINavigationController)?.popToRootViewController(animated: false)
+        //window?.rootViewController?.children[0].performSegue(withIdentifier: "passwordless", sender: nil)
+        return true
+      }
+      return false
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

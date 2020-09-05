@@ -351,7 +351,7 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
     
     @IBOutlet weak var userQuipsTable: UITableView!
     
-    private var refreshControl = UIRefreshControl()
+    var refreshControl = UIRefreshControl()
       var newUserQuips:[Quip?]=[]
     private var myScores:[String:Any]=[:]
     private var moreRecentQuips:Bool = false
@@ -588,7 +588,7 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
     
     @IBOutlet weak var userQuipsTable: UITableView!
     
-    private var refreshControl = UIRefreshControl()
+    var refreshControl = UIRefreshControl()
     var topUserQuips:[Quip?]=[]
     private var moreTopUserQuipsFirebase:Bool = false
     private var myHotIDs:[String] = []
@@ -706,6 +706,7 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
                            myQuip.gifID = quipData["g"] as? String
                            myQuip.imageRef = quipData["i"] as? String
                             myQuip.isReply = quipData["r"] as? Bool ?? false
+                            myQuip.aemail = quipData["email"] as? String
                             if myQuip.isReply{
                                 myQuip.quipParent = quipData["p"] as? String
                             }

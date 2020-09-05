@@ -371,6 +371,10 @@ class FirestoreService: NSObject {
     func createHotQuipsDoc(aHotIDs:[String], aHotQuips:[Quip], more:Bool, aChannelKey:String, completion: @escaping ([String:Any],[Quip], Bool)->()){
           var i:Int = 0
           var myData:[String:Any] = [:]
+        if aHotIDs.count == 0{
+            completion(myData, aHotQuips, more)
+            return
+        }
           for aHotId in aHotIDs{
              self.db.collection("Quips").document(aHotId).getDocument { (document, error) in
                  if let document = document, document.exists {
@@ -401,6 +405,10 @@ class FirestoreService: NSObject {
     func createHotQuipsDocUser(aHotIDs:[String], aHotQuips:[Quip], more:Bool, aUid:String, completion: @escaping ([String:Any],[Quip], Bool)->()){
              var i:Int = 0
              var myData:[String:Any] = [:]
+        if aHotIDs.count == 0{
+                   completion(myData, aHotQuips, more)
+                   return
+               }
              for aHotId in aHotIDs{
                 db.collection("Quips").document(aHotId).getDocument { (document, error) in
                     if let document = document, document.exists {
@@ -586,7 +594,18 @@ class FirestoreService: NSObject {
                                                 }else if event1.priority != nil && event2.priority != nil{
                                                     return event1.priority! < event2.priority!
                                                 }else{
-                                                    return event1.endDate! > event2.endDate!
+                                                    if let astart1 = event1.startDate {
+                                                        if let astart2 = event2.startDate{
+                                                                                                                return astart1 > astart2
+                                                                                                           }
+                                                                                                       }
+
+                                                    if let aend1 = event1.endDate {
+                                                        if let aend2 = event2.endDate{
+                                                             return aend1 > aend2
+                                                        }
+                                                    }
+                                                   return false
                                                 }
                                             }
                                             completion(pastChannels)
@@ -939,6 +958,7 @@ class FirestoreService: NSObject {
                     let myChannelParentKey = myInfo["pk"] as? String
                     let isReply = myInfo["reply"] as? Bool
                     let quipParent = myInfo["p"] as? String
+                    let aemail = myInfo["email"] as? String
                        
                     var aQuipScore:Int?
                     var aReplies:Int?
@@ -951,7 +971,7 @@ class FirestoreService: NSObject {
                     
                       let myImageRef = myInfo["i"] as? String
                       let myGifRef = myInfo["g"] as? String
-                    let myQuip = Quip(text: aQuipText ?? "", bowl: myChannel ?? "Other", time: atimePosted ?? Timestamp(), score: aQuipScore ?? 0, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent: quipParent)
+                    let myQuip = Quip(text: aQuipText ?? "", bowl: myChannel ?? "Other", time: atimePosted ?? Timestamp(), score: aQuipScore ?? 0, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent: quipParent, email: aemail)
                     
                        newUserQuips.append(myQuip)
                     
@@ -1001,6 +1021,7 @@ class FirestoreService: NSObject {
                                   let aQuipText = myInfo["t"] as? String
                                   let myChannel = myInfo["c"] as? String
                                   let quipParent = myInfo["p"] as? String
+                                let aemail = myInfo["email"] as? String
                                var aQuipScore:Int?
                                var aReplies:Int?
                                if let myQuipNumbers = myScores[aQuipID] as? [String:Any]{
@@ -1015,7 +1036,7 @@ class FirestoreService: NSObject {
                                 let myChannelKey = myInfo["k"] as? String
                                 let myChannelParentKey = myInfo["pk"] as? String
                                 let isReply = myInfo["reply"] as? Bool
-                               let myQuip = Quip(text: aQuipText!, bowl: myChannel ?? "Other", time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent:quipParent )
+                               let myQuip = Quip(text: aQuipText!, bowl: myChannel ?? "Other", time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent:quipParent, email: aemail)
                                   newUserQuips.append(myQuip)
                                 
                                 
@@ -1454,5 +1475,36 @@ class FirestoreService: NSObject {
                                            }
                                          completion(myBlockedUsers)
                                        }
+    }
+    
+    func getUniversities(completion: @escaping ([Channel])->()){
+        let docRef = db.collection("/Universities").document("Schools")
+        var aSchools:[Channel] = []
+        docRef.getDocument { (document, error) in
+            if let error = error{
+                print("error:\(error)")
+            }else{
+                if let mySchools = document?.data(){
+                    for aSchool in mySchools.keys{
+                        let schoolName = aSchool
+                        if let schoolInfo = mySchools[aSchool] as? [String:Any]{
+                            if let email = schoolInfo["email"] as? String{
+                            let mySchool = Channel(name: schoolName, akey: schoolName, email: email)
+                            aSchools.append(mySchool)
+                            }
+                        }
+                    }
+                }
+            }
+            completion(aSchools)
+        }
+    }
+    
+    func linkEmail(uid:String, email:String, completion: @escaping ()->()){
+        let docRef = db.collection("/Users").document(uid)
+        let data = ["email":email]
+        docRef.updateData(data)
+        completion()
+        
     }
 }

@@ -69,6 +69,8 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
             self.navigationItem.rightBarButtonItem = nil
             addGesture()
         }
+        bioTextView.isHidden = true
+        
         nameTextView.layer.cornerRadius = 10
         nameTextView.clipsToBounds = true
         bioTextView.layer.cornerRadius = 10
@@ -107,7 +109,14 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     //updates firestore and firebase with likes when view is dismissed
       override func viewWillDisappear(_ animated: Bool){
              super.viewWillDisappear(animated)
-
+        let indexPath = IndexPath(item: 0, section: 0)
+        if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellUserNew{
+            cell.refreshControl.endRefreshing()
+        }
+        let indexPath2 = IndexPath(item: 1, section: 0)
+        if let cell = collectionView.cellForItem(at: indexPath2) as? CollectionViewCellUserTop{
+            cell.refreshControl.endRefreshing()
+        }
           
              
            }
@@ -300,6 +309,11 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                        if let url = URL(string: "mailto:\(email)") {
                             UIApplication.shared.open(url)
                        }
+        }else if menuItem.name == "Link Email"{
+            let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+            let nextViewController = storyBoard.instantiateViewController(withIdentifier: "CreateAccount") as! myUIViewController
+            nextViewController.navigationItem.title = "Link Email"
+            navigationController?.pushViewController(nextViewController, animated: true)
         }
         
     }
@@ -307,19 +321,19 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     func showNextControllerEllipses(menuItem: MenuItem, quip: Quip?){
         if menuItem.name == "View Event Feed"{
             
-        }else if menuItem.name == "Report Quip"{
+        }else if menuItem.name == "Report Crack"{
             if let aquip = quip{
             FirestoreService.sharedInstance.reportQuip(quip: aquip)
             
             }
             displayMsgBox()
-        }else if menuItem.name == "Share Quip"{
+        }else if menuItem.name == "Share Crack"{
             if let aquip = quip{
             if let collectionViewCell = collectionView.visibleCells[0] as? CollectionViewCellUser{
                 collectionViewCell.generateDynamicLink(aquip: aquip, cell: nil)
             }
             }
-        }else if menuItem.name == "Delete Quip"{
+        }else if menuItem.name == "Delete Crack"{
             if let aQuipID = quip?.quipID{
                            FirestoreService.sharedInstance.deleteQuip(quipID: aQuipID){
                                self.collectionView.reloadData()
@@ -350,7 +364,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         }}))
     self.present(alert, animated: true, completion: nil)
     }
-    
+  /*
     @IBAction func editBtnClicked(_ sender: Any) {
         if nameTextView.isEditable {
             changeToNormalMode()
@@ -359,7 +373,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
             changeToEditMode()
         }
     }
-    
+    */
     func changeToEditMode(){
       //  bioTextView.removeConstraint(bioHeightConstraint!)
         bioTextView.isHidden = false

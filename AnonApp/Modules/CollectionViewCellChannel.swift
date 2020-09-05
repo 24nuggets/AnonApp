@@ -17,7 +17,7 @@ class CollectionViewCellChannelLive: UICollectionViewCell, MyCellDelegate3, UITa
     var activeChannels:[Channel] = []
     var bigCategory:String?
     var categoryName:String?
-    private var refreshControl = UIRefreshControl()
+    var refreshControl = UIRefreshControl()
     lazy var dateFormatter:DateFormatter = {
         let dateForm = DateFormatter()
         dateForm.dateFormat = "MMM d, h:mm a"
@@ -103,7 +103,15 @@ class CollectionViewCellChannelPast: UICollectionViewCell, MyCellDelegate3, UITa
     var pastChannels:[Channel] = []
     var bigCategory:String?
     var categoryName:String?
-    private var refreshControl = UIRefreshControl()
+    var refreshControl = UIRefreshControl()
+    lazy var dateFormatter:DateFormatter = {
+           let dateForm = DateFormatter()
+        dateForm.dateStyle = .medium
+        dateForm.timeStyle = .none
+        dateForm.locale = Locale(identifier: "en_US")
+           dateForm.timeZone = TimeZone.autoupdatingCurrent
+           return dateForm
+       }()
     
     override func awakeFromNib() {
            super.awakeFromNib()
@@ -161,7 +169,13 @@ class CollectionViewCellChannelPast: UICollectionViewCell, MyCellDelegate3, UITa
          
               if pastChannels.count > 0{
                    cell.channelName?.text = self.pastChannels[indexPath.row].channelName
-                
+                if let date1 = self.pastChannels[indexPath.row].startDate{
+                let date = dateFormatter.string(from:date1)
+                    cell.date.isHidden = false
+                cell.date.text = date
+                }else{
+                    cell.date.isHidden = true
+                }
                   cell.delegate = self
               }
               return cell
@@ -176,7 +190,7 @@ class CollectionViewCellChannelUpcoming: UICollectionViewCell, UITableViewDelega
     
     @IBOutlet weak var channelTable: UITableView!
     
-    private var refreshControl = UIRefreshControl()
+    var refreshControl = UIRefreshControl()
      var upcomingChannels:[Channel] = []
     var bigCategory:String?
        var categoryName:String?

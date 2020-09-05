@@ -48,6 +48,7 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
         
         
     }
+
     
     override func viewWillAppear(_ animated: Bool) {
          super.viewWillAppear(animated)
@@ -55,6 +56,7 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
         resetVars()
          onLoad()
      }
+    
     
     func resetVars(){
         didReorder = false
@@ -137,7 +139,7 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
         if catNames.count > 0 {
         nextViewController.currentFavs=Dictionary(uniqueKeysWithValues: zip(catNames, 1...catNames.count))
         }
-        if menuItem.name == "Add Teams And Leagues"{
+        if menuItem.name == "Add Teams and Leagues"{
             nextViewController.isAddSports = true
            // nextViewController.navigationItem.title = "Add Teams and Leagues"
         }else{
@@ -152,7 +154,7 @@ class ViewControllerFavorites: UIViewController, UITableViewDataSource, UITableV
         // MARK: - Database Functions
     
     func getIfUserFavCategories(){
-        self.myFavCats = []
+        
         
           if let aUid = uid{
             FirestoreService.sharedInstance.getUserFavCategories(aUid: aUid) {[weak self] (myFavCats) in

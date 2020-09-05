@@ -38,7 +38,7 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
     private weak var passedChannel:Channel?
   private var lastContentOffset: CGFloat = 0
     
-    weak var myCategory:Category?
+    var myCategory:Category?
     var bigCategory:String?
     private var isfav:Bool?
     private var myFavs:[Category] = []
@@ -55,7 +55,8 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
        // NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.detachlisteners), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
         
         //notification for when user reopens app after being in the background, appWillEnterForeground is called
-       // NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+       NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        
         
        
         catName.text = myCategory?.categoryName
@@ -84,15 +85,30 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
         collectionView.reloadData()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        let indexPath = IndexPath(item: 0, section: 0)
+               let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCellChannelLive
+        cell?.refreshControl.endRefreshing()
+                    let indexPath2 = IndexPath(item: 1, section: 0)
+                           let cell2 = collectionView.cellForItem(at: indexPath2) as? CollectionViewCellChannelPast
+        cell2?.refreshControl.endRefreshing()
+        let indexPath3 = IndexPath(item: 2, section: 0)
+                                  let cell3 = collectionView.cellForItem(at: indexPath3) as? CollectionViewCellChannelUpcoming
+        cell3?.refreshControl.endRefreshing()
+    }
     
+    @objc func appWillEnterForeground(){
+        collectionView.reloadData()
+    }
     
    
     
     //deinitializer for notification center
-   /* deinit {
+    deinit {
            NotificationCenter.default.removeObserver(self)
        }
-    */
+    
     func setUpButtons(){
             let selectedColor = UIColor(hexString: "ffaf46")
                        pastBtn.setTitleColor(selectedColor, for: .selected  )
@@ -102,20 +118,6 @@ class ViewControllerDiscover: myUIViewController, UICollectionViewDelegate, UICo
            
        }
    
-    
- 
-    
-   
-    
-   
-   /*
-   func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-    if gestureRecognizer.isEqual(navigationController?.interactivePopGestureRecognizer) {
-             navigationController?.popViewController(animated: true)
-         }
-         return false
-     }
-  */
     
  
     

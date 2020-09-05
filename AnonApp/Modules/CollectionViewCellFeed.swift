@@ -370,7 +370,8 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
 
 class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UITableViewDataSource  {
    
-    private var refreshControl=UIRefreshControl()
+    
+    var refreshControl=UIRefreshControl()
     private var firestoreQuips:[Quip?] = []
     var myScores:[String:Any]=[:]
     private var moreRecentQuipsFirebase:Bool = false
@@ -678,7 +679,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
 
 class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITableViewDataSource  {
    
-    private var refreshControl=UIRefreshControl()
+    var refreshControl=UIRefreshControl()
      private var myHotIDs:[String]=[]
     private var moreHotQuipsFirebase:Bool = false
     private var cellHeights = [IndexPath: CGFloat]()

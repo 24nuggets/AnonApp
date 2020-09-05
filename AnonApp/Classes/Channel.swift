@@ -18,6 +18,7 @@ class Channel{
     var parent:String?
     var parentKey:String?
     var priority:Int?
+    var aemail:String?
     
     
     init(name:String, akey:String, aparent:String?, aparentkey:String?, apriority:Int?, astartDate:Date?, aendDate:Date?){
@@ -28,6 +29,13 @@ class Channel{
         parent=aparent
         parentKey=aparentkey
         priority=apriority  
+    }
+    
+    init(name:String, akey:String, email:String){
+        channelName = name
+        aemail = email
+        key=akey
+        
     }
     
     deinit{

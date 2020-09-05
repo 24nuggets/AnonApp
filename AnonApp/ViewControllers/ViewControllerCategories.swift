@@ -79,6 +79,9 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
             // Fallback on earlier versions
         }
        hideKeyboardWhenTappedAround2()
+        
+        //notification for when user reopens app after being in the background, appWillEnterForeground is called
+             NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -99,6 +102,29 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
         collectionView.reloadData()
         
        }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        let indexPath = IndexPath(item: 0, section: 0)
+               let cell = collectionView.cellForItem(at: indexPath) as? collectionCellLiveCategories
+        cell?.refreshControl.endRefreshing()
+                    let indexPath2 = IndexPath(item: 1, section: 0)
+                           let cell2 = collectionView.cellForItem(at: indexPath2) as? collectionCellSportsCategories
+        cell2?.refreshControl.endRefreshing()
+        let indexPath3 = IndexPath(item: 2, section: 0)
+                                  let cell3 = collectionView.cellForItem(at: indexPath3) as? collectionCellEntertainmentCategories
+        cell3?.refreshControl.endRefreshing()
+    }
+    
+     @objc func appWillEnterForeground(){
+         collectionView.reloadData()
+     }
+     
+    
+     
+     //deinitializer for notification center
+     deinit {
+            NotificationCenter.default.removeObserver(self)
+        }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
