@@ -157,7 +157,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         
         if score < 0 {
             userScoreLabel.text = "0"
-            levelLable.text = "Level 1"
+            levelLable.text = "Nut Count: 0"
             firstRangeLabel.text = "0"
             secondRangeLabel.text = "100"
             progressBarLength = progressBar.bounds.width
@@ -165,6 +165,18 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
             leadingScoreBarConstraint.constant = 0
             
         }
+        else{
+            let nextScore = score % 100
+            let nuts = Int(floor(Double(score)/100.0))
+            userScoreLabel.text = String(nextScore)
+            levelLable.text = "Nut Count: \(nuts)"
+            self.view.layoutIfNeeded()
+                      let progress = Float(nextScore) / 100.0
+                  progressBar.progress = progress
+                      progressBarLength = progressBar.bounds.width
+                      leadingScoreBarConstraint.constant = progressBarLength * CGFloat(progress)
+        }
+        /*
         else if score < 100{
         
         userScoreLabel.text = String(score)
@@ -199,6 +211,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
              progressBarLength = progressBar.bounds.width
                               leadingScoreBarConstraint.constant = progressBarLength * CGFloat(progress)
                }
+ */
         
     }
     

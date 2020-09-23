@@ -96,6 +96,9 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         }
         makeViewFade()
         dismissKeyboard()
+        if let schoolEmail = emailEnding{
+            saveQuip()
+        }else{
         FirestoreService.sharedInstance.checkIfEventIsOpen(eventID: myChannel?.key ?? "Other") {[weak self] (isOpen) in
             if isOpen{
                 self?.saveQuip()
@@ -103,7 +106,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                 self?.displayMsgBox2()
             }
         }
-       
+        }
     }
     
     func makeViewFade(){
@@ -353,7 +356,8 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                                     "p": myParentChannelName,
                                      "a": auid,
                                      "email": emailEnding as Any,
-                                     "d": FieldValue.serverTimestamp()]
+                                     "d": FieldValue.serverTimestamp(),
+                                     "v":true]
                        
                        post4 = ["c": myChannel?.channelName ?? "Other",
                                        "t": quipText,
@@ -379,7 +383,8 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                                          "k": myChannelKey,
                                          "a": auid,
                                          "email": emailEnding as Any,
-                                         "d": FieldValue.serverTimestamp()]
+                                         "d": FieldValue.serverTimestamp(),
+                                         "v":true]
                        
                            post4 = ["c": myChannelName,
                             "t": quipText,

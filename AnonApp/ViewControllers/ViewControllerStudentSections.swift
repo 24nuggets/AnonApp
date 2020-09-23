@@ -20,6 +20,12 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
     @IBOutlet var studentSectionsTableView: UITableView!
     var mySchools:[Channel] = []
     var uid:String?
+    private var refreshControl = UIRefreshControl()
+    lazy var settingsMenuLauncher:SettingsMenuQuip = {
+        let launcher = SettingsMenuQuip()
+     launcher.homeController = self
+         return launcher
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,8 +37,17 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
        
         studentSectionsTableView.delegate = self
         studentSectionsTableView.dataSource = self
+        refreshControl.addTarget(self, action: #selector(ViewControllerStudentSections.refreshTable), for: .valueChanged)
+        studentSectionsTableView.refreshControl = refreshControl
         refreshTable()
     }
+    
+    @IBAction func settingsClicked(_ sender: Any) {
+        settingsMenuLauncher.makeViewFade()
+        settingsMenuLauncher.addMenuFromSide()
+        
+    }
+    
     func authorizeUser(tabBar:BaseTabBarController){
                 
                 Auth.auth().signInAnonymously() {[weak self] (authResult, error) in
@@ -40,6 +55,7 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
                  guard let user = authResult?.user else { return }
                      self?.uid = user.uid
                  tabBar.userID=user.uid
+                   UserDefaults.standard.set(user.uid, forKey: "UID")
                   FirestoreService.sharedInstance.getBlockedUsers(uid: user.uid) { (myblockedUsers) in
                       blockedUsers = myblockedUsers
                   }
@@ -49,10 +65,12 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
             }
     
     
-    func refreshTable(){
+    @objc func refreshTable(){
+        refreshControl.beginRefreshing()
         FirestoreService.sharedInstance.getUniversities {[weak self] (schools) in
             self?.mySchools = schools
             self?.studentSectionsTableView.reloadData()
+            self?.refreshControl.endRefreshing()
         }
     }
     
@@ -75,7 +93,29 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
              }
            return UITableViewCell()
        }
-    
+    func showNextControllerSettings(menuItem:MenuItem){
+         if menuItem.name == "Privacy Policy"{
+              let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+              let nextViewController = storyBoard.instantiateViewController(withIdentifier: "PrivacyController") as! myUIViewController
+              navigationController?.pushViewController(nextViewController, animated: true)
+          }else if menuItem.name == "Report a Problem"{
+              let email = supportEmail
+              if let url = URL(string: "mailto:\(email)") {
+                   UIApplication.shared.open(url)
+              }
+          }else if menuItem.name == "Contact Us"{
+              let email = supportEmail
+                         if let url = URL(string: "mailto:\(email)") {
+                              UIApplication.shared.open(url)
+                         }
+          }else if menuItem.name == "Link Email"{
+              let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+              let nextViewController = storyBoard.instantiateViewController(withIdentifier: "CreateAccount") as! myUIViewController
+              nextViewController.navigationItem.title = "Link Email"
+              navigationController?.pushViewController(nextViewController, animated: true)
+          }
+          
+      }
 
     
     // MARK: - Navigation

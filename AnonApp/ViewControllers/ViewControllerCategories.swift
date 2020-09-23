@@ -272,6 +272,7 @@ class ViewControllerCategories: myUIViewController, UISearchBarDelegate, UIColle
                 // ...
                guard let user = authResult?.user else { return }
                    self?.uid = user.uid
+                 UserDefaults.standard.set(user.uid, forKey: "UID")
                tabBar.userID=user.uid
                 FirestoreService.sharedInstance.getBlockedUsers(uid: user.uid) { (myblockedUsers) in
                     blockedUsers = myblockedUsers

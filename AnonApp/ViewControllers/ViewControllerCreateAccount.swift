@@ -14,18 +14,20 @@ class ViewControllerCreateAccount: myUIViewController {
     
     @IBOutlet weak var emailTextField: UITextField!
     
+    @IBOutlet var topView: UIView!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         addGesture()
+        topView.backgroundColor = darktint
         hideKeyboardWhenTappedAround()
         // Do any additional setup after loading the view.
     }
     override func viewDidAppear(_ animated: Bool) {
         emailTextField.becomeFirstResponder()
         emailTextField.selectedTextRange = emailTextField.textRange(from: emailTextField.beginningOfDocument, to: emailTextField.beginningOfDocument)
-        emailTextField.textColor = .black
+        emailTextField.textColor = .label
     }
     
     

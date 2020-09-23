@@ -225,6 +225,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return false
         }
     }
+    func displayMsgBoxEmailLink(email:String){
+          let title = "Email Link Successful"
+          let message = "\(email) has been successfully linked to your account."
+          let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+          alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { action in
+                switch action.style{
+                case .default:
+                      print("default")
+                 
+                      
+                case .cancel:
+                      print("cancel")
+
+                case .destructive:
+                      print("destructive")
+
+
+                @unknown default:
+                  print("unknown action")
+              }}))
+            let root = window?.rootViewController as? BaseTabBarController
+                let navContoller = root?.viewControllers?[0] as? UINavigationController
+                let firstController = navContoller?.viewControllers[0]
+                DispatchQueue.main.async {
+                firstController?.present(alert, animated: true, completion: nil)
+                }
+      }
     
     func displayLicenAgreement(){
         let message = "We use Apple's Standard End User License Agreement and to use this app you must agree to the terms outlined in the EULA."
@@ -269,8 +296,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         FirestoreService.sharedInstance.linkEmail(uid: uid, email: email) {
             
         }
-        (window?.rootViewController as? UINavigationController)?.popToRootViewController(animated: false)
+        let root = window?.rootViewController as? UITabBarController
+        (root?.viewControllers?[0] as? UINavigationController)?.popToRootViewController(animated: false)
+        (root?.viewControllers?[1] as? UINavigationController)?.popToRootViewController(animated: false)
         //window?.rootViewController?.children[0].performSegue(withIdentifier: "passwordless", sender: nil)
+        displayMsgBoxEmailLink(email: email)
         return true
       }
       return false

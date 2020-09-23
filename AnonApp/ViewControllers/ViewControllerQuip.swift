@@ -226,7 +226,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     }
     func displayMsgBoxAccess(){
         let title = "Link Email"
-        let message = "Link your \(emailEnding ?? "") email to post to this feed."
+        let message = "Link your \(emailEnding ?? "") email to post and vote in this group."
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { action in
           switch action.style{
@@ -428,6 +428,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
    
     func btnUpTapped(cell: QuipCells) {
+        if hasAccess{
            //Get the indexpath of cell where button was tapped
          if let indexPath = self.replyTable.indexPath(for: cell){
            if indexPath.row == 0 {
@@ -442,11 +443,16 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                
            }
               
-           }
+        }
+        
+    }else{
+        displayMsgBoxAccess()
+    }
            
        }
        
        func btnDownTapped(cell: QuipCells) {
+        if hasAccess{
            //Get the indexpath of cell where button was tapped
         if let indexPath = self.replyTable.indexPath(for: cell){
         if indexPath.row == 0 {
@@ -462,6 +468,9 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         }
            
         }
+    }else{
+        displayMsgBoxAccess()
+    }
        }
     func btnSharedTapped(cell: QuipCells) {
         
@@ -1502,6 +1511,15 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                  cell.myGifView.getImageFromGiphy(gifID: aGifID, feedTable:self.replyTable)
                                                              
              }
+                /*
+                if hasAccess {
+                    cell.upButton.isHidden = false
+                    cell.downButton.isHidden = false
+                }else{
+                    cell.upButton.isHidden = true
+                    cell.downButton.isHidden = true
+                }
+ */
              if self.quipLikeStatus == true {
                  cell.upButton.isSelected = true
                   cell.upButton.tintColor = UIColor(hexString: "ffaf46")
@@ -1543,6 +1561,15 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                              cell.myGifView.getImageFromGiphy(gifID: aGID, feedTable:self.replyTable)
                                                                                                                                       
                  }
+                    /*
+                    if hasAccess {
+                        cell.upButton.isHidden = false
+                        cell.downButton.isHidden = false
+                    }else{
+                        cell.upButton.isHidden = true
+                        cell.downButton.isHidden = true
+                    }
+            */
                          cell.quipText?.text = aReply.quipText
                              if let aReplyScore=aReply.tempScore{
                                      cell.score?.text = String(aReplyScore)

@@ -682,6 +682,9 @@ class FirebaseService: NSObject {
            
             completion(score)
             }
+            else{
+                completion(0)
+            }
         }
         
     }

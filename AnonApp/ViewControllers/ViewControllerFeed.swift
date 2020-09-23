@@ -67,10 +67,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                   }else{
                       self.navigationItem.rightBarButtonItem = nil
                   }
-        if let schoolEmail = myChannel?.aemail{
-            emailEnding = schoolEmail
-            checkIfViewOnly(emailEnd: schoolEmail)
-        }
+       
         if let channelKey = myChannel?.key{
         FirestoreService.sharedInstance.getEvent(eventID: channelKey) {[weak self] (stage, parentKey, parentName) in
             if let aStage = stage{
@@ -101,6 +98,8 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
        selectNew()
     }
     
+    
+    
     func checkIfViewOnly(emailEnd:String){
         let length = emailEnd.count
         let userEmail = UserDefaults.standard.string(forKey: "EmailConfirmed")
@@ -122,10 +121,13 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
          }
   
     
-    override func viewDidAppear(_ animated: Bool){
-              super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool){
+              super.viewWillAppear(animated)
       
-        
+        if let schoolEmail = myChannel?.aemail{
+                   emailEnding = schoolEmail
+                   checkIfViewOnly(emailEnd: schoolEmail)
+               }
        
         
         
@@ -226,8 +228,12 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         
         if hasAccess{
            let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
-            let nextViewController = storyBoard.instantiateViewController(withIdentifier: "ViewControllerWriteQuip") as! ViewControllerWriteQuip
-            self.navigationController?.pushViewController(nextViewController, animated: true)
+            let writeQuip = storyBoard.instantiateViewController(withIdentifier: "ViewControllerWriteQuip") as! ViewControllerWriteQuip
+            writeQuip.myChannel = self.myChannel
+                writeQuip.feedVC = self
+                writeQuip.emailEnding = emailEnding
+            writeQuip.uid=self.uid
+            self.navigationController?.showDetailViewController(writeQuip, sender: nil)
         }else{
             displayMsgBoxAccess()
         }
@@ -235,7 +241,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     func displayMsgBoxAccess(){
         let title = "Link Email"
-        let message = "Link your \(emailEnding ?? "") email to post to this feed."
+        let message = "Link your \(emailEnding ?? "") email to post and vote in this group."
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { action in
           switch action.style{

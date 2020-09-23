@@ -315,10 +315,12 @@ class ellipsesMenuQuip:Menu{
 class SettingsMenuQuip:Menu{
     
     weak var userController: ViewControllerUser?
+    weak var homeController: ViewControllerStudentSections?
     
     override func nextController(menuItem:MenuItem){
         
         userController?.showNextControllerSettings(menuItem: menuItem)
+        homeController?.showNextControllerSettings(menuItem: menuItem)
         
     }
     
@@ -356,7 +358,7 @@ class SettingsMenuQuip:Menu{
 
     override func populateMenuItems(){
         //menuItems = [MenuItem(name:"Edit Profile", imageName: "wrench"), MenuItem(name: "Privacy Policy", imageName: "doc.text"), MenuItem(name:"Report a Problem", imageName:"flag"), MenuItem(name:"Contact Us", imageName:"envelope"), MenuItem(name:"Cancel", imageName: "multiply")]
-        menuItems = [MenuItem(name: "Link Email", imageName: "doc.text"), MenuItem(name: "Privacy Policy", imageName: "doc.text"), MenuItem(name:"Report a Problem", imageName:"flag"), MenuItem(name:"Contact Us", imageName:"envelope"), MenuItem(name:"Cancel", imageName: "multiply")]
+        menuItems = [MenuItem(name: "Link Email", imageName: "link"), MenuItem(name: "Privacy Policy", imageName: "doc.text"), MenuItem(name:"Report a Problem", imageName:"flag"), MenuItem(name:"Contact Us", imageName:"envelope"), MenuItem(name:"Cancel", imageName: "multiply")]
            
        }
 }
@@ -374,7 +376,7 @@ class EllipsesMenuEvent:Menu{
 
       override func populateMenuItems(){
          
-          menuItems = [MenuItem(name:"Share Event", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
+          menuItems = [MenuItem(name:"Share College", imageName:"arrowshape.turn.up.right.circle"), MenuItem(name:"Cancel", imageName: "multiply.circle")]
           
           collectionView.reloadData()
          }

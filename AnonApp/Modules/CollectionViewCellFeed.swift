@@ -545,8 +545,15 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                                 cell?.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.feedTable)
                                                                     
                                                                }
-                            
-                        
+                       /*
+                        if myFeedController?.hasAccess ?? false{
+                            cell?.upButton.isHidden = false
+                            cell?.downButton.isHidden = false
+                        }else{
+                            cell?.upButton.isHidden = true
+                            cell?.downButton.isHidden = true
+                        }
+        */
                 if let dateVal = myQuip.timePosted?.seconds{
                     let milliTimePost = dateVal * 1000
                 if let aCurrentTime = self.currentTime{
@@ -596,6 +603,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
        return cellHeights[indexPath] ?? UITableView.automaticDimension
    }
     override func btnDownTapped(cell: QuipCells) {
+         if myFeedController?.hasAccess ?? false{
         //Get the indexpath of cell where button was tapped
         if let indexPath = self.feedTable.indexPath(for: cell){
        
@@ -604,6 +612,9 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                 
 
             }
+        }
+        }else{
+            myFeedController?.displayMsgBoxAccess()
         }
         
     }
@@ -614,6 +625,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
     
     override func btnUpTapped(cell: QuipCells) {
            //Get the indexpath of cell where button was tapped
+        if myFeedController?.hasAccess ?? false{
            if let indexPath = self.feedTable.indexPath(for: cell){
           
                if let myQuip = newQuips[indexPath.row]{
@@ -623,6 +635,9 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                
            
            }
+        }else{
+            myFeedController?.displayMsgBoxAccess()
+        }
        }
     
    override func btnSharedTapped(cell: QuipCells) {
@@ -830,6 +845,15 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                                        cell.myGifView.getImageFromGiphy(gifID: gifID, feedTable:self.feedTable)
                                                                                                        
                                }
+                            /*
+                                if myFeedController?.hasAccess ?? false{
+                                cell.upButton.isHidden = false
+                                cell.downButton.isHidden = false
+                            }else{
+                                cell.upButton.isHidden = true
+                                cell.downButton.isHidden = true
+                            }
+    */
                               
                                if myQuip.parentKey == myFeedController?.myChannel?.key{
                                    cell.categoryLabel.text = myQuip.channel
@@ -877,6 +901,7 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
          return cellHeights[indexPath] ?? UITableView.automaticDimension
      }
       override func btnDownTapped(cell: QuipCells) {
+        if myFeedController?.hasAccess ?? false{
           //Get the indexpath of cell where button was tapped
           if let indexPath = self.feedTable.indexPath(for: cell){
          
@@ -886,6 +911,9 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                
               }
           }
+    }else{
+        myFeedController?.displayMsgBoxAccess()
+    }
           
       }
     override func btnRepliesTapped(cell: QuipCells) {
@@ -893,6 +921,7 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
     }
     
     override func btnUpTapped(cell: QuipCells) {
+        if myFeedController?.hasAccess ?? false{
            //Get the indexpath of cell where button was tapped
            if let indexPath = self.feedTable.indexPath(for: cell){
            
@@ -902,6 +931,9 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                }
             
         }
+    }else{
+        myFeedController?.displayMsgBoxAccess()
+    }
        }
     
     override func btnSharedTapped(cell: QuipCells) {
