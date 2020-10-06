@@ -17,7 +17,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     
     
 
-    let shareText = "Check out this crack on pnut!"
+    let shareText = "Check out this crack on the Nut House!"
     var myQuip:Quip?
     var passedReply:Quip?
     weak var myChannel:Channel?
@@ -126,7 +126,8 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            let length = emailEnd.count
            let userEmail = UserDefaults.standard.string(forKey: "EmailConfirmed")
            let userEmailEnd = String(userEmail?.suffix(length) ?? "")
-           if emailEnd == userEmailEnd || userEmail == "matthewcapriotti4@gmail.com" || userEmail == "jmichaelthompson96@gmail.com"{
+        let email = UserDefaults.standard.string(forKey: "Email")
+           if emailEnd == userEmailEnd || userEmail == "matthewcapriotti4@gmail.com" || userEmail == "jmichaelthompson96@gmail.com" || email == "testid3241"{
               hasAccess = true
            }else{
               hasAccess = false

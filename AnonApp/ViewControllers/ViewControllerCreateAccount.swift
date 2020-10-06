@@ -33,6 +33,7 @@ class ViewControllerCreateAccount: myUIViewController {
     
     @IBAction func createAccountClicked(_ sender: Any) {
         if let email = emailTextField.text{
+        UserDefaults.standard.set(email, forKey: "Email")
         let actionCodeSettings = ActionCodeSettings()
         actionCodeSettings.url = URL(string: "https://anonapp.page.link")
         // The sign-in operation has to always be completed in the app.
@@ -48,10 +49,9 @@ class ViewControllerCreateAccount: myUIViewController {
             // The link was successfully sent. Inform the user.
             // Save the email locally so you don't need to ask the user for it again
             // if they open the link on the same device.
-            UserDefaults.standard.set(email, forKey: "Email")
+            
                                     self.showMessagePrompt(message:"Check your email for link")
-            print(UserDefaults.standard.string(forKey: "Email"))
-            // ...
+           
         }
             
         }else {
