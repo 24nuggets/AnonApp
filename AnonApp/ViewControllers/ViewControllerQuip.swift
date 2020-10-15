@@ -1381,7 +1381,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                            }
                var post2 = [   "t": quipText,
                                "a": uid ?? "Other",
-                               "d": FieldValue.serverTimestamp(),
+                         //      "d": FieldValue.serverTimestamp(),
                                "r": true,
                                "email": emailEnding as Any,
                                "p": myQuip?.quipID as Any] as [String : Any]
@@ -1400,17 +1400,37 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     }
     
     func addReplyToFirestore(key:String, data:[String:Any]){
+       
         
+        if let auid = uid{
         if let aQuipID = myQuip?.quipID{
+            if let aChannelID = myQuip?.channelKey{
+                if let aQuipAuthor = myQuip?.user{
+            
+                    cloudFunctionManager.sharedInstance.functions.httpsCallable("writeReply").call(["crackID": aQuipID, "key":key, "data":data, "uid":auid, "channelID": aChannelID, "quipAuthor": aQuipAuthor] ) {[weak self] (result, error) in
+            if let error = error as NSError? {
+              if error.domain == FunctionsErrorDomain {
+                let code = FunctionsErrorCode(rawValue: error.code)
+                let message = error.localizedDescription
+                let details = error.userInfo[FunctionsErrorDetailsKey]
+               print("code:\(String(describing: code)), message:\(message), details:\(String(describing: details))")
+              }
+              // ...
+            }
+                        self?.resetView()
+              
+            }
+            /*
             FirestoreService.sharedInstance.saveReply(quipId: aQuipID, mydata: data, key: key) {
                 self.addReplyToFirebase(key: key)
                 self.addQuipToRecentsForUser(data: data, key: key)
                 self.addQuipDocToFirestore(data: data, key: key)
             }
-        
-       
+        */
+            }
+            }
         }
-        
+        }
     }
     func addQuipToRecentsForUser(data:[String:Any], key: String){
         var mydata = data
@@ -1429,7 +1449,8 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     }
     
     func addReplyToFirebase(key:String){
-         let reply1 = ["s": 0] as [String : Any]
+         let reply1 = ["s": 0,
+                       "r": 0] as [String : Any]
         
        
         var childUpdates:[String:Any]=[:]
@@ -1456,33 +1477,37 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             }
                    
         FirebaseService.sharedInstance.updateChildValues(myUpdates: childUpdates)
+    resetView()
+        
+    }
+    
+    func resetView(){
         textView.text = placeHolderText
-        let fixedWidth = textView.frame.size.width
-        let initialHeight = textView.frame.size.height
-        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        let diffHeight = newSize.height - initialHeight
-        textView.frame.size = CGSize(width: fixedWidth, height: newSize.height)
-        textView.textColor = .gray
-        textView.resignFirstResponder()
-        adjustStackViewHeigt(height: diffHeight)
-        if imageView?.image != nil || mediaView?.media != nil{
-            adjustStackViewHeigt(height: -210)
-        }
-       deleteBtn?.removeFromSuperview()
-        mediaView?.removeFromSuperview()
-        
-        
-        imageView?.removeFromSuperview()
-        
-        mediaView?.isHidden = true
-        imageView?.isHidden = true
-        isNewImage = true
-        self.activityIndicator?.stopAnimating()
-        self.activityIndicator?.removeFromSuperview()
-        self.blackView.removeFromSuperview()
-        updateReplies()
-        postBtn.isEnabled = true
-        
+            let fixedWidth = textView.frame.size.width
+            let initialHeight = textView.frame.size.height
+            let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+            let diffHeight = newSize.height - initialHeight
+            textView.frame.size = CGSize(width: fixedWidth, height: newSize.height)
+            textView.textColor = .gray
+            textView.resignFirstResponder()
+            adjustStackViewHeigt(height: diffHeight)
+            if imageView?.image != nil || mediaView?.media != nil{
+                adjustStackViewHeigt(height: -210)
+            }
+           deleteBtn?.removeFromSuperview()
+            mediaView?.removeFromSuperview()
+            
+            
+            imageView?.removeFromSuperview()
+            
+            mediaView?.isHidden = true
+            imageView?.isHidden = true
+            isNewImage = true
+            self.activityIndicator?.stopAnimating()
+            self.activityIndicator?.removeFromSuperview()
+            self.blackView.removeFromSuperview()
+            updateReplies()
+            postBtn.isEnabled = true
     }
     
     @objc func refreshData(){

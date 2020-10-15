@@ -13,7 +13,7 @@ import GiphyCoreSDK
 
 class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
     
-   let shareText = "Check out this crack on pnut!"
+   let shareText = "Check out this crack on the Nut House!"
      var currentTime:Double?
     var myFeedController:ViewControllerFeed?
      var newQuips:[Quip?] = []

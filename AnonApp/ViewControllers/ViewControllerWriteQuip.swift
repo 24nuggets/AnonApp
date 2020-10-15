@@ -347,8 +347,8 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                                                   "c": myChannelName,
                                                   "k": myChannelKey,
                                                   "pk": myParentChannelKey,
-                                                  "email": emailEnding as Any,
-                                                  "d": FieldValue.serverTimestamp()]
+                                                  "email": emailEnding as Any]
+                                              //    "d": FieldValue.serverTimestamp()]
                        post2 = [   "t": quipText,
                                     "k": myChannelKey,
                                     "c": myChannelName,
@@ -356,12 +356,12 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                                     "p": myParentChannelName,
                                      "a": auid,
                                      "email": emailEnding as Any,
-                                     "d": FieldValue.serverTimestamp(),
+                               //      "d": FieldValue.serverTimestamp(),
                                      "v":true]
                        
                        post4 = ["c": myChannel?.channelName ?? "Other",
                                        "t": quipText,
-                                      "d": FieldValue.serverTimestamp(),
+                               //       "d": FieldValue.serverTimestamp(),
                                       "email": emailEnding as Any,
                                       "k": myChannelKey,
                                       "pk":myParentChannelKey]
@@ -376,20 +376,20 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                     post3 = ["a": auid,
                                               "t": quipText,
                                               "email": emailEnding as Any,
-                                              "k": myChannelKey,
-                                              "d": FieldValue.serverTimestamp()]
+                                              "k": myChannelKey]
+                                         //     "d": FieldValue.serverTimestamp()]
                        post2 = [        "t": quipText,
                                          "c": myChannelName,
                                          "k": myChannelKey,
                                          "a": auid,
                                          "email": emailEnding as Any,
-                                         "d": FieldValue.serverTimestamp(),
+                                  //       "d": FieldValue.serverTimestamp(),
                                          "v":true]
                        
                            post4 = ["c": myChannelName,
                             "t": quipText,
                             "email": emailEnding as Any,
-                           "d": FieldValue.serverTimestamp(),
+                       //    "d": FieldValue.serverTimestamp(),
                            "k": myChannelKey]
                      
                        childUpdates = ["/A/\(myChannelKey)/Q/\(key)":post1,
@@ -417,11 +417,38 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     
     //add quips to recentChannelDoc
     func queryRecentChannelQuips(data:[String:Any], key:String, post4:[String:Any], post2:[String:Any]){
+        
+        //TODO add cloud function
+        
          
         if let myChannelKey = self.myChannel?.key{
+            if let auid = uid{
+                 self.textView.resignFirstResponder()
+                cloudFunctionManager.sharedInstance.functions.httpsCallable("writeCrack").call(["key":key, "data":data, "uid":auid, "channelID": myChannelKey, "post4":post4, "post2":post2] ) {[weak self] (result, error) in
+                    if let error = error as NSError? {
+                      if error.domain == FunctionsErrorDomain {
+                        let code = FunctionsErrorCode(rawValue: error.code)
+                        let message = error.localizedDescription
+                        let details = error.userInfo[FunctionsErrorDetailsKey]
+                       print("code:\(String(describing: code)), message:\(message), details:\(String(describing: details))")
+                      }
+                      // ...
+                    }
+                                //self?.resetView()
+                    if let feedVC = self?.feedVC{
+                                       feedVC.collectionView.reloadData()
+                                   }
+                                   self?.activityIndicator?.stopAnimating()
+                                   self?.activityIndicator?.removeFromSuperview()
+                                   self?.blackView.removeFromSuperview()
+                               self?.dismiss(animated: true, completion: nil)
+                      
+                    }
+            }
+           /*
             FirestoreService.sharedInstance.addQuipToRecentChannelTransaction(myChannelKey: myChannelKey, data: data, key: key) {
                 self.addQuipToFirebase()
-                 self.textView.resignFirstResponder()
+                
                 
                 self.runTransactionForRecentUser(data: post4, key: key)
                 self.addQuipDocToFirestore(data: post2, key: key)
@@ -432,9 +459,10 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                 
             }
         }
+    */
     }
    
-    
+    }
     
    
     
@@ -442,13 +470,13 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         if let auid = uid{
             FirestoreService.sharedInstance.addQuipToRecentUserQuips(auid: auid, data: data, key: key){
              
-                if let feedVC = self.feedVC{
-                    feedVC.collectionView.reloadData()
-                }
-                self.activityIndicator?.stopAnimating()
-                self.activityIndicator?.removeFromSuperview()
-                self.blackView.removeFromSuperview()
-            self.dismiss(animated: true, completion: nil)
+               if let feedVC = self.feedVC{
+                                                     feedVC.collectionView.reloadData()
+                                                 }
+                                                 self.activityIndicator?.stopAnimating()
+                                                 self.activityIndicator?.removeFromSuperview()
+                                                 self.blackView.removeFromSuperview()
+                                             self.dismiss(animated: true, completion: nil)
             }
         }
     }

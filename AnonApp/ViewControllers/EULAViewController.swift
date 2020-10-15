@@ -1,18 +1,18 @@
 //
-//  NavigationControllerDiscover.swift
+//  EULAViewController.swift
 //  AnonApp
 //
-//  Created by Matthew Capriotti on 5/21/20.
+//  Created by Matthew Capriotti on 10/6/20.
 //  Copyright © 2020 Matthew Capriotti. All rights reserved.
 //
 
 import UIKit
 
-class NavigationControllerDiscover: UINavigationController {
+class EULAViewController: myUIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        addGesture()
         // Do any additional setup after loading the view.
     }
     

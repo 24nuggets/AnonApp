@@ -956,7 +956,7 @@ class FirestoreService: NSObject {
                        let myChannel = myInfo["c"] as? String
                         let myChannelKey = myInfo["k"] as? String
                     let myChannelParentKey = myInfo["pk"] as? String
-                    let isReply = myInfo["reply"] as? Bool
+                    let isReply = myInfo["r"] as? Bool
                     let quipParent = myInfo["p"] as? String
                     let aemail = myInfo["email"] as? String
                        
@@ -1035,7 +1035,7 @@ class FirestoreService: NSObject {
                                 let myGifRef = myInfo["g"] as? String
                                 let myChannelKey = myInfo["k"] as? String
                                 let myChannelParentKey = myInfo["pk"] as? String
-                                let isReply = myInfo["reply"] as? Bool
+                                let isReply = myInfo["r"] as? Bool
                                let myQuip = Quip(text: aQuipText!, bowl: myChannel ?? "Other", time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent:quipParent, email: aemail)
                                   newUserQuips.append(myQuip)
                                 
@@ -1150,6 +1150,9 @@ class FirestoreService: NSObject {
                 let myReplies = document.data(with: ServerTimestampBehavior.estimate)
                 let sortedKeys = Array(myReplies.keys).sorted(by: <)
                 for aKey in sortedKeys{
+                    if aKey == "n"{
+                        continue
+                    }
                     let myInfo = myReplies[aKey] as! [String:Any]
                                let aReplyID = aKey
                                let atimePosted = myInfo["d"] as? Timestamp
@@ -1218,13 +1221,13 @@ class FirestoreService: NSObject {
             if let eventID = quip.channelKey{
                     if let author = quip.user{
                         self.removeQuip(eventID: eventID, author: author, quipID: quipID, quip: quip,parentEventID: quip.parentKey){
-                            completion()
-                        }
+                           completion()
+                       }
                 }
             }
             else if let parentQuip = quip.quipParent{
                 if let author = quip.user{
-                    self.removeReply(parentID: parentQuip, author: author, replyID: quipID, quip: quip, parentEventID: nil) {
+                   self.removeReply(parentID: parentQuip, author: author, replyID: quipID, quip: quip, parentEventID: nil) {
                         completion()
                     }
                 }
@@ -1236,7 +1239,7 @@ class FirestoreService: NSObject {
     func removeQuip(eventID:String, author:String, quipID:String, quip:Quip,parentEventID:String?, completion: @escaping ()->()){
        
         
-                           
+             /*
                            db.collection("Quips/\(quipID)/Replies").document("RecentReplies").delete { (err) in
                                  if let err = err {
                                                          print("Error removing document: \(err)")
@@ -1301,10 +1304,25 @@ class FirestoreService: NSObject {
                    if let imageRef = quip.imageRef{
                        FirebaseStorageService.sharedInstance.deleteImage(imageRef: imageRef)
                    }
+        */
+        cloudFunctionManager.sharedInstance.functions.httpsCallable("deleteCrack").call(["eventID": eventID, "user":author, "quipID":quipID]) { (result, error) in
+          if let error = error as NSError? {
+            if error.domain == FunctionsErrorDomain {
+              let code = FunctionsErrorCode(rawValue: error.code)
+              let message = error.localizedDescription
+              let details = error.userInfo[FunctionsErrorDetailsKey]
+             print("code:\(String(describing: code)), message:\(message), details:\(String(describing: details))")
+            }
+            // ...
+          }
+                completion()
+            
+          }
+        
     }
     
     func removeReply(parentID:String, author:String, replyID:String, quip:Quip,parentEventID:String?, completion: @escaping ()->()){
-        
+      /*
         db.collection("Quips").document(replyID).delete { (err) in
               if let err = err {
                                       print("Error removing document: \(err)")
@@ -1349,6 +1367,19 @@ class FirestoreService: NSObject {
         if let imageRef = quip.imageRef{
                               FirebaseStorageService.sharedInstance.deleteImage(imageRef: imageRef)
                           }
+ */
+        cloudFunctionManager.sharedInstance.functions.httpsCallable("deleteReply").call(["parentID": parentID, "user":author, "replyID":replyID]) { (result, error) in
+          if let error = error as NSError? {
+            if error.domain == FunctionsErrorDomain {
+              let code = FunctionsErrorCode(rawValue: error.code)
+              let message = error.localizedDescription
+              let details = error.userInfo[FunctionsErrorDetailsKey]
+             print("code:\(String(describing: code)), message:\(message), details:\(String(describing: details))")
+            }
+            // ...
+          }
+          completion()
+        }
         
     }
     
@@ -1503,7 +1534,7 @@ class FirestoreService: NSObject {
     func linkEmail(uid:String, email:String, completion: @escaping ()->()){
         let docRef = db.collection("/Users").document(uid)
         let data = ["email":email]
-        docRef.updateData(data)
+        docRef.setData(data)
         completion()
         
     }

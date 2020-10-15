@@ -300,6 +300,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         (root?.viewControllers?[0] as? UINavigationController)?.popToRootViewController(animated: false)
         (root?.viewControllers?[1] as? UINavigationController)?.popToRootViewController(animated: false)
         //window?.rootViewController?.children[0].performSegue(withIdentifier: "passwordless", sender: nil)
+        var components = email.components(separatedBy: "@")
+        let school = components[1]
+        Analytics.setUserProperty(school, forName: "School")
+        Analytics.logEvent(AnalyticsEventSignUp, parameters: [
+        AnalyticsParameterItemID: school,
+        AnalyticsParameterItemName: "School",
+        AnalyticsParameterContentType: "cont"
+        ])
         displayMsgBoxEmailLink(email: email)
         return true
       }

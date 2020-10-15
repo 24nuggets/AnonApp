@@ -24,20 +24,22 @@ class FirebaseService: NSObject {
   
     
     func setCurrentTimeForChannel(myChannelKey: String){
-          let timeUpdates = ["d":ServerValue.timestamp(),
+          let timeUpdates = ["r":ServerValue.timestamp(),
                                        "s":10000] as [String : Any]
                     ref.child("A/" + myChannelKey + "/Q/z").updateChildValues(timeUpdates)
     }
     
     func setCurrentTimeForUser(uid:String){
         
-        let timeUpdates = ["d":ServerValue.timestamp(),
+        let timeUpdates = ["r":ServerValue.timestamp(),
                            "s": 10000] as [String : Any]
                       
                  ref.child("M/\(uid)/q/z").updateChildValues(timeUpdates)
     }
     func setCurrentTimeForReply(quipId:String){
-         ref.child("Q/" + quipId + "/R/z/d").setValue(ServerValue.timestamp())
+        let timeUpdates = ["r":ServerValue.timestamp(),
+                                  "s": 10000] as [String : Any]
+         ref.child("Q/" + quipId + "/R/z").updateChildValues(timeUpdates)
     }
     
     func getNewScoresFeed(myChannelKey:String, completion: @escaping ([String:Any], Double, Bool)->() ){
@@ -57,7 +59,7 @@ class FirebaseService: NSObject {
                    for key in mykeys {
                         i += 1
                     if key.key == "z"{
-                        currentTime = key.childSnapshot(forPath: "d").value as! Double
+                        currentTime = key.childSnapshot(forPath: "r").value as! Double
                        }
                        else{
                         let aQuipID:String? = key.key
@@ -174,7 +176,7 @@ class FirebaseService: NSObject {
                    while let rest = enumerator.nextObject() as? DataSnapshot {
                         i += 1
                       if rest.key == "z"{
-                           currentTime = rest.childSnapshot(forPath: "d").value as! Double
+                           currentTime = rest.childSnapshot(forPath: "r").value as! Double
                        
                        }
                        else{
@@ -390,7 +392,7 @@ class FirebaseService: NSObject {
             while let rest = enumerator.nextObject() as? DataSnapshot {
                             i+=1
                                  if rest.key == "z"{
-                                     currentTime = rest.childSnapshot(forPath: "d").value as! Double
+                                     currentTime = rest.childSnapshot(forPath: "r").value as! Double
                                  
                                  }
                                  else{
@@ -451,7 +453,7 @@ class FirebaseService: NSObject {
             while let rest = enumerator.nextObject() as? DataSnapshot {
                 i+=1
                                  if rest.key == "z"{
-                                     currentTime = rest.childSnapshot(forPath: "d").value as! Double
+                                     currentTime = rest.childSnapshot(forPath: "r").value as! Double
                                  
                                  }
                                  else{
@@ -579,7 +581,7 @@ class FirebaseService: NSObject {
                       let enumerator = snapshot.children
                       while let rest = enumerator.nextObject() as? DataSnapshot {
                           if rest.key == "z"{
-                              currentTime = rest.childSnapshot(forPath: "d").value as! Double
+                              currentTime = rest.childSnapshot(forPath: "r").value as! Double
                           
                           }
                           else{

@@ -113,6 +113,10 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
               let nextViewController = storyBoard.instantiateViewController(withIdentifier: "CreateAccount") as! myUIViewController
               nextViewController.navigationItem.title = "Link Email"
               navigationController?.pushViewController(nextViewController, animated: true)
+          }else if menuItem.name == "EULA"{
+              let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+                         let nextViewController = storyBoard.instantiateViewController(withIdentifier: "EULAViewController") as! myUIViewController
+                         navigationController?.pushViewController(nextViewController, animated: true)
           }
           
       }
