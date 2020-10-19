@@ -74,6 +74,7 @@ class WelcomeViewController: UIViewController {
             
             button.addTarget(self, action: #selector(didTapButton(_:)), for: .touchUpInside)
             button.setTitleColor(.white, for: .normal)
+            button.titleLabel?.font = UIFont(name: "Helvetica-Bold", size: 20)
             button.backgroundColor = UIColor(hexString: "ffaf46")
             button.setTitle("Continue", for: .normal)
             button.layer.cornerRadius = 15
