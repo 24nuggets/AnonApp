@@ -12,6 +12,7 @@
 		8E8C971571B346CB2C0BF8B8 /* Pods_AnonApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 822DF05D1F86A70D48417533 /* Pods_AnonApp.framework */; };
 		C70C8E3124B526B300E73741 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C70C8E3024B526B100E73741 /* Assets.xcassets */; };
 		C70C8E3324B66D1200E73741 /* ViewControllerPrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70C8E3224B66D1200E73741 /* ViewControllerPrivacyPolicy.swift */; };
+		C723E656253BD87A0051C853 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C723E655253BD8750051C853 /* WelcomeViewController.swift */; };
 		C73A5F5324F5C9560063B329 /* ViewControllerStudentSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73A5F5224F5C9560063B329 /* ViewControllerStudentSections.swift */; };
 		C73A5F5524F5D2B70063B329 /* University.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73A5F5424F5D2B70063B329 /* University.swift */; };
 		C73A5F5724F740890063B329 /* ViewControllerSignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73A5F5624F740890063B329 /* ViewControllerSignIn.swift */; };
@@ -91,6 +92,7 @@
 		A723336372F22710E044569C /* Pods-AnonAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnonAppTests.release.xcconfig"; path = "Target Support Files/Pods-AnonAppTests/Pods-AnonAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		C70C8E3024B526B100E73741 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C70C8E3224B66D1200E73741 /* ViewControllerPrivacyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerPrivacyPolicy.swift; sourceTree = "<group>"; };
+		C723E655253BD8750051C853 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		C73A5F5224F5C9560063B329 /* ViewControllerStudentSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerStudentSections.swift; sourceTree = "<group>"; };
 		C73A5F5424F5D2B70063B329 /* University.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = University.swift; sourceTree = "<group>"; };
 		C73A5F5624F740890063B329 /* ViewControllerSignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerSignIn.swift; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 				C73A5F5624F740890063B329 /* ViewControllerSignIn.swift */,
 				C73A5F5A24F740E10063B329 /* ViewControllerCreateAccount.swift */,
 				C7AB9E55252D406C002652EA /* EULAViewController.swift */,
+				C723E655253BD8750051C853 /* WelcomeViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -672,6 +675,7 @@
 				C788018024A299570094BEC9 /* CollectionViewCellFeed.swift in Sources */,
 				C73AA0C92453ACEF000C27B9 /* ViewControllerCategories.swift in Sources */,
 				C7B1891224C7BBFC0066D583 /* HomeNavigationController.swift in Sources */,
+				C723E656253BD87A0051C853 /* WelcomeViewController.swift in Sources */,
 				C7A6DF9624804807003DA05B /* UIViewExtension.swift in Sources */,
 				C775988B24AFA6280038BB28 /* cloudFunctionManager.swift in Sources */,
 				C76C374724CBC992001777BF /* Colors.swift in Sources */,
@@ -863,7 +867,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.32;
+				MARKETING_VERSION = 1.33;
 				PRODUCT_BUNDLE_IDENTIFIER = HundredMillion.AnonApp;
 				PRODUCT_NAME = "Nut House";
 				SWIFT_VERSION = 5.0;
@@ -886,7 +890,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.32;
+				MARKETING_VERSION = 1.33;
 				PRODUCT_BUNDLE_IDENTIFIER = HundredMillion.AnonApp;
 				PRODUCT_NAME = "Nut House";
 				SWIFT_VERSION = 5.0;

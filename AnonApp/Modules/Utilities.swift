@@ -68,6 +68,8 @@ func timeSincePost(timePosted:Double, currentTime:Double)->String{
     let seconds = floor(timeSincePost)
     if seconds == 1 {
         return (String(format: "%.0f",seconds) + " second ago")
+    }else if seconds < 0 {
+        return (String(format: "%.0f",0) + " seconds ago")
     }
     else{
         return (String(format: "%.0f",seconds) + " seconds ago")

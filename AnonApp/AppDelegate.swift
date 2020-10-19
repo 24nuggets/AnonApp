@@ -188,7 +188,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
        Messaging.messaging().delegate = self
         
         if !isAppAlreadyLaunchedOnce() {
-            displayLicenAgreement()
+        //    displayLicenAgreement()
         }
         if #available(iOS 13.0, *) {
            // if UITraitCollection.current.userInterfaceStyle == .light{
@@ -276,12 +276,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         alert.addAction(declineAction)
         alert.addAction(acceptAction)
         
+        
         let root = window?.rootViewController as? BaseTabBarController
         let navContoller = root?.viewControllers?[0] as? UINavigationController
         let firstController = navContoller?.viewControllers[0]
         DispatchQueue.main.async {
         firstController?.present(alert, animated: true, completion: nil)
+
         }
+  
     }
     
     func handlePasswordlessSignIn(withURL url: URL) -> Bool {

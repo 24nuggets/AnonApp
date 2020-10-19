@@ -1417,9 +1417,15 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
               }
               // ...
             }
-                        self?.resetView()
-              
+                        //self?.resetView()
             }
+                    let myReply = Quip(aScore: 0, aKey: key, atimePosted: Timestamp(date: Date()), aText: data["t"] as! String, aAuthor: data["a"] as! String, image:data["i"] as? String, gif:data["g"] as? String, quipParentID: aQuipID)
+                    
+                    myReplies.append(myReply)
+                    resetView()
+                    
+
+            
             /*
             FirestoreService.sharedInstance.saveReply(quipId: aQuipID, mydata: data, key: key) {
                 self.addReplyToFirebase(key: key)
@@ -1506,7 +1512,9 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             self.activityIndicator?.stopAnimating()
             self.activityIndicator?.removeFromSuperview()
             self.blackView.removeFromSuperview()
-            updateReplies()
+            //updateReplies()
+        replyTable.reloadData()
+        refreshControl.endRefreshing()
             postBtn.isEnabled = true
     }
     

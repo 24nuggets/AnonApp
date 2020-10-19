@@ -41,6 +41,15 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
         studentSectionsTableView.refreshControl = refreshControl
         refreshTable()
     }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if Core.shared.isNewUser(){
+            //onboarding sequence
+            let vc = storyboard?.instantiateViewController(identifier: "WelcomeViewController") as! WelcomeViewController
+            vc.modalPresentationStyle = .fullScreen
+           present(vc, animated: true)
+        }
+    }
     
     @IBAction func settingsClicked(_ sender: Any) {
         settingsMenuLauncher.makeViewFade()
@@ -148,4 +157,19 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
     }
     
 
+}
+
+
+class Core{
+    
+    static let shared = Core()
+    
+    func isNewUser()->Bool{
+        //inverse it because first time it is not set it will return false
+        return !UserDefaults.standard.bool(forKey: "isNewUser")
+    }
+    func setIsNotNewUser(){
+        UserDefaults.standard.set(true, forKey: "isNewUser")
+        
+    }
 }

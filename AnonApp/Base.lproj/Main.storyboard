@@ -1155,7 +1155,7 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="266" height="106"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Utu-39-oo7">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Utu-39-oo7">
                                                                         <rect key="frame" x="10" y="24" width="48" height="24"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                                         <nil key="textColor"/>
@@ -1341,7 +1341,7 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="284" height="167"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KmN-j1-afA">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KmN-j1-afA">
                                                                         <rect key="frame" x="10" y="24" width="48" height="24"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                                         <nil key="textColor"/>
@@ -1631,7 +1631,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="106"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xu2-XA-Lbj">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xu2-XA-Lbj">
                                                     <rect key="frame" x="10" y="24" width="48" height="24"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                     <nil key="textColor"/>
@@ -1720,7 +1720,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="106"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aS7-cb-L3v">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aS7-cb-L3v">
                                                     <rect key="frame" x="10" y="24" width="48" height="24"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                     <nil key="textColor"/>
@@ -2031,7 +2031,7 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="249" height="106"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aqx-OT-xOj">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aqx-OT-xOj">
                                                                         <rect key="frame" x="10" y="24" width="48" height="24"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                                         <nil key="textColor"/>
@@ -2210,7 +2210,7 @@
                                                                 <rect key="frame" x="0.0" y="0.0" width="275" height="106"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6wt-ra-lPC">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6wt-ra-lPC">
                                                                         <rect key="frame" x="10" y="24" width="48" height="24"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                                         <nil key="textColor"/>
@@ -8759,7 +8759,7 @@ You are advised to review this Privacy Policy periodically for any changes. Chan
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="VGY-Bm-bch">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                <mutableString key="text">The Mac App Store Products and App Store Products (collectively, “App Store Product(s)”) made available through the Mac App Store Service and App Store Service (collectively, “App Store Service(s)”) are licensed, not sold, to you. Your license to each App Store Product that you obtain through the App Store Services is subject to your prior acceptance of this Licensed Application End User License Agreement (“Standard EULA”), and you agree that the terms of this Standard EULA will apply to each App Store Product that you license through the App Store Service, unless that App Store Product is covered by a valid end user license agreement between you and the Application Provider of that App Store Product, in which case the terms of that separate end user license agreement will govern. Your license to any Apple Product under this Standard EULA or separate end user license agreement is granted by Apple, and your license to any Third-Party Product under this Standard EULA or separate end user license agreement is granted by the Application Provider of that Third-Party Product. Any App Store Product that is subject to the license granted under this Standard EULA is referred to herein as the “Licensed Application”. The Application Provider or Apple as applicable (“Licensor”) reserves all rights in and to the Licensed Application not expressly granted to you under this Standard EULA.
+                                <string key="text">The Mac App Store Products and App Store Products (collectively, “App Store Product(s)”) made available through the Mac App Store Service and App Store Service (collectively, “App Store Service(s)”) are licensed, not sold, to you. Your license to each App Store Product that you obtain through the App Store Services is subject to your prior acceptance of this Licensed Application End User License Agreement (“Standard EULA”), and you agree that the terms of this Standard EULA will apply to each App Store Product that you license through the App Store Service, unless that App Store Product is covered by a valid end user license agreement between you and the Application Provider of that App Store Product, in which case the terms of that separate end user license agreement will govern. Your license to any Apple Product under this Standard EULA or separate end user license agreement is granted by Apple, and your license to any Third-Party Product under this Standard EULA or separate end user license agreement is granted by the Application Provider of that Third-Party Product. Any App Store Product that is subject to the license granted under this Standard EULA is referred to herein as the “Licensed Application”. The Application Provider or Apple as applicable (“Licensor”) reserves all rights in and to the Licensed Application not expressly granted to you under this Standard EULA.
 
 a. Scope of License: This license granted to you for the Licensed Application by Licensor is limited to a nontransferable license to use the Licensed Application on any Apple-branded products running iOS (including but not limited to iPad, iPhone, and iPod touch) (“iOS Devices”) or Mac OS X (“Mac Computers”), as applicable (collectively, “Apple Device(s)”) that you own or control and as permitted by the usage rules set forth in the Mac App Store, App Store and iBooks Store Terms and Conditions (the “Usage Rules”). This license does not allow you to use the Licensed Application on any Apple Device that you do not own or control, and except as provided in the Usage Rules, you may not distribute or make the Licensed Application available over a network where it could be used by multiple devices at the same time. You may not rent, lease, lend, sell, transfer redistribute, or sublicense the Licensed Application and, if you sell your Mac Computer or iOS Device to a third party, you must remove the Licensed Application from the Mac Computer or iOS Device before doing so. You may not copy (except as expressly permitted by this license and the Usage Rules), decompile, reverse-engineer, disassemble, attempt to derive the source code of, modify, or create derivative works of the Licensed Application, any updates, or any part thereof (except as and only to the extent that any foregoing restriction is prohibited by applicable law or to the extent as may be permitted by the licensing terms governing use of any open-sourced components included with the Licensed Application). Any attempt to do so is a violation of the rights of the Licensor and its licensors. If you breach this restriction, you may be subject to prosecution and damages.
 
@@ -8789,7 +8789,7 @@ g. You may not use or otherwise export or re-export the Licensed Application exc
 
 h. The Licensed Application and related documentation are "Commercial Items", as that term is defined at 48 C.F.R. §2.101, consisting of "Commercial Computer Software" and "Commercial Computer Software Documentation", as such terms are used in 48 C.F.R. §12.212 or 48 C.F.R. §227.7202, as applicable. Consistent with 48 C.F.R. §12.212 or 48 C.F.R. §227.7202-1 through 227.7202-4, as applicable, the Commercial Computer Software and Commercial Computer Software Documentation are being licensed to U.S. Government end users (a) only as Commercial Items and (b) with only those rights as are granted to all other end users pursuant to the terms and conditions herein. Unpublished-rights reserved under the copyright laws of the United States.
 
-i. The laws of the State of California, excluding its conflicts of law rules, govern this license and your use of the Licensed Application. Your use of the Licensed Application may also be subject to other local, state, national, or international laws.</mutableString>
+i. The laws of the State of California, excluding its conflicts of law rules, govern this license and your use of the Licensed Application. Your use of the Licensed Application may also be subject to other local, state, national, or international laws.</string>
                                 <color key="textColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -8960,9 +8960,39 @@ i. The laws of the State of California, excluding its conflicts of law rules, go
             </objects>
             <point key="canvasLocation" x="5446" y="766"/>
         </scene>
+        <!--Welcome View Controller-->
+        <scene sceneID="sfy-Nf-oyX">
+            <objects>
+                <viewController storyboardIdentifier="WelcomeViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="AOX-mI-hdT" customClass="WelcomeViewController" customModule="Nut_House" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="b7d-G4-0XH">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sOA-Vw-jwn">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="sOA-Vw-jwn" firstAttribute="leading" secondItem="FFN-mJ-OPD" secondAttribute="leading" id="AdV-lP-4ka"/>
+                            <constraint firstItem="sOA-Vw-jwn" firstAttribute="top" secondItem="FFN-mJ-OPD" secondAttribute="top" id="KLz-ah-qk9"/>
+                            <constraint firstItem="FFN-mJ-OPD" firstAttribute="trailing" secondItem="sOA-Vw-jwn" secondAttribute="trailing" id="LT4-vx-Pqe"/>
+                            <constraint firstItem="FFN-mJ-OPD" firstAttribute="bottom" secondItem="sOA-Vw-jwn" secondAttribute="bottom" id="XSm-Wa-dzV"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="FFN-mJ-OPD"/>
+                    </view>
+                    <connections>
+                        <outlet property="holderView" destination="sOA-Vw-jwn" id="7a1-8c-pYi"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qIr-7Y-GKK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6599" y="594"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="86i-wZ-YD7"/>
+        <segue reference="BQD-lp-45l"/>
         <segue reference="NB8-lY-Ebi"/>
         <segue reference="0Bk-yL-E3w"/>
     </inferredMetricsTieBreakers>
