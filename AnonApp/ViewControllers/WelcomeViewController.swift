@@ -34,8 +34,8 @@ class WelcomeViewController: UIViewController {
         holderView.addSubview(scrollView)
         
         
-        let titles = ["Welcome", "Your School", "Your Sack", ""]
-        let images = ["Tutorial Page 1 Final","Tutorial Page 2 Final","Tutorial Page 3 Final", "Tutorial Page 4 Final"]
+        let titles = ["Welcome", "", "", ""]
+        let images = ["Tutorial Redo Page 1","Tutorial Redo Page 2","Tutorial Redo Page 3", "Tutorial Page 4 Final"]
         //if you change num of pages change button target less than guard
         let numOfPages = 4
         
@@ -47,10 +47,11 @@ class WelcomeViewController: UIViewController {
             
             // the image size is ratio is width: 349, height: 620
             var imageView:UIImageView
-            if x == numOfPages - 1{
-                 imageView = UIImageView(frame: CGRect(x: (pageView.frame.size.width / 2) - (((pageView.frame.size.height - 90 - 15) * (349/620)) / 2), y: 20, width: (pageView.frame.size.height - 90 - 15) * (349/620), height: pageView.frame.size.height - 90 - 15))
-            }else{
-             imageView = UIImageView(frame: CGRect(x: (pageView.frame.size.width / 2) - (((pageView.frame.size.height - 130 - 60 - 15) * (349/620)) / 2), y: 120, width: (pageView.frame.size.height - 130 - 60 - 15) * (349/620), height: pageView.frame.size.height - 130 - 60 - 15))
+            if x == 0{
+                imageView = UIImageView(frame: CGRect(x: (pageView.frame.size.width / 2) - (((pageView.frame.size.height - 130 - 60 - 15) * (349/620)) / 2), y: 120, width: (pageView.frame.size.height - 130 - 60 - 15) * (349/620), height: pageView.frame.size.height - 130 - 60 - 15))
+                 
+           }else{
+             imageView = UIImageView(frame: CGRect(x: (pageView.frame.size.width / 2) - (((pageView.frame.size.height - 90 - 15) * (349/620)) / 2), y: 20, width: (pageView.frame.size.height - 90 - 15) * (349/620), height: pageView.frame.size.height - 90 - 15))
             }
             let button = UIButton(frame: CGRect(x: 10, y: pageView.frame.size.height - 60, width: pageView.frame.size.width - 20, height: 50))
             
