@@ -34,42 +34,97 @@ class WelcomeViewController: UIViewController {
         holderView.addSubview(scrollView)
         
         
-        let titles = ["Welcome", "", "", ""]
-        let images = ["Tutorial Redo Page 1","Tutorial Redo Page 2","Tutorial Redo Page 3", "Tutorial Page 4 Final"]
+        let titles = ["Welcome to the Nut House", "Post (Crack) On Your College's Page", "Vote, Reply, & Share With Other Students"]
+        let subtitles = ["", "Cracks disappear from the feed after 48 hrs", "A score of -5 deletes a crack"]
+        let images = ["NutHouse Icon","Better Resolution Exerpt - Main Feed","Better Resolution Exerpt - Vote and Reply"]
         //if you change num of pages change button target less than guard
-        let numOfPages = 4
+        let numOfPages = 3
         
         for x in 0..<numOfPages{
             let pageView = UIView(frame: CGRect(x: CGFloat(x) * holderView.frame.size.width, y: 0, width: holderView.frame.size.width, height: holderView.frame.size.height))
             scrollView.addSubview(pageView)
             
-            let label = UILabel(frame: CGRect(x: 10, y: 10, width: pageView.frame.size.width - 20, height: 120))
+            let label = UILabel()
+            let label2 = UILabel()
             
             // the image size is ratio is width: 349, height: 620
             var imageView:UIImageView
             if x == 0{
-                imageView = UIImageView(frame: CGRect(x: (pageView.frame.size.width / 2) - (((pageView.frame.size.height - 130 - 60 - 15) * (349/620)) / 2), y: 120, width: (pageView.frame.size.height - 130 - 60 - 15) * (349/620), height: pageView.frame.size.height - 130 - 60 - 15))
+                imageView = UIImageView()
+               // imageView = UIImageView(frame: CGRect(x: (pageView.frame.size.width / 2) - (((pageView.frame.size.height - 130 - 60 - 15) * (349/620)) / 2), y: 120, width: (pageView.frame.size.height - 130 - 60 - 15) * (349/620), height: pageView.frame.size.height - 130 - 60 - 15))
                  
            }else{
-             imageView = UIImageView(frame: CGRect(x: (pageView.frame.size.width / 2) - (((pageView.frame.size.height - 90 - 15) * (349/620)) / 2), y: 20, width: (pageView.frame.size.height - 90 - 15) * (349/620), height: pageView.frame.size.height - 90 - 15))
+             //imageView = UIImageView(frame: CGRect(x: (pageView.frame.size.width / 2) - (((pageView.frame.size.height - 90 - 15) * (349/620)) / 2), y: 20, width: (pageView.frame.size.height - 90 - 15) * (349/620), height: pageView.frame.size.height - 90 - 15))
+                imageView = UIImageView()
             }
-            let button = UIButton(frame: CGRect(x: 10, y: pageView.frame.size.height - 60, width: pageView.frame.size.width - 20, height: 50))
+            let button = UIButton(frame: CGRect(x: 15, y: pageView.frame.size.height - 60, width: pageView.frame.size.width - 30, height: 50))
+           //  let button = UIButton()
             
             label.textAlignment = .center
-            label.font = UIFont(name: "Helvetica-Bold", size: 48)
+            label.lineBreakMode = .byWordWrapping
+            label.numberOfLines = 0
+            if x==0 {
+            label.font = UIFont(name: "GillSans-UltraBold", size: 54)
+            }else{
+               label.font = UIFont(name: "GillSans-Bold", size: 40)
+            }
             label.textColor = UIColor(hexString: "ffaf46")
             pageView.addSubview(label)
             label.text = titles[x]
             
-            holderView.backgroundColor = darktint
+            label2.textAlignment = .center
+            label2.lineBreakMode = .byWordWrapping
+            label2.numberOfLines = 0
+           
+            label2.font = UIFont(name: "GillSans-Bold", size: 32)
+            
+            label2.textColor = UIColor(hexString: "ffaf46")
+            label2.text = subtitles[x]
+            
+            if x != 0{
+            pageView.addSubview(label2)
+            pageView.addConstraintWithFormat(format: "H:|-15-[v0]-15-|", views: label2)
+            }
+            pageView.addConstraintWithFormat(format: "H:|-15-[v0]-15-|", views: label)
+           
+            pageView.backgroundColor = darktint
             
             imageView.contentMode = .scaleAspectFit
             imageView.image = UIImage(named: images[x])
             imageView.layer.cornerRadius = 40
             imageView.clipsToBounds = true
+            imageView.backgroundColor = .black
            
             
             pageView.addSubview(imageView)
+            
+            
+            pageView.addConstraintWithFormat(format: "V:|-15-[v0]", views: label)
+          
+            let spacer1 = UIView()
+            let spacer2 = UIView()
+            spacer1.backgroundColor = darktint
+            spacer2.backgroundColor = darktint
+            pageView.addSubview(spacer1)
+            pageView.addSubview(spacer2)
+            if x == 0 {
+            pageView.addConstraintWithFormat(format: "V:[v0][v2][v1][v3(==v2)]-60-|", views: label,imageView,spacer1, spacer2 )
+            }else{
+                let spacer3 = UIView()
+                spacer3.backgroundColor = darktint
+                pageView.addSubview(spacer3)
+                pageView.addConstraintWithFormat(format: "V:[v0][v3][v1][v4(==v3)][v2][v5(==v3)]-60-|", views: label,imageView, label2, spacer1, spacer2, spacer3 )
+            }
+          
+            if x == 0 {
+            imageView.heightAnchor.constraint(equalToConstant: (pageView.frame.size.width - 30)).isActive = true
+            }else if x == 1 {
+            imageView.heightAnchor.constraint(equalToConstant: (pageView.frame.size.width - 30) * (675 / 905)).isActive = true
+            }
+            else if x == 2 {
+               imageView.heightAnchor.constraint(equalToConstant: (pageView.frame.size.width - 30) * (740 / 920)).isActive = true
+            }
+            imageView.widthAnchor.constraint(equalToConstant: pageView.frame.size.width - 30).isActive = true
             imageView.centerXAnchor.constraint(equalTo: pageView.centerXAnchor).isActive = true
             
             button.addTarget(self, action: #selector(didTapButton(_:)), for: .touchUpInside)
@@ -83,13 +138,14 @@ class WelcomeViewController: UIViewController {
             }
             button.tag = x + 1
             pageView.addSubview(button)
+            
         }
-        scrollView.contentSize = CGSize(width: holderView.frame.size.width * 3, height: 0)
+        scrollView.contentSize = CGSize(width: Int(holderView.frame.size.width) * numOfPages, height: 0)
         scrollView.isPagingEnabled = true
     }
     
     @objc func didTapButton(_ button:UIButton){
-        guard button.tag < 4 else{
+        guard button.tag < 3 else{
             //dismiss
             Analytics.logEvent(AnalyticsEventTutorialComplete, parameters: nil)
             Core.shared.setIsNotNewUser()
