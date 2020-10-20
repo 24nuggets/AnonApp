@@ -34,9 +34,9 @@ class WelcomeViewController: UIViewController {
         holderView.addSubview(scrollView)
         
         
-        let titles = ["Welcome to the Nut House", "Post (Crack) On Your College's Page", "Vote, Reply, & Share With Other Students"]
+        let titles = ["Welcome to the\nNut House", "Post (Crack) On Your College's Page", "Vote, Reply, & Share With Other Students"]
         let subtitles = ["", "Cracks disappear from the feed after 48 hrs", "A score of -5 deletes a crack"]
-        let images = ["NutHouse Icon","Better Resolution Exerpt - Main Feed","Better Resolution Exerpt - Vote and Reply"]
+        let images = ["Nut House Icon New Resolution","Loser Exerpt Screenshot","Better Resolution Exerpt - Vote and Reply"]
         //if you change num of pages change button target less than guard
         let numOfPages = 3
         
@@ -57,14 +57,14 @@ class WelcomeViewController: UIViewController {
              //imageView = UIImageView(frame: CGRect(x: (pageView.frame.size.width / 2) - (((pageView.frame.size.height - 90 - 15) * (349/620)) / 2), y: 20, width: (pageView.frame.size.height - 90 - 15) * (349/620), height: pageView.frame.size.height - 90 - 15))
                 imageView = UIImageView()
             }
-            let button = UIButton(frame: CGRect(x: 15, y: pageView.frame.size.height - 60, width: pageView.frame.size.width - 30, height: 50))
+            let button = UIButton(frame: CGRect(x: 20, y: pageView.frame.size.height - 60, width: pageView.frame.size.width - 40, height: 50))
            //  let button = UIButton()
             
             label.textAlignment = .center
             label.lineBreakMode = .byWordWrapping
             label.numberOfLines = 0
             if x==0 {
-            label.font = UIFont(name: "GillSans-UltraBold", size: 54)
+            label.font = UIFont(name: "GillSans-UltraBold", size: 50)
             }else{
                label.font = UIFont(name: "GillSans-Bold", size: 40)
             }
@@ -83,9 +83,9 @@ class WelcomeViewController: UIViewController {
             
             if x != 0{
             pageView.addSubview(label2)
-            pageView.addConstraintWithFormat(format: "H:|-15-[v0]-15-|", views: label2)
+            pageView.addConstraintWithFormat(format: "H:|-20-[v0]-20-|", views: label2)
             }
-            pageView.addConstraintWithFormat(format: "H:|-15-[v0]-15-|", views: label)
+            pageView.addConstraintWithFormat(format: "H:|-20-[v0]-20-|", views: label)
            
             pageView.backgroundColor = darktint
             
@@ -99,7 +99,7 @@ class WelcomeViewController: UIViewController {
             pageView.addSubview(imageView)
             
             
-            pageView.addConstraintWithFormat(format: "V:|-15-[v0]", views: label)
+            pageView.addConstraintWithFormat(format: "V:|-10-[v0]", views: label)
           
             let spacer1 = UIView()
             let spacer2 = UIView()
@@ -117,14 +117,14 @@ class WelcomeViewController: UIViewController {
             }
           
             if x == 0 {
-            imageView.heightAnchor.constraint(equalToConstant: (pageView.frame.size.width - 30)).isActive = true
+            imageView.heightAnchor.constraint(equalToConstant: (pageView.frame.size.width - 40) * (744 / 856)).isActive = true
             }else if x == 1 {
-            imageView.heightAnchor.constraint(equalToConstant: (pageView.frame.size.width - 30) * (675 / 905)).isActive = true
+            imageView.heightAnchor.constraint(equalToConstant: (pageView.frame.size.width - 40) * (715 / 940)).isActive = true
             }
             else if x == 2 {
-               imageView.heightAnchor.constraint(equalToConstant: (pageView.frame.size.width - 30) * (740 / 920)).isActive = true
+               imageView.heightAnchor.constraint(equalToConstant: (pageView.frame.size.width - 40) * (740 / 920)).isActive = true
             }
-            imageView.widthAnchor.constraint(equalToConstant: pageView.frame.size.width - 30).isActive = true
+            imageView.widthAnchor.constraint(equalToConstant: pageView.frame.size.width - 40).isActive = true
             imageView.centerXAnchor.constraint(equalTo: pageView.centerXAnchor).isActive = true
             
             button.addTarget(self, action: #selector(didTapButton(_:)), for: .touchUpInside)
