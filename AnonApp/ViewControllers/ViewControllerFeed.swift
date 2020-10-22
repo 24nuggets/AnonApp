@@ -27,6 +27,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     var isOpen:Bool?
     var emailEnding:String?
     var hasAccess = false
+    var isAdmin = false
   
    
            var myLikesDislikesMap:[String:Int] = [:]
@@ -105,8 +106,11 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         let email = UserDefaults.standard.string(forKey: "Email")
         let userEmail = UserDefaults.standard.string(forKey: "EmailConfirmed")
         let userEmailEnd = String(userEmail?.suffix(length) ?? "")
-        if emailEnd == userEmailEnd || userEmail == "matthewcapriotti4@gmail.com" || userEmail == "jmichaelthompson96@gmail.com" || email == "testid3241"{
+        if emailEnd == userEmailEnd || email == "testid3241"{
            hasAccess = true
+        }else if userEmail == "matthewcapriotti4@gmail.com" || userEmail == "jmichaelthompson96@gmail.com"{
+            hasAccess = true
+            isAdmin = true
         }else{
            hasAccess = false
         }
@@ -191,6 +195,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
       }
       
       func updateFirestoreLikesDislikes(){
+        if !isAdmin {
           if myNewLikesDislikesMap.count>0{
               if let aUID = uid {
                   if let aChannelKey = myChannel?.key{
@@ -200,6 +205,9 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                   }
               }
           }
+        }else{
+            myNewLikesDislikesMap = [:]
+        }
       }
     
     func resetVars(){

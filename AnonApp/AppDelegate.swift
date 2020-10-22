@@ -299,11 +299,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         FirestoreService.sharedInstance.linkEmail(uid: uid, email: email) {
             
         }
+        if email == "matthewcapriotti4@gmail.com" || email == "jmichaelthompson96@gmail.com"{
+            UserDefaults.standard.set(true, forKey: "isAdmin")
+        }
         let root = window?.rootViewController as? UITabBarController
         (root?.viewControllers?[0] as? UINavigationController)?.popToRootViewController(animated: false)
         (root?.viewControllers?[1] as? UINavigationController)?.popToRootViewController(animated: false)
         //window?.rootViewController?.children[0].performSegue(withIdentifier: "passwordless", sender: nil)
-        var components = email.components(separatedBy: "@")
+        let components = email.components(separatedBy: "@")
         let school = components[1]
         Analytics.setUserProperty(school, forName: "School")
         Analytics.logEvent(AnalyticsEventSignUp, parameters: [

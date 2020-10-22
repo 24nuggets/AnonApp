@@ -57,6 +57,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     var hiddenPosts:[String:Bool] = [:]
     var emailEnding:String?
     var hasAccess = false
+    var isAdmin = false
 
     @IBOutlet weak var replyTable: UITableView!
     @IBOutlet weak var stackView: UIStackView!
@@ -96,6 +97,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         hideKeyboardWhenTappedAround()
         if let schoolEmail = emailEnding{
             checkIfViewOnly(emailEnd: schoolEmail)
+        }else if  parentViewUser != nil{
+            //if you are coming from your profile you have acces to vote and post
+            //need this becasue of the users with the testid that post
+            //todo if we give access to view others profiles we have to change this
+            hasAccess = true
         }else if let schoolEmail = myQuip?.aemail{
             emailEnding = schoolEmail
             checkIfViewOnly(emailEnd: schoolEmail)
@@ -127,8 +133,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
            let userEmail = UserDefaults.standard.string(forKey: "EmailConfirmed")
            let userEmailEnd = String(userEmail?.suffix(length) ?? "")
         let email = UserDefaults.standard.string(forKey: "Email")
-           if emailEnd == userEmailEnd || userEmail == "matthewcapriotti4@gmail.com" || userEmail == "jmichaelthompson96@gmail.com" || email == "testid3241"{
+           if emailEnd == userEmailEnd || email == "testid3241"{
               hasAccess = true
+           }else if userEmail == "matthewcapriotti4@gmail.com" || userEmail == "jmichaelthompson96@gmail.com"{
+            hasAccess = true
+            isAdmin = true
            }else{
               hasAccess = false
            }
@@ -931,7 +940,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
        }
     
     func updateFirestoreLikesDislikes(){
-         
+        if !isAdmin {
         if let aUID = uid {
             if let quipKey = myQuip?.quipID {
                 
@@ -939,6 +948,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                 FirestoreService.sharedInstance.updateLikesDislikes(myNewLikesDislikesMap: myNewLikesDislikesMap, aChannelOrUserKey: quipKey, myMap: myUserMap, aUID: aUID, parentChannelKey: nil, parentChannelMap: nil, parentQuipsMap: nil)
                   
             }
+        }
         }
        }
     
@@ -1407,7 +1417,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
             if let aChannelID = myQuip?.channelKey{
                 if let aQuipAuthor = myQuip?.user{
             
-                    cloudFunctionManager.sharedInstance.functions.httpsCallable("writeReply").call(["crackID": aQuipID, "key":key, "data":data, "uid":auid, "channelID": aChannelID, "quipAuthor": aQuipAuthor] ) {[weak self] (result, error) in
+                    cloudFunctionManager.sharedInstance.functions.httpsCallable("writeReply").call(["crackID": aQuipID, "key":key, "data":data, "uid":auid, "channelID": aChannelID, "quipAuthor": aQuipAuthor] ) { (result, error) in
             if let error = error as NSError? {
               if error.domain == FunctionsErrorDomain {
                 let code = FunctionsErrorCode(rawValue: error.code)
@@ -1417,6 +1427,11 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
               }
               // ...
             }
+                        if auid != aQuipAuthor{
+                        Messaging.messaging().subscribe(toTopic: "\(aQuipID)Replier"){ error in
+                                             print("Subscribed to \(aQuipID)")
+                                           }
+                        }
                         //self?.resetView()
             }
                     let myReply = Quip(aScore: 0, aKey: key, atimePosted: Timestamp(date: Date()), aText: data["t"] as! String, aAuthor: data["a"] as! String, image:data["i"] as? String, gif:data["g"] as? String, quipParentID: aQuipID)

@@ -441,7 +441,11 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                                    self?.activityIndicator?.stopAnimating()
                                    self?.activityIndicator?.removeFromSuperview()
                                    self?.blackView.removeFromSuperview()
+                    Messaging.messaging().subscribe(toTopic: "\(key)Author"){ error in
+                      print("Subscribed to \(key)")
+                    }
                                self?.dismiss(animated: true, completion: nil)
+                                
                       
                     }
             }

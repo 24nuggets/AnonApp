@@ -51,7 +51,7 @@ class ViewControllerCreateAccount: myUIViewController {
             // Save the email locally so you don't need to ask the user for it again
             // if they open the link on the same device.
             
-                                    self.showMessagePrompt(message:"Check your email for link")
+            self.showMessagePrompt(message:"Check your email for link. If it does not show up in 1 minute, check your junk folder.")
            
         }
             

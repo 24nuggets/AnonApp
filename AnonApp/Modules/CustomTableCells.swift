@@ -227,8 +227,11 @@ class QuipCells:UITableViewCell{
        }
     
     func noneToDown2(quipScore:Int, quip:Quip?){
+        let isAdmin = UserDefaults.standard.bool(forKey: "isAdmin")
+        if !isAdmin{
            self.downButton.isSelected=true
            self.downButton.tintColor = UIColor(hexString: "ffaf46")
+        }
                let originalScore = Int(self.score.text!)
                let newScore = originalScore! - 1
                self.score.text = String(newScore)
@@ -283,8 +286,11 @@ class QuipCells:UITableViewCell{
            
        }
     func noneToUp2(quipScore:Int, quip:Quip?){
+        let isAdmin = UserDefaults.standard.bool(forKey: "isAdmin")
+        if !isAdmin{
          self.upButton.isSelected=true
         self.upButton.tintColor = UIColor(hexString: "ffaf46")
+        }
               let originalScore = Int(self.score.text!)
          let newScore = originalScore! + 1
          if let aquip = quip {
