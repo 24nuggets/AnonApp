@@ -362,12 +362,77 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         print(userInfo)
     }
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        if let acrackID = response.notification.request.content.userInfo["crackID"] as? String{
+            let crackID = acrackID as! String
+            let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+                   guard let initialVC = window?.rootViewController as? BaseTabBarController else {
+                     return
+                   }
+            if let auid = UserDefaults.standard.string(forKey: "UID"){
+            FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: auid, aKey: auid) { (likesDislikes) in
+                
+            
+                
+            
+            FirestoreService.sharedInstance.getQuip(quipID: crackID) { (quip) in
+                FirebaseService.sharedInstance.getQuipScore(aQuip: quip) { (aquip) in
+                    //  self?.window = UIWindow(frame: UIScreen.main.bounds)
+                                    //  self?.window?.rootViewController = tabVC
+                                   
+                                      
+                                     let quipViewController = storyBoard.instantiateViewController(withIdentifier: "ViewControllerQuip") as! ViewControllerQuip
+                                      quipViewController.myQuip = quip
+                                      quipViewController.currentTime = Date().timeIntervalSince1970 * 1000
+                    quipViewController.uid = auid
+                    if likesDislikes[crackID] == 1 {
+                        quipViewController.quipLikeStatus = true
+                    }else if likesDislikes[crackID]  == -1{
+                        quipViewController.quipLikeStatus = false
+                    }
+                    if let score = aquip.quipScore{
+                    quipViewController.quipScore = String(score)
+                     //   guard let viewControllers = initialVC.viewControllers,
+                      //  let listIndex = viewControllers.firstIndex(where: { $0 is HomeNavigationController }),
+                  //  let navVC = viewControllers[listIndex] as? HomeNavigationController else { return }
+                       // navVC.popToRootViewController(animated: false)
+                      //  initialVC.selectedIndex = listIndex
+                       
+                            
+                          //  feedViewController?.definesPresentationContext = true
+                        
+                        let listIndex = 1
+                        guard let viewControllers = initialVC.viewControllers,
+                        let navVC = viewControllers[listIndex] as? UINavigationController else { return }
+                                                    
+                        navVC.popToRootViewController(animated: false)
+                        initialVC.selectedIndex = listIndex
+                        
+                        //  navVC.definesPresentationContext = true
+                        quipViewController.parentViewUser = navVC.viewControllers.first as? ViewControllerUser
+                        navVC.pushViewController(quipViewController, animated: true)
+                        }
+                            
+                    }
+                }
+            }
+            }
+        
+        }
+        
+    }
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+    }
+    
     
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
       print("Firebase registration token: \(fcmToken)")
-
+        
       let dataDict:[String: String] = ["token": fcmToken]
       NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
+        
       // TODO: If necessary send token to application server.
       // Note: This callback is fired at each app startup and whenever a new token is generated.
     }

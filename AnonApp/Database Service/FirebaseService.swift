@@ -143,7 +143,7 @@ class FirebaseService: NSObject {
                                          }
                                      }
                             }
-                                if i == 20 {
+                                if i == 21 {
                                     self?.lastRecentKeyFeed = tempLastRecentkey!
                                     moreRecentQuipsFirebase = true
                                                                                         

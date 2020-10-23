@@ -32,8 +32,8 @@ class ViewControllerCreateAccount: myUIViewController {
     
     
     @IBAction func createAccountClicked(_ sender: Any) {
-        if let email = emailTextField.text{
-            
+        if let email1 = emailTextField.text{
+            let email = email1.trimmingCharacters(in: .whitespacesAndNewlines)
         UserDefaults.standard.set(email, forKey: "Email")
         let actionCodeSettings = ActionCodeSettings()
         actionCodeSettings.url = URL(string: "https://anonapp.page.link")
