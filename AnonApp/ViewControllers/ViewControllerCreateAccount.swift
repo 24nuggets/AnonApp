@@ -16,6 +16,7 @@ class ViewControllerCreateAccount: myUIViewController {
     
     @IBOutlet var topView: UIView!
     
+    @IBOutlet weak var linkEmailButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,18 +24,23 @@ class ViewControllerCreateAccount: myUIViewController {
         topView.backgroundColor = darktint
         hideKeyboardWhenTappedAround()
         // Do any additional setup after loading the view.
+        linkEmailButton.layer.cornerRadius = 20
+        linkEmailButton.clipsToBounds = true
     }
     override func viewDidAppear(_ animated: Bool) {
         emailTextField.becomeFirstResponder()
         emailTextField.selectedTextRange = emailTextField.textRange(from: emailTextField.beginningOfDocument, to: emailTextField.beginningOfDocument)
         emailTextField.textColor = .label
+        //take this out after testing
+        DynamicLinks.performDiagnostics(completion: nil)
     }
     
     
     @IBAction func createAccountClicked(_ sender: Any) {
         if let email1 = emailTextField.text{
+            
             let email = email1.trimmingCharacters(in: .whitespacesAndNewlines)
-        UserDefaults.standard.set(email, forKey: "Email")
+       UserDefaults.standard.set(email, forKey: "Email")
         let actionCodeSettings = ActionCodeSettings()
         actionCodeSettings.url = URL(string: "https://anonapp.page.link")
         // The sign-in operation has to always be completed in the app.
@@ -51,6 +57,7 @@ class ViewControllerCreateAccount: myUIViewController {
             // Save the email locally so you don't need to ask the user for it again
             // if they open the link on the same device.
             
+            Analytics.logEvent(AnalyticsEventLogin, parameters: [:])
             self.showMessagePrompt(message:"Check your email for link. If it does not show up in 1 minute, check your junk folder.")
            
         }

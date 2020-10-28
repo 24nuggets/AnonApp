@@ -27,7 +27,7 @@ class CustomImageView:UIImageView{
         activityIndicator = UIActivityIndicatorView()
         if let myactivityIndicator = activityIndicator{
         myactivityIndicator.hidesWhenStopped = true
-            if #available(iOS 13.0, *) {
+            if #available(iOS 14.0, *) {
                 myactivityIndicator.style = .gray
             } else {
                 // Fallback on earlier versions

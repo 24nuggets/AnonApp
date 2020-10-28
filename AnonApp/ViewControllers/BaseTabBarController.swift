@@ -22,7 +22,9 @@ class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
        
         self.delegate = self
         
-       
+        authorizeUser { (uid) in
+            
+        }
        
         
     }
@@ -36,16 +38,30 @@ class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
  
     
     func authorizeUser(completion: @escaping (String)->()){
+        if Core.shared.isKeyPresentInUserDefaults(key: "UID"){
+            if let uid = UserDefaults.standard.string(forKey: "UID"){
+                
+                
+            FirestoreService.sharedInstance.getBlockedUsers(uid: uid) { (myblockedUsers) in
+                blockedUsers = myblockedUsers
+            }
+            }
+        }else{
         
         Auth.auth().signInAnonymously() {[weak self] (authResult, error) in
           // ...
          guard let user = authResult?.user else { return }
             self?.userID = user.uid
+            let topVC = (self?.viewControllers?[0] as? UINavigationController)?.topViewController as? ViewControllerFeed
+            topVC?.uid = user.uid
+            topVC?.collectionView.reloadData()
             UserDefaults.standard.set(user.uid, forKey: "UID")
-            completion(user.uid)
+            FirestoreService.sharedInstance.getBlockedUsers(uid: user.uid) { (myblockedUsers) in
+                blockedUsers = myblockedUsers
+            }
             
         }
-        
+        }
        
     }
     

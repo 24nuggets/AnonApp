@@ -203,7 +203,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     @IBAction func gifBtnClicked(_ sender: Any) {
         let g = GiphyViewController()
         g.theme = GPHTheme(type: .automatic)
-               g.layout = .waterfall
+             //  g.layout = .waterfall
                g.mediaTypeConfig = [.gifs, .recents]
                g.showConfirmationScreen = true
                g.rating = .ratedPG13

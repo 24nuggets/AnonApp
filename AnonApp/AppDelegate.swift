@@ -108,7 +108,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             let myChannel = Channel(name: eventName, akey: eventId!, aparent: nil, aparentkey: parentEventKey, apriority: nil, astartDate: nil, aendDate: nil)
                             feedViewController?.myChannel = myChannel
                             feedViewController?.uid = uid
-                            let listIndex = 0
+                            let listIndex = 1
                             guard let viewControllers = initialVC.viewControllers,
                             let navVC = viewControllers[listIndex] as? UINavigationController else { return }
                              
@@ -307,13 +307,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         (root?.viewControllers?[1] as? UINavigationController)?.popToRootViewController(animated: false)
         //window?.rootViewController?.children[0].performSegue(withIdentifier: "passwordless", sender: nil)
         let components = email.components(separatedBy: "@")
-        let school = components[1]
-        Analytics.setUserProperty(school, forName: "School")
+        let schoolEmailEnd = components[1]
+        Analytics.setUserProperty(schoolEmailEnd, forName: "School")
         Analytics.logEvent(AnalyticsEventSignUp, parameters: [
-        AnalyticsParameterItemID: school,
+        AnalyticsParameterItemID: schoolEmailEnd,
         AnalyticsParameterItemName: "School",
         AnalyticsParameterContentType: "cont"
         ])
+        UserDefaults.standard.removeObject(forKey: "HomeSchool")
+        FirestoreService.sharedInstance.getUniversities {(schools) in
+            for school in schools{
+                if let schoolEmail = school.aemail{
+                if schoolEmailEnd == schoolEmail{
+                    UserDefaults.standard.set(school.channelName, forKey: "HomeSchool")
+                    root?.selectedIndex = 1
+                    root?.selectedIndex = 0
+                    break
+                }
+            }
+            }
+        }
         displayMsgBoxEmailLink(email: email)
         return true
       }
@@ -365,7 +378,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         
         if let acrackID = response.notification.request.content.userInfo["crackID"] as? String{
-            let crackID = acrackID as! String
+            let crackID = acrackID 
             let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
                    guard let initialVC = window?.rootViewController as? BaseTabBarController else {
                      return
@@ -402,7 +415,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                             
                           //  feedViewController?.definesPresentationContext = true
                         
-                        let listIndex = 1
+                        let listIndex = 2
                         guard let viewControllers = initialVC.viewControllers,
                         let navVC = viewControllers[listIndex] as? UINavigationController else { return }
                                                     

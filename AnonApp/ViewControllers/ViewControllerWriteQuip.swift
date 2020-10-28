@@ -96,7 +96,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         }
         makeViewFade()
         dismissKeyboard()
-        if let schoolEmail = emailEnding{
+        if emailEnding != nil{
             saveQuip()
         }else{
         FirestoreService.sharedInstance.checkIfEventIsOpen(eventID: myChannel?.key ?? "Other") {[weak self] (isOpen) in
@@ -140,7 +140,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     @IBAction func gifClicked(_ sender: Any) {
         let g = GiphyViewController()
         g.theme = GPHTheme(type: .automatic)
-        g.layout = .waterfall
+        //g.layout = .waterfall
         g.mediaTypeConfig = [.gifs, .recents]
         g.showConfirmationScreen = true
         g.rating = .ratedPG13

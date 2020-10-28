@@ -31,9 +31,7 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        let tabBar = tabBarController as! BaseTabBarController
-               
-              authorizeUser(tabBar: tabBar)
+        
        
         studentSectionsTableView.delegate = self
         studentSectionsTableView.dataSource = self
@@ -41,15 +39,12 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
         studentSectionsTableView.refreshControl = refreshControl
         refreshTable()
     }
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if Core.shared.isNewUser(){
-            //onboarding sequence
-            let vc = storyboard?.instantiateViewController(identifier: "WelcomeViewController") as! WelcomeViewController
-            vc.modalPresentationStyle = .fullScreen
-           present(vc, animated: true)
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+       
+        self.uid = UserDefaults.standard.string(forKey: "UID")
     }
+   
     
     @IBAction func settingsClicked(_ sender: Any) {
         settingsMenuLauncher.makeViewFade()
@@ -57,21 +52,7 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
         
     }
     
-    func authorizeUser(tabBar:BaseTabBarController){
-                
-                Auth.auth().signInAnonymously() {[weak self] (authResult, error) in
-                  // ...
-                 guard let user = authResult?.user else { return }
-                     self?.uid = user.uid
-                 tabBar.userID=user.uid
-                   UserDefaults.standard.set(user.uid, forKey: "UID")
-                  FirestoreService.sharedInstance.getBlockedUsers(uid: user.uid) { (myblockedUsers) in
-                      blockedUsers = myblockedUsers
-                  }
-                }
-                
-               
-            }
+   
     
     
     @objc func refreshTable(){
@@ -160,16 +141,4 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
 }
 
 
-class Core{
-    
-    static let shared = Core()
-    
-    func isNewUser()->Bool{
-        //inverse it because first time it is not set it will return false
-        return !UserDefaults.standard.bool(forKey: "isNewUser")
-    }
-    func setIsNotNewUser(){
-        UserDefaults.standard.set(true, forKey: "isNewUser")
-        
-    }
-}
+

@@ -50,54 +50,77 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     @IBOutlet weak var topView: UIView!
     @IBOutlet weak var bottomBar: UIView!
     @IBOutlet weak var collectionView: UICollectionView!
-   
+    
+    @IBOutlet weak var notConnectedView: UIView!
+    
+    @IBOutlet weak var notConnectedMessage: UILabel!
+    
+    @IBOutlet weak var linkEmailButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
        
         // Do any additional setup after loading the view.
-      //  self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for:.default)
         
-        //gets rid of border between the two navigation bars on top
-        navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.layoutIfNeeded()
-        topView.backgroundColor = darktint
-       self.title =  myChannel?.channelName
-        
+       if navigationController?.viewControllers.count != 1{
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
+            self.navigationItem.leftBarButtonItem?.isEnabled = true
+            notConnectedView.isHidden = true
+        self.title =  myChannel?.channelName
+        addGesture()
+        /*
            if isOpen ?? false{
                       self.navigationItem.rightBarButtonItem = self.writeQuipBtn
                   }else{
                       self.navigationItem.rightBarButtonItem = nil
                   }
        
-        if let channelKey = myChannel?.key{
-        FirestoreService.sharedInstance.getEvent(eventID: channelKey) {[weak self] (stage, parentKey, parentName) in
-            if let aStage = stage{
-                if aStage == 2{
-                    self?.navigationItem.rightBarButtonItem = self?.writeQuipBtn
-                }else{
-                    self?.navigationItem.rightBarButtonItem = nil
+            if let channelKey = myChannel?.key{
+                FirestoreService.sharedInstance.getEvent(eventID: channelKey) {[weak self] (stage, parentKey, parentName) in
+                    if let aStage = stage{
+                        if aStage == 2{
+                            self?.navigationItem.rightBarButtonItem = self?.writeQuipBtn
+                        }else{
+                            self?.navigationItem.rightBarButtonItem = nil
+                        }
+                    }
+                    if let aparentKey = parentKey{
+                        self?.myChannel?.parentKey = aparentKey
+                    }
+                    if let aparentName = parentName{
+                        self?.myChannel?.parent = aparentName
+                    }
                 }
             }
-            if let aparentKey = parentKey{
-                self?.myChannel?.parentKey = aparentKey
-            }
-            if let aparentName = parentName{
-                self?.myChannel?.parent = aparentName
-            }
+            */
         }
+        if navigationController?.viewControllers.count == 1{
+           // let tabBar = tabBarController as! BaseTabBarController
+           // authorizeUser(tabBar: tabBar)
+            if Core.shared.isKeyPresentInUserDefaults(key: "UID"){
+            uid = UserDefaults.standard.string(forKey: "UID")
+            }
+            loadFeedOrNot(homeSchool: myChannel?.channelName ?? "")
         }
         
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.layoutIfNeeded()
+        topView.backgroundColor = darktint
         
-        //notification when app will enter foreground
-      //  NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerDiscover.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-         
-       
-        addGesture()
         collectionView.delegate = self
         collectionView.dataSource = self
        setUpButtons()
        selectNew()
     }
+    override func viewDidLayoutSubviews() {
+           super.viewDidLayoutSubviews()
+           if Core.shared.isNewUser(){
+               //onboarding sequence
+               let vc = storyboard?.instantiateViewController(identifier: "WelcomeViewController") as! WelcomeViewController
+               vc.modalPresentationStyle = .fullScreen
+              present(vc, animated: true)
+           }
+       }
     
     
     
@@ -128,6 +151,30 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     override func viewWillAppear(_ animated: Bool){
               super.viewWillAppear(animated)
+        if navigationController?.viewControllers.count == 1{
+           
+            
+            var homeSchool = ""
+            let userEmail = UserDefaults.standard.string(forKey: "EmailConfirmed")
+            let userEmailEnd = userEmail?.components(separatedBy: "@").last
+            //remove in next release
+            if userEmailEnd == "ufl.edu"{
+                UserDefaults.standard.set("University of Florida", forKey: "HomeSchool")
+            }
+            
+            if Core.shared.isKeyPresentInUserDefaults(key: "HomeSchool"){
+                homeSchool = UserDefaults.standard.string(forKey: "HomeSchool") ?? ""
+                myChannel = Channel(name: homeSchool, akey: homeSchool, email: userEmailEnd ?? "")
+               
+                if notConnectedView.isHidden == false{
+                collectionView.reloadData()
+                loadFeedOrNot(homeSchool: homeSchool)
+                }
+            }
+            
+            
+            
+        }else{
       
         if let schoolEmail = myChannel?.aemail{
                    emailEnding = schoolEmail
@@ -135,10 +182,48 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                }
        
         
-        
+        }
 
            
               
+    }
+    
+    func loadFeedOrNot(homeSchool:String){
+        //linked email and school exists
+        if homeSchool != "" {
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
+            self.navigationItem.leftBarButtonItem?.isEnabled = true
+         notConnectedView.isHidden = true
+            self.navigationItem.title = homeSchool
+            
+            hasAccess = true
+            if let schoolEmail = myChannel?.aemail{
+                       emailEnding = schoolEmail
+            }
+        }
+        //linked email but not school email or school does not exist
+        else if Core.shared.isKeyPresentInUserDefaults(key: "EmailConfirmed"){
+            self.navigationItem.rightBarButtonItem?.isEnabled = false
+            self.navigationItem.leftBarButtonItem?.isEnabled = false
+            notConnectedView.isHidden = false
+            notConnectedView.backgroundColor = darktint
+            notConnectedMessage.text = "The email you have linked does not have a college page. Please contact us if you want your college added to Nut House."
+            linkEmailButton.layer.cornerRadius = 20
+            linkEmailButton.clipsToBounds = true
+            
+        }
+        //have not linked email
+        else{
+            self.navigationItem.rightBarButtonItem?.isEnabled = false
+            self.navigationItem.leftBarButtonItem?.isEnabled = false
+            notConnectedView.isHidden = false
+            notConnectedView.backgroundColor = darktint
+            notConnectedMessage.text = "Please link your college email to view your college's page here."
+            linkEmailButton.layer.cornerRadius = 20
+            linkEmailButton.clipsToBounds = true
+            
+        }
+        
     }
     
     //updates firestore and firebase with likes when view is dismissed
@@ -215,6 +300,14 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
            myNewLikesDislikesMap=[:]
         childChannelMap = [:]
        }
+    
+    @IBAction func linkEmailClicked(_ sender: Any) {
+        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "CreateAccount") as! myUIViewController
+        nextViewController.navigationItem.title = "Link Email"
+        navigationController?.pushViewController(nextViewController, animated: true)
+    }
+    
     
     @IBAction func eventEllipsesClicked(_ sender: Any) {
         ellipeseMenuLauncher.makeViewFade()
@@ -700,8 +793,36 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         }
     }
     
-   
+   func authorizeUser(tabBar:BaseTabBarController){
+                  
+                  Auth.auth().signInAnonymously() {[weak self] (authResult, error) in
+                    // ...
+                   guard let user = authResult?.user else { return }
+                       self?.uid = user.uid
+                   tabBar.userID=user.uid
+                     UserDefaults.standard.set(user.uid, forKey: "UID")
+                    self?.collectionView.reloadData()
+                   
+                  }
+                  
+                 
+              }
 
 }
 
-
+class Core{
+    
+    static let shared = Core()
+    
+    func isNewUser()->Bool{
+        //inverse it because first time it is not set it will return false
+        return !UserDefaults.standard.bool(forKey: "isNewUser")
+    }
+    func setIsNotNewUser(){
+        UserDefaults.standard.set(true, forKey: "isNewUser")
+        
+    }
+    func isKeyPresentInUserDefaults(key: String) -> Bool {
+        return UserDefaults.standard.object(forKey: key) != nil
+    }
+}
