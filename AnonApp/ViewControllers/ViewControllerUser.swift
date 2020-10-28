@@ -61,9 +61,8 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
      //   bioHeightConstraint = NSLayoutConstraint(item: bioTextView!, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         // Do any additional setup after loading the view.
         if navigationController?.viewControllers.count == 1{
-              let tabBar = tabBarController as! BaseTabBarController
-              self.uid = tabBar.userID
-            uidProfile = uid
+             
+             
         }else{
             self.navigationItem.leftBarButtonItem = nil
             self.navigationItem.rightBarButtonItem = nil
@@ -100,9 +99,13 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     
    
     
-    override func viewDidAppear(_ animated: Bool){
-          super.viewDidAppear(animated)
-        
+    override func viewWillAppear(_ animated: Bool){
+          super.viewWillAppear(animated)
+        if navigationController?.viewControllers.count == 1{
+             
+              self.uid = UserDefaults.standard.string(forKey: "UID")
+            uidProfile = uid
+        }
            
         }
     
