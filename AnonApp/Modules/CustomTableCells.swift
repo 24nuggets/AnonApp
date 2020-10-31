@@ -100,6 +100,54 @@ class QuipCells:UITableViewCell{
         self.contentView.autoresizingMask = .flexibleHeight
     }
     
+    var table:UITableView?
+    
+    var gifID: String? {
+            didSet {
+                
+                if let url = gifID {
+                    //self.image = UIImage(named: "loading")
+                    self.addGifViewToTableCell()
+                    GPHMedia.loadGifUsingCacheWithUrlString(gifID: url) { [weak self](gif, isCached) -> (Void) in
+                        // set the image only when we are still displaying the content for the image we finished downloading
+                        if url == self?.gifID {
+                            if let aGifView = self?.myGifView{
+                                if isCached{
+                                    aGifView.removeConstraints(aGifView.constraints)
+                                    aGifView.widthAnchor.constraint(equalTo: aGifView.heightAnchor, multiplier: gif.aspectRatio).isActive = true
+                                   aGifView.layer.cornerRadius = 8.0
+                                   aGifView.clipsToBounds = true
+                                           for subview in aGifView.subviews{
+                                               if let mysubview = subview as? UIActivityIndicatorView{
+                                                   mysubview.stopAnimating()
+                                               }
+                                           }
+                                }else{
+                                DispatchQueue.main.async {
+                                    self?.table?.beginUpdates()
+                            aGifView.removeConstraints(aGifView.constraints)
+                            aGifView.widthAnchor.constraint(equalTo: aGifView.heightAnchor, multiplier: gif.aspectRatio).isActive = true
+                                    self?.table?.endUpdates()
+                           aGifView.layer.cornerRadius = 8.0
+                           aGifView.clipsToBounds = true
+                                   for subview in aGifView.subviews{
+                                       if let mysubview = subview as? UIActivityIndicatorView{
+                                           mysubview.stopAnimating()
+                                       }
+                                   }
+                                }
+                                }
+                                    aGifView.media = gif
+                            }
+                        }
+                    }
+                }
+                else {
+                    self.myGifView.media = nil
+                }
+            }
+        }
+    
     var aQuip:Quip? {
         didSet{
             if let myQuip = aQuip{
@@ -171,6 +219,8 @@ class QuipCells:UITableViewCell{
         super.prepareForReuse()
         myGifView.media = nil
         myImageView.image = nil
+        gifID = nil
+        table = nil
         myImageView.removeConstraints(myImageView.constraints)
         myGifView.removeConstraints(myGifView.constraints)
         myImageView.removeFromSuperview()

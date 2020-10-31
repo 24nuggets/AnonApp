@@ -541,8 +541,10 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                                                        //        }
                         }
                          else if let myGifID = myQuip.gifID  {
-                                cell?.addGifViewToTableCell()
-                                cell?.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.feedTable)
+                               // cell?.addGifViewToTableCell()
+                               // cell?.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.feedTable)
+                            cell?.table = feedTable
+                            cell?.gifID = myGifID
                                                                     
                                                                }
                        /*
@@ -834,6 +836,7 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                                if let myImageRef = myQuip.imageRef {
                                    
                                        cell.addImageViewToTableCell()
+                                
                                        cell.myImageView.getImage(myQuipImageRef: myImageRef, feedTable: self.feedTable)
                                    
                                                                 
@@ -841,9 +844,10 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                                                                                                    
                                else if let gifID = myQuip.gifID {
                                                              
-                                       cell.addGifViewToTableCell()
-                                       cell.myGifView.getImageFromGiphy(gifID: gifID, feedTable:self.feedTable)
-                                                                                                       
+                                       //cell.addGifViewToTableCell()
+                                       //cell.myGifView.getImageFromGiphy(gifID: gifID, feedTable:self.feedTable)
+                                cell.table = feedTable
+                                cell.gifID = gifID
                                }
                             /*
                                 if myFeedController?.hasAccess ?? false{

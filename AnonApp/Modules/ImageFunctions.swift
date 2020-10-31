@@ -235,3 +235,30 @@ extension GPHMediaView{
     
 }
 
+extension GPHMedia{
+    static func loadGifUsingCacheWithUrlString(gifID:String, completion: @escaping (GPHMedia, Bool)->(Void)){
+        if let cacheGif = imageCache.object(forKey: gifID as NSString){
+            guard let media = cacheGif as? GPHMedia else { return }
+            completion(media, true)
+          
+        }
+        else {
+           GiphyCore.shared.gifByID(gifID) {(response, error) in
+                      if let media = response?.data {
+                         
+                            imageCache.setObject(media, forKey: gifID as NSString)
+                            
+                           completion(media, false)
+                           // runningRequestsGifViews.removeValue(forKey: aself)
+                      }
+                              
+        }
+                            
+                          
+         //   runningRequestsGifViews[self]=task
+        }
+        
+        
+    }
+}
+

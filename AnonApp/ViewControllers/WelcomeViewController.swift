@@ -157,7 +157,7 @@ class WelcomeViewController: UIViewController {
     }
     
      func displayLicenAgreement(){
-          let message = "We use Apple's Standard End User License Agreement and to use this app you must agree to the terms outlined in the EULA."
+          let message = "To use this app you must agree to the terms outlined in our EULA."
           //create alert
           let alert = UIAlertController(title: "License Agreement", message: message, preferredStyle: .alert)
            let defaults = UserDefaults.standard
@@ -168,6 +168,14 @@ class WelcomeViewController: UIViewController {
               
               defaults.set(false, forKey: "isAppAlreadyLaunchedOnce")
           }
+        let viewTerms = UIAlertAction(title: "View EULA", style: .default){ (action) -> Void in
+            //DECLINE LOGIC GOES HERE
+            self.displayLicenAgreement()
+            if let url = URL(string: "https://www.eulatemplate.com/live.php?token=yoAxpErtqui13YazEpfxcoI7slyMlP4Z") {
+                UIApplication.shared.open(url)
+            }
+            defaults.set(false, forKey: "isAppAlreadyLaunchedOnce")
+        }
           
           //create Accept button
           let acceptAction = UIAlertAction(title: "Accept", style: .default) { (action) -> Void in
@@ -176,8 +184,11 @@ class WelcomeViewController: UIViewController {
           }
           
           //add task to tableview buttons
-          alert.addAction(declineAction)
-          alert.addAction(acceptAction)
+        alert.addAction(acceptAction)
+        alert.addAction(declineAction)
+        alert.addAction(viewTerms)
+          
+          
           
           
         self.present(alert,animated: true)

@@ -8748,8 +8748,43 @@ You are advised to review this Privacy Policy periodically for any changes. Chan
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="VGY-Bm-bch">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <string key="text">The Mac App Store Products and App Store Products (collectively, “App Store Product(s)”) made available through the Mac App Store Service and App Store Service (collectively, “App Store Service(s)”) are licensed, not sold, to you. Your license to each App Store Product that you obtain through the App Store Services is subject to your prior acceptance of this Licensed Application End User License Agreement (“Standard EULA”), and you agree that the terms of this Standard EULA will apply to each App Store Product that you license through the App Store Service, unless that App Store Product is covered by a valid end user license agreement between you and the Application Provider of that App Store Product, in which case the terms of that separate end user license agreement will govern. Your license to any Apple Product under this Standard EULA or separate end user license agreement is granted by Apple, and your license to any Third-Party Product under this Standard EULA or separate end user license agreement is granted by the Application Provider of that Third-Party Product. Any App Store Product that is subject to the license granted under this Standard EULA is referred to herein as the “Licensed Application”. The Application Provider or Apple as applicable (“Licensor”) reserves all rights in and to the Licensed Application not expressly granted to you under this Standard EULA.
+                                <mutableString key="text">End-User License Agreement (EULA) of Nut House
+This End-User License Agreement ("EULA") is a legal agreement between you and Nut House. Our EULA was created by EULA Template for Nut House.
 
+This EULA agreement governs your acquisition and use of our Nut House software ("Software") directly from Nut House or indirectly through a Nut House authorized reseller or distributor (a "Reseller"). Our Privacy Policy was created by the Privacy Policy Generator.
+
+Please read this EULA agreement carefully before completing the installation process and using the Nut House software. It provides a license to use the Nut House software and contains warranty information and liability disclaimers.
+
+If you register for a free trial of the Nut House software, this EULA agreement will also govern that trial. By clicking "accept" or installing and/or using the Nut House software, you are confirming your acceptance of the Software and agreeing to become bound by the terms of this EULA agreement.
+
+If you are entering into this EULA agreement on behalf of a company or other legal entity, you represent that you have the authority to bind such entity and its affiliates to these terms and conditions. If you do not have such authority or if you do not agree with the terms and conditions of this EULA agreement, do not install or use the Software, and you must not accept this EULA agreement.
+
+This EULA agreement shall apply only to the Software supplied by Nut House herewith regardless of whether other software is referred to or described herein. The terms also apply to any Nut House updates, supplements, Internet-based services, and support services for the Software, unless other terms accompany those items on delivery. If so, those terms apply.
+
+License Grant
+Nut House hereby grants you a personal, non-transferable, non-exclusive licence to use the Nut House software on your devices in accordance with the terms of this EULA agreement.
+
+You are permitted to load the Nut House software (for example a PC, laptop, mobile or tablet) under your control. You are responsible for ensuring your device meets the minimum requirements of the Nut House software.
+
+You are not permitted to:
+
+Edit, alter, modify, adapt, translate or otherwise change the whole or any part of the Software nor permit the whole or any part of the Software to be combined with or become incorporated in any other software, nor decompile, disassemble or reverse engineer the Software or attempt to do any such things
+Reproduce, copy, distribute, resell or otherwise use the Software for any commercial purpose
+Allow any third party to use the Software on behalf of or for the benefit of any third party
+Use the Software in any way which breaches any applicable local, national or international law
+use the Software for any purpose that Nut House considers is a breach of this EULA agreement
+Intellectual Property and Ownership
+Nut House shall at all times retain ownership of the Software as originally downloaded by you and all subsequent downloads of the Software by you. The Software (and the copyright, and other intellectual property rights of whatever nature in the Software, including any modifications made thereto) are and shall remain the property of Nut House.
+
+Nut House reserves the right to grant licences to use the Software to third parties.
+
+Termination
+This EULA agreement is effective from the date you first use the Software and shall continue until terminated. You may terminate it at any time upon written notice to Nut House.
+
+It will also terminate immediately if you fail to comply with any term of this EULA agreement. Upon such termination, the licenses granted by this EULA agreement will immediately terminate and you agree to stop all access and use of the Software. The provisions that by their nature continue and survive will survive any termination of this EULA agreement.
+
+Governing Law
+This EULA agreement, and any dispute arising out of or in connection with this EULA agreement, shall be governed by and construed in accordance with the laws of us.
 a. Scope of License: This license granted to you for the Licensed Application by Licensor is limited to a nontransferable license to use the Licensed Application on any Apple-branded products running iOS (including but not limited to iPad, iPhone, and iPod touch) (“iOS Devices”) or Mac OS X (“Mac Computers”), as applicable (collectively, “Apple Device(s)”) that you own or control and as permitted by the usage rules set forth in the Mac App Store, App Store and iBooks Store Terms and Conditions (the “Usage Rules”). This license does not allow you to use the Licensed Application on any Apple Device that you do not own or control, and except as provided in the Usage Rules, you may not distribute or make the Licensed Application available over a network where it could be used by multiple devices at the same time. You may not rent, lease, lend, sell, transfer redistribute, or sublicense the Licensed Application and, if you sell your Mac Computer or iOS Device to a third party, you must remove the Licensed Application from the Mac Computer or iOS Device before doing so. You may not copy (except as expressly permitted by this license and the Usage Rules), decompile, reverse-engineer, disassemble, attempt to derive the source code of, modify, or create derivative works of the Licensed Application, any updates, or any part thereof (except as and only to the extent that any foregoing restriction is prohibited by applicable law or to the extent as may be permitted by the licensing terms governing use of any open-sourced components included with the Licensed Application). Any attempt to do so is a violation of the rights of the Licensor and its licensors. If you breach this restriction, you may be subject to prosecution and damages.
 
 The terms of this license will govern any upgrades provided by Licensor that replace and/or supplement the original Licensed Application, unless such upgrade is accompanied by a separate license in which case the terms of that license will govern.
@@ -8778,7 +8813,7 @@ g. You may not use or otherwise export or re-export the Licensed Application exc
 
 h. The Licensed Application and related documentation are "Commercial Items", as that term is defined at 48 C.F.R. §2.101, consisting of "Commercial Computer Software" and "Commercial Computer Software Documentation", as such terms are used in 48 C.F.R. §12.212 or 48 C.F.R. §227.7202, as applicable. Consistent with 48 C.F.R. §12.212 or 48 C.F.R. §227.7202-1 through 227.7202-4, as applicable, the Commercial Computer Software and Commercial Computer Software Documentation are being licensed to U.S. Government end users (a) only as Commercial Items and (b) with only those rights as are granted to all other end users pursuant to the terms and conditions herein. Unpublished-rights reserved under the copyright laws of the United States.
 
-i. The laws of the State of California, excluding its conflicts of law rules, govern this license and your use of the Licensed Application. Your use of the Licensed Application may also be subject to other local, state, national, or international laws.</string>
+i. The laws of the State of California, excluding its conflicts of law rules, govern this license and your use of the Licensed Application. Your use of the Licensed Application may also be subject to other local, state, national, or international laws.</mutableString>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>

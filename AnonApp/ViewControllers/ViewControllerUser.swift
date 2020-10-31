@@ -82,8 +82,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         nameTextView.tintColorDidChange()
         bioTextView.textContainerInset = .zero
         nameTextView.textContainerInset = .zero
-        loadUserProfile()
-        getUserScore()
+       
         progressDot.layer.zPosition = 1
         progressDot.layer.cornerRadius = 4
         progressDot.clipsToBounds = true
@@ -102,9 +101,11 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     override func viewWillAppear(_ animated: Bool){
           super.viewWillAppear(animated)
         if navigationController?.viewControllers.count == 1{
-             
+          //maybe move to view did load
               self.uid = UserDefaults.standard.string(forKey: "UID")
             uidProfile = uid
+           // loadUserProfile()
+            getUserScore()
         }
            
         }

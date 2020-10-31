@@ -32,14 +32,14 @@ class ViewControllerCreateAccount: myUIViewController {
         emailTextField.selectedTextRange = emailTextField.textRange(from: emailTextField.beginningOfDocument, to: emailTextField.beginningOfDocument)
         emailTextField.textColor = .label
         //take this out after testing
-        DynamicLinks.performDiagnostics(completion: nil)
+       // DynamicLinks.performDiagnostics(completion: nil)
     }
     
     
     @IBAction func createAccountClicked(_ sender: Any) {
         if let email1 = emailTextField.text{
             
-            let email = email1.trimmingCharacters(in: .whitespacesAndNewlines)
+            let email = email1.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
        UserDefaults.standard.set(email, forKey: "Email")
         let actionCodeSettings = ActionCodeSettings()
         actionCodeSettings.url = URL(string: "https://anonapp.page.link")

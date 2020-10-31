@@ -1527,7 +1527,8 @@ class FirestoreService: NSObject {
                     }
                 }
             }
-            completion(aSchools)
+            let sortedSchools = aSchools.sorted { $0.channelName?.lowercased() ?? "" < $1.channelName?.lowercased() ?? "" }
+            completion(sortedSchools)
         }
     }
     

@@ -1556,8 +1556,10 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
              }
                                                                                         
              else if let aGifID = myQuip?.gifID{
-                     cell.addGifViewToTableCell()
-                 cell.myGifView.getImageFromGiphy(gifID: aGifID, feedTable:self.replyTable)
+                  //   cell.addGifViewToTableCell()
+               //  cell.myGifView.getImageFromGiphy(gifID: aGifID, feedTable:self.replyTable)
+                cell.table = replyTable
+                cell.gifID = aGifID
                                                              
              }
                 /*

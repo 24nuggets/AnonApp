@@ -510,9 +510,10 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
                                                   }
                                                                                                                                                                  
                                                   else if let myGifID = myQuip.gifID  {
-                                                                                                                           
-                                                      cell.addGifViewToTableCell()
-                                                      cell.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.userQuipsTable)
+                                                    cell.table = userQuipsTable
+                                                    cell.gifID = myGifID
+                                                    //  cell.addGifViewToTableCell()
+                                                     // cell.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.userQuipsTable)
                                                                                                                                                                      
                                                   }
                                                                       
@@ -756,9 +757,10 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
                                                 }
                                                                                                                                                                
                                                 else if let myGifID = myQuip.gifID  {
-                                                                                                                         
-                                                    cell.addGifViewToTableCell()
-                                                    cell.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.userQuipsTable)
+                                                    cell.table = userQuipsTable
+                                                    cell.gifID = myGifID
+                                                  //  cell.addGifViewToTableCell()
+                                                 //   cell.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.userQuipsTable)
                                                                                                                                                                    
                                                 }
                                                                     
