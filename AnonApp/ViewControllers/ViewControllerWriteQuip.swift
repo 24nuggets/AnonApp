@@ -99,6 +99,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         if emailEnding != nil{
             saveQuip()
         }else{
+        /*
         FirestoreService.sharedInstance.checkIfEventIsOpen(eventID: myChannel?.key ?? "Other") {[weak self] (isOpen) in
             if isOpen{
                 self?.saveQuip()
@@ -106,6 +107,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                 self?.displayMsgBox2()
             }
         }
+        */
         }
     }
     
@@ -469,7 +471,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     }
     
    
-    
+   /*
     func runTransactionForRecentUser(data:[String:Any], key: String){
         if let auid = uid{
             FirestoreService.sharedInstance.addQuipToRecentUserQuips(auid: auid, data: data, key: key){
@@ -496,7 +498,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         FirebaseService.sharedInstance.updateChildValues(myUpdates: childUpdates)
        
     }
-    
+    */
     func setUpGiphyView(){
         mediaView?.removeFromSuperview()
         deleteBtn?.removeFromSuperview()

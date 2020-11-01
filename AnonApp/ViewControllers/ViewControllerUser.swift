@@ -126,6 +126,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
            }
     func loadUserProfile(){
         if let auid = uidProfile{
+        /*
         FirestoreService.sharedInstance.getUserProfile(uid: auid) {[weak self] (name, bio) in
             self?.nameTextView.text = name
             self?.bioTextView.text = bio
@@ -138,7 +139,9 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
             }
             self?.view.setNeedsLayout()
         }
+             */
         }
+        
     }
     
     func setUpButtons(){
