@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import GiphyUISDK
 import GiphyCoreSDK
+import MailchimpSDK
 
 class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
@@ -111,6 +112,9 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         collectionView.dataSource = self
        setUpButtons()
        selectNew()
+        
+        
+        
     }
     override func viewDidLayoutSubviews() {
            super.viewDidLayoutSubviews()
@@ -183,9 +187,100 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
        
         
         }
-
-           
+        //take out in a few weeks, just to get the previous signups to subscribe
+        if Core.shared.isKeyPresentInUserDefaults(key: "AskedToSubscribe") == false && Core.shared.isKeyPresentInUserDefaults(key: "Email"){
+            if Core.shared.isKeyPresentInUserDefaults(key: "EmailConfirmed"){
+                
+            }
+            displayAskToSendEmail()
+            
+            
+        }
               
+    }
+    
+    func displayAskToSendEmail(){
+        let title = "Subscribe"
+        let message = "Can Nut House send you promotional and marketing emails?"
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "No", style: .default, handler: { action in
+          switch action.style{
+          case .default:
+                print("default")
+            if let email = UserDefaults.standard.string(forKey: "Email"){
+                do{
+                    try MailchimpSDK.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
+                }
+                catch{
+                    print("error initializing mailchimp")
+                }
+            var contact: Contact = Contact(emailAddress: email)
+                if Core.shared.isKeyPresentInUserDefaults(key: "EmailConfirmed"){
+                    contact.tags = [Contact.Tag(name: email.components(separatedBy: "@").last ?? "", status: .active), Contact.Tag(name: "SignedUp", status: .active)]
+                }else{
+            contact.tags = [Contact.Tag(name: email.components(separatedBy: "@").last ?? "", status: .active)]
+                }
+           UserDefaults.standard.setValue(true, forKey: "AskedToSubscribe")
+            MailchimpSDK.createOrUpdate(contact: contact) { result in
+                switch result {
+                case .success:
+                    print("Successfully added or updated contact")
+                case .failure(let error):
+                    print("Error: \(error.localizedDescription)")
+                }
+            }
+            }
+          case .cancel:
+                print("cancel")
+
+          case .destructive:
+                print("destructive")
+
+
+          @unknown default:
+            print("unknown action")
+        }}))
+        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { action in
+              switch action.style{
+              case .default:
+                    print("default")
+                if let email = UserDefaults.standard.string(forKey: "Email"){
+                    do{
+                        try MailchimpSDK.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
+                    }
+                    catch{
+                        print("error initializing mailchimp")
+                    }
+                var contact: Contact = Contact(emailAddress: email)
+                    if Core.shared.isKeyPresentInUserDefaults(key: "EmailConfirmed"){
+                        contact.tags = [Contact.Tag(name: email.components(separatedBy: "@").last ?? "", status: .active), Contact.Tag(name: "SignedUp", status: .active)]
+                    }else{
+                contact.tags = [Contact.Tag(name: email.components(separatedBy: "@").last ?? "", status: .active)]
+                    }
+                contact.marketingPermissions = [Contact.MarketingPermission(marketingPermissionId: "marketing", enabled: true)]
+                contact.status = .subscribed
+                
+               UserDefaults.standard.setValue(true, forKey: "AskedToSubscribe")
+                MailchimpSDK.createOrUpdate(contact: contact) { result in
+                    switch result {
+                    case .success:
+                        print("Successfully added or updated contact")
+                    case .failure(let error):
+                        print("Error: \(error.localizedDescription)")
+                    }
+                }
+                }
+              case .cancel:
+                    print("cancel")
+
+              case .destructive:
+                    print("destructive")
+
+
+              @unknown default:
+                print("unknown action")
+            }}))
+        self.present(alert, animated: true, completion: nil)
     }
     
     func loadFeedOrNot(homeSchool:String){
@@ -218,7 +313,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
             self.navigationItem.leftBarButtonItem?.isEnabled = false
             notConnectedView.isHidden = false
             notConnectedView.backgroundColor = darktint
-            notConnectedMessage.text = "Please link your college email to view your college's page here."
+            notConnectedMessage.text = "Please link your .edu college email to view your college's page here."
             linkEmailButton.layer.cornerRadius = 20
             linkEmailButton.clipsToBounds = true
             

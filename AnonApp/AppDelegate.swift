@@ -10,6 +10,8 @@ import UIKit
 import Firebase
 import GiphyUISDK
 import GiphyCoreSDK
+import MailchimpSDK
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
@@ -327,6 +329,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
             }
         }
+        do{
+            try MailchimpSDK.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
+        }
+        catch{
+            print("error initializing mailchimp")
+        }
+        MailchimpSDK.addTag(name: "SignedUp",
+                           emailAddress: email) { result in
+                           switch result {
+                           case .success:
+                               print("Successfully added tag")
+                           case .failure(let error):
+                               print("Error: \(error.localizedDescription)")
+                           }
+                       }
+       
         displayMsgBoxEmailLink(email: email)
         return true
       }
@@ -354,6 +372,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         application.applicationIconBadgeNumber = 0
+        
     
     }
 

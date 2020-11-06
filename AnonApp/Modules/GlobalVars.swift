@@ -9,3 +9,5 @@
 import Foundation
 
 var blockedUsers:[String:Bool] = [:]
+var hiddenPosts:[String:Bool] = [:]
+

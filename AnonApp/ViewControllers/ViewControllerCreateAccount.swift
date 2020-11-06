@@ -8,9 +8,11 @@
 
 import UIKit
 import Firebase
+import MailchimpSDK
 
 class ViewControllerCreateAccount: myUIViewController {
     
+    @IBOutlet weak var subscribeCheckBox: UIButton!
     
     @IBOutlet weak var emailTextField: UITextField!
     
@@ -26,20 +28,24 @@ class ViewControllerCreateAccount: myUIViewController {
         // Do any additional setup after loading the view.
         linkEmailButton.layer.cornerRadius = 20
         linkEmailButton.clipsToBounds = true
+        subscribeCheckBox.setImage(UIImage(systemName:"square"), for: .normal)
+        subscribeCheckBox.setImage(UIImage(systemName:"checkmark.square"), for: .selected)
+        subscribeCheckBox.isSelected = true
+        
     }
     override func viewDidAppear(_ animated: Bool) {
         emailTextField.becomeFirstResponder()
         emailTextField.selectedTextRange = emailTextField.textRange(from: emailTextField.beginningOfDocument, to: emailTextField.beginningOfDocument)
         emailTextField.textColor = .label
-        //take this out after testing
-       // DynamicLinks.performDiagnostics(completion: nil)
+       
     }
     
     
     @IBAction func createAccountClicked(_ sender: Any) {
         if let email1 = emailTextField.text{
             
-            let email = email1.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let email2 = email1.trimmingCharacters(in: .whitespacesAndNewlines)
+            let email = email2.lowercased()
        UserDefaults.standard.set(email, forKey: "Email")
         let actionCodeSettings = ActionCodeSettings()
         actionCodeSettings.url = URL(string: "https://anonapp.page.link")
@@ -59,6 +65,27 @@ class ViewControllerCreateAccount: myUIViewController {
             
             Analytics.logEvent(AnalyticsEventLogin, parameters: [:])
             self.showMessagePrompt(message:"Check your email for link. If it does not show up in 1 minute, check your junk folder.")
+            do{
+                try MailchimpSDK.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
+            }
+            catch{
+                print("error initializing mailchimp")
+            }
+            var contact: Contact = Contact(emailAddress: email)
+            contact.tags = [Contact.Tag(name: email.components(separatedBy: "@").last ?? "", status: .active)]
+            if self.subscribeCheckBox.isSelected{
+            contact.marketingPermissions = [Contact.MarketingPermission(marketingPermissionId: "marketing", enabled: true)]
+            contact.status = .subscribed
+            }
+           UserDefaults.standard.setValue(true, forKey: "AskedToSubscribe")
+            MailchimpSDK.createOrUpdate(contact: contact) { result in
+                switch result {
+                case .success:
+                    print("Successfully added or updated contact")
+                case .failure(let error):
+                    print("Error: \(error.localizedDescription)")
+                }
+            }
            
         }
             
@@ -112,6 +139,17 @@ class ViewControllerCreateAccount: myUIViewController {
        self.present(alert, animated: true, completion: nil)
        }
 
+    
+    
+    @IBAction func checkBoxClicked(_ sender: Any) {
+        if subscribeCheckBox.isSelected {
+            subscribeCheckBox.isSelected = false
+        }else{
+            subscribeCheckBox.isSelected = true
+        }
+        
+    }
+    
     /*
     // MARK: - Navigation
 

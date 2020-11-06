@@ -132,7 +132,7 @@ class FirestoreService: NSObject {
                                     let document = querySnapshot!.documents[0]
                                  
                                 self?.lastRecentDocFeed = document
-                                          moreRecentQuipsFirestore = true
+                                moreRecentQuipsFirestore = true
                                   
                                     
                                     guard document.data(with: ServerTimestampBehavior.estimate)["quips"] != nil else {return}
@@ -1012,7 +1012,8 @@ class FirestoreService: NSObject {
                                   let document = querySnapshot!.documents[0]
                               let myQuips = document.data(with: ServerTimestampBehavior.estimate)["quips"] as! [String:Any]
                               let sortedKeys = Array(myQuips.keys).sorted(by: >)
-                           
+                            self?.myLastRecentDocUser = document
+                            moreRecentQuipsUser = true
                               for aQuip in sortedKeys{
                                 i += 1
                                   let myInfo = myQuips[aQuip] as! [String:Any]
@@ -1046,10 +1047,9 @@ class FirestoreService: NSObject {
                             
                             
                             
-                                    if i == 10 {
-                                        self?.myLastRecentDocUser = document
-                                        moreRecentQuipsUser = true
-                                    }
+                                    
+                                        
+                                    
                             completion(newUserQuips, moreRecentQuipsUser)
                                   
                               }
@@ -1446,9 +1446,12 @@ class FirestoreService: NSObject {
     
     func addQuipToUsersHiddenPost(quipID:String, uid:String, channelkey:String?, parentChannelKey:String?, quipParentKey:String?, quipAuthoruid:String?, completion: @escaping ()->()){
        let batch = self.db.batch()
+        let docRef = db.collection("/Users/\(uid)/HiddenPosts").document("HiddenPosts")
+        batch.setData([quipID:true], forDocument: docRef,merge: true)
+        hiddenPosts[quipID] = true
+        /*
         if let achannelkey = channelkey{
-            let docRef = db.collection("/Users/\(uid)/HiddenPosts").document(achannelkey)
-            batch.setData([quipID:true], forDocument: docRef,merge: true)
+            
         }
         if let aparentChannelKey = parentChannelKey{
             let docRef = db.collection("/Users/\(uid)/HiddenPosts").document(aparentChannelKey)
@@ -1462,13 +1465,14 @@ class FirestoreService: NSObject {
             let docRef = db.collection("/Users/\(uid)/HiddenPosts").document(aquipAuthor)
             batch.setData([quipID:true], forDocument: docRef,merge: true)
         }
+ */
             batch.commit()
             completion()
     }
     
-    func getHiddenPosts(uid:String, key:String, completion: @escaping ([String:Bool])->()){
+    func getHiddenPosts(uid:String,  completion: @escaping ([String:Bool])->()){
         var myHiddenPosts:[String:Bool] = [:]
-               let docRef = db.collection("/Users/\(uid)/HiddenPosts").document(key)
+               let docRef = db.collection("/Users/\(uid)/HiddenPosts").document("HiddenPosts")
                                 
                             
                                 docRef.getDocument{(document, error) in

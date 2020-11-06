@@ -54,7 +54,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
     let placeHolderText = "Reply to this crack"
     let blackView = UIView()
     var activityIndicator:UIActivityIndicatorView?
-    var hiddenPosts:[String:Bool] = [:]
+   
     var emailEnding:String?
     var hasAccess = false
     var isAdmin = false
@@ -974,9 +974,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
           // let myRef = "Users/\(uid ?? "Other")/LikesDislikes"
         
         if let aUID = uid, let aQuipKey = myQuip?.quipID {
-            FirestoreService.sharedInstance.getHiddenPosts(uid: aUID, key: aQuipKey) {[weak self] (hiddenPosts) in
-                self?.hiddenPosts = hiddenPosts
-            }
+            
             FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUID, aKey: aQuipKey) { [weak self](myLikesDislikesMap) in
                 self?.myLikesDislikesMap = myLikesDislikesMap
                 self?.updateReplies()
@@ -1428,6 +1426,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
               // ...
             }
                         if auid != aQuipAuthor{
+                        sleep(2)
                         Messaging.messaging().subscribe(toTopic: "\(aQuipID)Replier"){ error in
                                              print("Subscribed to \(aQuipID)")
                                            }
@@ -1608,8 +1607,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                                                                              
                      else if let aGID = aReply.gifID {
                                                                                             
-                             cell.addGifViewToTableCell()
-                             cell.myGifView.getImageFromGiphy(gifID: aGID, feedTable:self.replyTable)
+                        cell.gifID = aGID   
                                                                                                                                       
                  }
                     /*

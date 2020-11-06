@@ -501,6 +501,7 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
            if newUserQuips.count > 0 {
                                           if let myQuip = self.newUserQuips[indexPath.row]{
                                               cell.aQuip = myQuip
+                                            
                                                   if let myImageRef = myQuip.imageRef  {
                                                       
                                                           cell.addImageViewToTableCell()
@@ -512,6 +513,7 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
                                                   else if let myGifID = myQuip.gifID  {
                                                     cell.table = userQuipsTable
                                                     cell.gifID = myGifID
+                                                    
                                                     //  cell.addGifViewToTableCell()
                                                      // cell.myGifView.getImageFromGiphy(gifID: myGifID, feedTable:self.userQuipsTable)
                                                                                                                                                                      

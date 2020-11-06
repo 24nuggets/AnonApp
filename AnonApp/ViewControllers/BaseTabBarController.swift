@@ -40,7 +40,9 @@ class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
     func authorizeUser(completion: @escaping (String)->()){
         if Core.shared.isKeyPresentInUserDefaults(key: "UID"){
             if let uid = UserDefaults.standard.string(forKey: "UID"){
-                
+                FirestoreService.sharedInstance.getHiddenPosts(uid: uid) { (ahiddenPosts) in
+                    hiddenPosts =  ahiddenPosts
+                }
                 
             FirestoreService.sharedInstance.getBlockedUsers(uid: uid) { (myblockedUsers) in
                 blockedUsers = myblockedUsers

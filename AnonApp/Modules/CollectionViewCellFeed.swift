@@ -18,7 +18,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
     var myFeedController:ViewControllerFeed?
      var newQuips:[Quip?] = []
      var hotQuips:[Quip?] = []
-    var hiddenPosts:[String:Bool] = [:]
+   
    
     lazy var MenuLauncher:ellipsesMenuFeed = {
             let launcher = ellipsesMenuFeed()
@@ -407,9 +407,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
         self.moreRecentQuipsFirebase = false
         if let myChannelKey = myFeedController?.myChannel?.key{
             if let aUid = myFeedController?.uid {
-                FirestoreService.sharedInstance.getHiddenPosts(uid: aUid, key: myChannelKey) {[weak self] (hiddenPosts) in
-                    self?.hiddenPosts = hiddenPosts
-                }
+                
             FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { [weak self](myLikesDislikesMap) in
             self?.myFeedController?.myLikesDislikesMap = myLikesDislikesMap
             
@@ -728,8 +726,6 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
          moreHotQuipsFirebase = false
          if let myChannelKey = myFeedController?.myChannel?.key{
              if let aUid = myFeedController?.uid {
-                FirestoreService.sharedInstance.getHiddenPosts(uid: aUid, key: myChannelKey) {[weak self] (hiddenPosts) in
-                    self?.hiddenPosts = hiddenPosts
                 
              FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { [weak self](myLikesDislikesMap) in
                         self?.myFeedController?.myLikesDislikesMap = myLikesDislikesMap
@@ -745,7 +741,7 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                  }
              }
                     }
-         }
+         
         }
         }
      }

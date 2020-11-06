@@ -236,10 +236,10 @@ extension GPHMediaView{
 }
 
 extension GPHMedia{
-    static func loadGifUsingCacheWithUrlString(gifID:String, completion: @escaping (GPHMedia, Bool)->(Void)){
+    static func loadGifUsingCacheWithUrlString(gifID:String, completion: @escaping (GPHMedia, Bool, String)->(Void)){
         if let cacheGif = imageCache.object(forKey: gifID as NSString){
             guard let media = cacheGif as? GPHMedia else { return }
-            completion(media, true)
+            completion(media, true, gifID)
           
         }
         else {
@@ -248,7 +248,7 @@ extension GPHMedia{
                          
                             imageCache.setObject(media, forKey: gifID as NSString)
                             
-                           completion(media, false)
+                           completion(media, false, gifID)
                            // runningRequestsGifViews.removeValue(forKey: aself)
                       }
                               

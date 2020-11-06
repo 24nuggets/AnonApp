@@ -107,12 +107,18 @@ class QuipCells:UITableViewCell{
                 
                 if let url = gifID {
                     //self.image = UIImage(named: "loading")
+                    myGifView = GPHMediaView()
                     self.addGifViewToTableCell()
-                    GPHMedia.loadGifUsingCacheWithUrlString(gifID: url) { [weak self](gif, isCached) -> (Void) in
+                    
+                    
+                    GPHMedia.loadGifUsingCacheWithUrlString(gifID: url) { [weak self](gif, isCached, gifId) -> (Void) in
                         // set the image only when we are still displaying the content for the image we finished downloading
-                        if url == self?.gifID {
+                       
+                        if url == gifId {
                             if let aGifView = self?.myGifView{
+                                
                                 if isCached{
+                                    
                                     aGifView.removeConstraints(aGifView.constraints)
                                     aGifView.widthAnchor.constraint(equalTo: aGifView.heightAnchor, multiplier: gif.aspectRatio).isActive = true
                                    aGifView.layer.cornerRadius = 8.0
@@ -122,28 +128,33 @@ class QuipCells:UITableViewCell{
                                                    mysubview.stopAnimating()
                                                }
                                            }
+                                    
                                 }else{
                                 DispatchQueue.main.async {
+                                    aGifView.setNeedsDisplay()
                                     self?.table?.beginUpdates()
-                            aGifView.removeConstraints(aGifView.constraints)
-                            aGifView.widthAnchor.constraint(equalTo: aGifView.heightAnchor, multiplier: gif.aspectRatio).isActive = true
-                                    self?.table?.endUpdates()
-                           aGifView.layer.cornerRadius = 8.0
-                           aGifView.clipsToBounds = true
+                                    aGifView.removeConstraints(aGifView.constraints)
+                                    aGifView.widthAnchor.constraint(equalTo: aGifView.heightAnchor, multiplier: gif.aspectRatio).isActive = true
+                                            self?.table?.endUpdates()
+                                   aGifView.layer.cornerRadius = 8.0
+                                   aGifView.clipsToBounds = true
                                    for subview in aGifView.subviews{
                                        if let mysubview = subview as? UIActivityIndicatorView{
                                            mysubview.stopAnimating()
                                        }
                                    }
+                                    
                                 }
                                 }
                                     aGifView.media = gif
+                                
+                                
                             }
                         }
                     }
                 }
                 else {
-                    self.myGifView.media = nil
+                    self.myGifView?.media = nil
                 }
             }
         }
@@ -201,6 +212,8 @@ class QuipCells:UITableViewCell{
     }
     
     
+    var myGifView : GPHMediaView? = nil
+    
     let myImageView : CustomImageView = {
     let imgView = CustomImageView()
         
@@ -209,22 +222,20 @@ class QuipCells:UITableViewCell{
     }()
     
     
-    let myGifView : GPHMediaView = {
-     let gifView = GPHMediaView()
     
-     return gifView
-     }()
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        myGifView.media = nil
+        
+        myGifView?.media = nil
+        
         myImageView.image = nil
         gifID = nil
         table = nil
         myImageView.removeConstraints(myImageView.constraints)
-        myGifView.removeConstraints(myGifView.constraints)
+        myGifView?.removeConstraints(myGifView?.constraints ?? [])
         myImageView.removeFromSuperview()
-        myGifView.removeFromSuperview()
+        myGifView?.removeFromSuperview()
         upButton.isSelected = false
         downButton.isSelected = false
         upButton.tintColor = .lightGray
@@ -235,7 +246,7 @@ class QuipCells:UITableViewCell{
         if shareButton != nil {
             shareButton.isHidden = false
         }
-        myGifView.cancelLoad()
+        myGifView?.cancelLoad()
         myImageView.cancelLoad()
         
         
@@ -374,17 +385,18 @@ class QuipCells:UITableViewCell{
     
     func addGifViewToTableCell(){
           
-          self.contentView.addSubview(self.myGifView)
-          self.myGifView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.myGifView!)
+          self.myGifView?.translatesAutoresizingMaskIntoConstraints = false
                      
         let bottomConstraint = NSLayoutConstraint(item: self.contentView, attribute: .bottom, relatedBy: .equal, toItem: self.myGifView, attribute: .bottom, multiplier: 1, constant: 40)
           let leadingContraint = NSLayoutConstraint(item: self.myGifView, attribute: .leading, relatedBy: .equal, toItem: self.contentView, attribute: .leading, multiplier: 1, constant: 10)
           let trailingConstraint = NSLayoutConstraint(item: self.contentView, attribute: .trailing, relatedBy: .equal, toItem: self.myGifView, attribute: .trailing, multiplier: 1, constant: 77)
           let topConstraint = NSLayoutConstraint(item: self.myGifView, attribute: .top, relatedBy: .equal, toItem: self.quipText, attribute: .bottom, multiplier: 1, constant: 4)
-        self.myGifView.heightAnchor.constraint(equalToConstant: 250).isActive = true
+        self.myGifView?.heightAnchor.constraint(equalToConstant: 250).isActive = true
             
           self.contentView.addConstraints([bottomConstraint,leadingContraint,trailingConstraint, topConstraint])
-        self.myGifView.addActivityIndicator()
+        self.myGifView?.addActivityIndicator()
+       
       }
   
     

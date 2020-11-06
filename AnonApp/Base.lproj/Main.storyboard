@@ -653,11 +653,11 @@
             </objects>
             <point key="canvasLocation" x="1926" y="-1345"/>
         </scene>
-        <!--Colleges-->
+        <!--The Block-->
         <scene sceneID="aG6-WY-D6Y">
             <objects>
                 <navigationController id="9aZ-rV-EYW" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Colleges" image="magnifyingglass" id="Ege-Dj-4lF"/>
+                    <tabBarItem key="tabBarItem" title="The Block" image="magnifyingglass" id="Ege-Dj-4lF"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="gwO-Fb-ldE">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -8748,7 +8748,7 @@ You are advised to review this Privacy Policy periodically for any changes. Chan
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="VGY-Bm-bch">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <mutableString key="text">End-User License Agreement (EULA) of Nut House
+                                <string key="text">End-User License Agreement (EULA) of Nut House
 This End-User License Agreement ("EULA") is a legal agreement between you and Nut House. Our EULA was created by EULA Template for Nut House.
 
 This EULA agreement governs your acquisition and use of our Nut House software ("Software") directly from Nut House or indirectly through a Nut House authorized reseller or distributor (a "Reseller"). Our Privacy Policy was created by the Privacy Policy Generator.
@@ -8813,7 +8813,7 @@ g. You may not use or otherwise export or re-export the Licensed Application exc
 
 h. The Licensed Application and related documentation are "Commercial Items", as that term is defined at 48 C.F.R. §2.101, consisting of "Commercial Computer Software" and "Commercial Computer Software Documentation", as such terms are used in 48 C.F.R. §12.212 or 48 C.F.R. §227.7202, as applicable. Consistent with 48 C.F.R. §12.212 or 48 C.F.R. §227.7202-1 through 227.7202-4, as applicable, the Commercial Computer Software and Commercial Computer Software Documentation are being licensed to U.S. Government end users (a) only as Commercial Items and (b) with only those rights as are granted to all other end users pursuant to the terms and conditions herein. Unpublished-rights reserved under the copyright laws of the United States.
 
-i. The laws of the State of California, excluding its conflicts of law rules, govern this license and your use of the Licensed Application. Your use of the Licensed Application may also be subject to other local, state, national, or international laws.</mutableString>
+i. The laws of the State of California, excluding its conflicts of law rules, govern this license and your use of the Licensed Application. Your use of the Licensed Application may also be subject to other local, state, national, or international laws.</string>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -8954,7 +8954,7 @@ i. The laws of the State of California, excluding its conflicts of law rules, go
                                 <textInputTraits key="textInputTraits" textContentType="email"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DYM-hS-UQK">
-                                <rect key="frame" x="122.5" y="111" width="130" height="36"/>
+                                <rect key="frame" x="122.5" y="167" width="130" height="36"/>
                                 <color key="backgroundColor" systemColor="quaternaryLabelColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="130" id="atR-RD-kqF"/>
@@ -8967,28 +8967,48 @@ i. The laws of the State of California, excluding its conflicts of law rules, go
                                     <action selector="createAccountClicked:" destination="Nab-T5-4pM" eventType="touchUpInside" id="GeF-3w-2sK"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Subscribe to marketing and promotional emails from Nut House" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p0U-Qf-bCb">
+                                <rect key="frame" x="90" y="118" width="255" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O2R-Rg-cnu">
+                                <rect key="frame" x="58.5" y="119" width="19.5" height="22"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <state key="normal" image="square" catalog="system"/>
+                                <connections>
+                                    <action selector="checkBoxClicked:" destination="Nab-T5-4pM" eventType="touchUpInside" id="53K-qt-D3y"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fyP-s5-nTd"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="DYM-hS-UQK" firstAttribute="top" secondItem="r8Y-EZ-vvK" secondAttribute="bottom" constant="20" id="8zw-Mb-AwI"/>
+                            <constraint firstItem="p0U-Qf-bCb" firstAttribute="top" secondItem="r8Y-EZ-vvK" secondAttribute="bottom" constant="27" id="4vp-QM-gJI"/>
+                            <constraint firstItem="O2R-Rg-cnu" firstAttribute="centerX" secondItem="yPk-vJ-I5k" secondAttribute="centerX" id="57Z-f3-GXg"/>
+                            <constraint firstItem="DYM-hS-UQK" firstAttribute="top" secondItem="p0U-Qf-bCb" secondAttribute="bottom" constant="25" id="A5E-h8-eF0"/>
                             <constraint firstItem="yPk-vJ-I5k" firstAttribute="leading" secondItem="fyP-s5-nTd" secondAttribute="leading" constant="42" id="Gix-4S-S6z"/>
+                            <constraint firstItem="p0U-Qf-bCb" firstAttribute="leading" secondItem="O2R-Rg-cnu" secondAttribute="trailing" constant="12" id="Hgy-eK-9z9"/>
+                            <constraint firstItem="fyP-s5-nTd" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="p0U-Qf-bCb" secondAttribute="trailing" constant="30" id="QGi-uw-64A"/>
                             <constraint firstItem="DYM-hS-UQK" firstAttribute="centerX" secondItem="fyP-s5-nTd" secondAttribute="centerX" id="ZU0-NC-2R5"/>
                             <constraint firstItem="yPk-vJ-I5k" firstAttribute="top" secondItem="fyP-s5-nTd" secondAttribute="top" constant="62" id="aMg-iA-cT9"/>
                             <constraint firstItem="fyP-s5-nTd" firstAttribute="trailing" secondItem="r8Y-EZ-vvK" secondAttribute="trailing" constant="40" id="gfe-s8-Rxf"/>
                             <constraint firstItem="r8Y-EZ-vvK" firstAttribute="centerY" secondItem="yPk-vJ-I5k" secondAttribute="centerY" id="iAA-Rm-M3L"/>
+                            <constraint firstItem="O2R-Rg-cnu" firstAttribute="centerY" secondItem="p0U-Qf-bCb" secondAttribute="centerY" id="rw2-eR-RHy"/>
                             <constraint firstItem="r8Y-EZ-vvK" firstAttribute="leading" secondItem="yPk-vJ-I5k" secondAttribute="trailing" constant="8" id="xLN-nm-HwP"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="emailTextField" destination="r8Y-EZ-vvK" id="1Lo-VL-095"/>
                         <outlet property="linkEmailButton" destination="DYM-hS-UQK" id="Tuk-d1-4xO"/>
+                        <outlet property="subscribeCheckBox" destination="O2R-Rg-cnu" id="Ej1-gJ-lYh"/>
                         <outlet property="topView" destination="qBM-Vu-gd5" id="eWq-ZH-hec"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lLw-65-cDb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5446" y="766"/>
+            <point key="canvasLocation" x="5445.6000000000004" y="765.96701649175418"/>
         </scene>
         <!--Welcome View Controller-->
         <scene sceneID="sfy-Nf-oyX">
@@ -9040,6 +9060,7 @@ i. The laws of the State of California, excluding its conflicts of law rules, go
         <image name="multiply" width="9" height="9"/>
         <image name="person.3.fill" width="24" height="12"/>
         <image name="plus" width="11" height="11"/>
+        <image name="square" catalog="system" width="128" height="114"/>
         <image name="square.and.pencil" width="13" height="13"/>
         <image name="star.fill" width="15" height="14"/>
         <systemColor name="labelColor">
