@@ -130,7 +130,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     
                 }else if queryItem.name == "parenteventid"{
                     parentEventKey = queryItem.value
+                }else if queryItem.name == "invitedby"{
+                    let referer = queryItem.value
+                    UserDefaults.standard.setValue(referer, forKey: "invitedby")
                 }
+                
             }
         }
         
@@ -321,6 +325,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             for school in schools{
                 if let schoolEmail = school.aemail{
                 if schoolEmailEnd == schoolEmail{
+                    if Core.shared.isKeyPresentInUserDefaults(key: "invitedby") && !UserDefaults.standard.bool(forKey: "beenReferred"){
+                        if let referer = UserDefaults.standard.string(forKey: "invitedby"){
+                        FirebaseService.sharedInstance.addNutsForReferral(uid: referer)
+                            UserDefaults.standard.setValue(true, forKey: "beenReferred")
+                        }
+                    }
+                    
                     UserDefaults.standard.set(school.channelName, forKey: "HomeSchool")
                     root?.selectedIndex = 1
                     root?.selectedIndex = 0
@@ -459,12 +470,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     
-    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
-      print("Firebase registration token: \(fcmToken)")
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        if let fcmToken1 = fcmToken{
+            print("Firebase registration token: \(fcmToken1)")
         
-      let dataDict:[String: String] = ["token": fcmToken]
+      let dataDict:[String: String] = ["token": fcmToken1]
       NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
-        
+        }
       // TODO: If necessary send token to application server.
       // Note: This callback is fired at each app startup and whenever a new token is generated.
     }

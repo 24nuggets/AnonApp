@@ -690,4 +690,22 @@ class FirebaseService: NSObject {
         }
         
     }
+    
+    func redeemNuts(uid:String, nuts:Int, completion: @escaping (Bool)->()){
+        let path = "M/\(uid)"
+        let diff = -100 * nuts
+        ref.child(path).updateChildValues(["s":ServerValue.increment(NSNumber(value: diff))]) { (error, ref) in
+            if let aerror = error {
+                completion(false)
+            }else{
+                completion(true)
+            }
+        }
+       
+    }
+    func addNutsForReferral(uid:String){
+        let path = "M/\(uid)"
+        let diff = 500
+        ref.child(path).updateChildValues(["s":ServerValue.increment(NSNumber(value: diff))])
+    }
 }

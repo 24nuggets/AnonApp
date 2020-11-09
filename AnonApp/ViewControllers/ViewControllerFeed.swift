@@ -201,7 +201,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     func displayAskToSendEmail(){
         let title = "Subscribe"
-        let message = "Can Nut House send you promotional and marketing emails?"
+        let message = "Can Nut House send you occasional promotional emails?"
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "No", style: .default, handler: { action in
           switch action.style{
@@ -507,11 +507,11 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         
         
         let eventNameQueryItem1 = URLQueryItem(name: "eventname", value: myChannel?.channelName?.encodeUrl())
-        
+        let eventUIDQueryItem = URLQueryItem(name: "invitedby", value: uid)
         if let parentqueryitem = eventparentIDQueryItem2{
         components.queryItems = [eventNameQueryItem1,parentqueryitem, eventIDQueryItem3]
         }else{
-            components.queryItems = [eventNameQueryItem1, eventIDQueryItem3]
+            components.queryItems = [eventUIDQueryItem, eventNameQueryItem1, eventIDQueryItem3]
         }
         guard let linkparam = components.url else {return}
         print(linkparam)

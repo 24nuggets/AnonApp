@@ -56,13 +56,13 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
             eventparentIDQueryItem2 = URLQueryItem(name: "parenteventid", value: parentEventKey)
         }
         
-        
+        let eventUIDQueryItem = URLQueryItem(name: "invitedby", value: myUserController?.uid)
         let eventNameQueryItem1 = URLQueryItem(name: "eventname", value: aquip.channel?.encodeUrl())
         let quipIDQueryItem4 = URLQueryItem(name: "quipid", value: aquip.quipID)
         if let parentqueryitem = eventparentIDQueryItem2{
         components.queryItems = [eventNameQueryItem1,parentqueryitem, eventIDQueryItem3,quipIDQueryItem4]
         }else{
-            components.queryItems = [eventNameQueryItem1, eventIDQueryItem3,quipIDQueryItem4]
+            components.queryItems = [eventUIDQueryItem, eventNameQueryItem1, eventIDQueryItem3,quipIDQueryItem4]
         }
         guard let linkparam = components.url else {return}
         print(linkparam)

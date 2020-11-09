@@ -47,7 +47,9 @@ class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
             FirestoreService.sharedInstance.getBlockedUsers(uid: uid) { (myblockedUsers) in
                 blockedUsers = myblockedUsers
             }
+                completion(uid)
             }
+            
         }else{
         
         Auth.auth().signInAnonymously() {[weak self] (authResult, error) in
@@ -61,7 +63,7 @@ class BaseTabBarController: UITabBarController, UITabBarControllerDelegate {
             FirestoreService.sharedInstance.getBlockedUsers(uid: user.uid) { (myblockedUsers) in
                 blockedUsers = myblockedUsers
             }
-            
+            completion(user.uid)
         }
         }
        

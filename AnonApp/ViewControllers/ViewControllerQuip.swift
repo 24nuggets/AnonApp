@@ -112,7 +112,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         resetVars()
         refreshData()
         
-        
+        Analytics.logEvent(AnalyticsEventSelectContent, parameters: nil)
     }
     override func viewWillAppear(_ animated: Bool){
       super.viewWillAppear(animated)
@@ -607,13 +607,13 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                eventparentIDQueryItem2 = URLQueryItem(name: "parenteventid", value: parentEventKey)
            }
            
-           
+        let eventUIDQueryItem = URLQueryItem(name: "invitedby", value: uid)
            let eventNameQueryItem1 = URLQueryItem(name: "eventname", value: aquip.channel?.encodeUrl())
            let quipIDQueryItem4 = URLQueryItem(name: "quipid", value: aquip.quipID)
            if let parentqueryitem = eventparentIDQueryItem2{
            components.queryItems = [eventNameQueryItem1,parentqueryitem, eventIDQueryItem3,quipIDQueryItem4]
            }else{
-               components.queryItems = [eventNameQueryItem1, eventIDQueryItem3,quipIDQueryItem4]
+               components.queryItems = [eventUIDQueryItem, eventNameQueryItem1, eventIDQueryItem3,quipIDQueryItem4]
            }
            guard let linkparam = components.url else {return}
            print(linkparam)
@@ -1426,7 +1426,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
               // ...
             }
                         if auid != aQuipAuthor{
-                        sleep(2)
+                        sleep(1)
                         Messaging.messaging().subscribe(toTopic: "\(aQuipID)Replier"){ error in
                                              print("Subscribed to \(aQuipID)")
                                            }
@@ -1530,6 +1530,8 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
         replyTable.reloadData()
         refreshControl.endRefreshing()
             postBtn.isEnabled = true
+        let indexPath = IndexPath(row: myReplies.count, section: 0)
+        replyTable.scrollToRow(at: indexPath, at: .bottom, animated: true)
     }
     
     @objc func refreshData(){

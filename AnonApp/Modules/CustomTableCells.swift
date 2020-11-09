@@ -131,11 +131,10 @@ class QuipCells:UITableViewCell{
                                     
                                 }else{
                                 DispatchQueue.main.async {
-                                    aGifView.setNeedsDisplay()
                                     self?.table?.beginUpdates()
                                     aGifView.removeConstraints(aGifView.constraints)
                                     aGifView.widthAnchor.constraint(equalTo: aGifView.heightAnchor, multiplier: gif.aspectRatio).isActive = true
-                                            self?.table?.endUpdates()
+                                    self?.table?.endUpdates()
                                    aGifView.layer.cornerRadius = 8.0
                                    aGifView.clipsToBounds = true
                                    for subview in aGifView.subviews{

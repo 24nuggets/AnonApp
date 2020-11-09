@@ -1543,4 +1543,15 @@ class FirestoreService: NSObject {
         completion()
         
     }
+    func enterNutsInRaffle(uid:String, nuts:Int, completion: @escaping (Bool)->()){
+        let docRef = db.collection("/Raffle").document("RaffleData")
+        let data = [uid: FieldValue.increment(Int64(nuts))]
+        docRef.updateData(data) { (error) in
+            if let aerror = error {
+                completion(false)
+            }else{
+                completion(true)
+            }
+        }
+    }
 }

@@ -546,7 +546,7 @@
             </objects>
             <point key="canvasLocation" x="2775" y="-2255"/>
         </scene>
-        <!--Colleges-->
+        <!--The Block-->
         <scene sceneID="4ki-OR-qOA">
             <objects>
                 <tableViewController id="AYE-e3-gtx" customClass="ViewControllerStudentSections" customModule="Nut_House" customModuleProvider="target" sceneMemberID="viewController">
@@ -614,8 +614,13 @@
                             <outlet property="delegate" destination="AYE-e3-gtx" id="jw3-aD-l8f"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Colleges" id="GWz-iy-Xhi">
+                    <navigationItem key="navigationItem" title="The Block" id="GWz-iy-Xhi">
                         <barButtonItem key="backBarButtonItem" title=" " id="17i-L3-TUp"/>
+                        <barButtonItem key="leftBarButtonItem" image="arrowshape.turn.up.right" id="5Aa-rK-RVR">
+                            <connections>
+                                <action selector="shareClicked:" destination="AYE-e3-gtx" id="phz-VW-z85"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" image="gear" id="T0t-fm-Y2d">
                             <connections>
                                 <action selector="settingsClicked:" destination="AYE-e3-gtx" id="gO5-cV-d8N"/>
@@ -2393,7 +2398,7 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" textContentType="name"/>
                             </textView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nut Count: 0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xWm-ew-Wn0">
-                                <rect key="frame" x="22" y="12" width="331" height="21"/>
+                                <rect key="frame" x="139" y="12" width="97.5" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -2434,6 +2439,7 @@
                         <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="QD1-RM-Uda" firstAttribute="trailing" secondItem="PXA-DP-sGO" secondAttribute="trailing" constant="16" id="0Ol-Dk-D9I"/>
+                            <constraint firstItem="xWm-ew-Wn0" firstAttribute="centerX" secondItem="QNh-Cj-Qat" secondAttribute="centerX" id="1Bx-0O-PW8"/>
                             <constraint firstItem="sGP-5E-ayK" firstAttribute="bottom" secondItem="9lv-8J-Irj" secondAttribute="top" id="1zD-V8-wyI"/>
                             <constraint firstItem="QD1-RM-Uda" firstAttribute="leading" secondItem="vot-CU-ZUr" secondAttribute="leading" id="3H6-BC-H8H"/>
                             <constraint firstItem="QD1-RM-Uda" firstAttribute="bottom" secondItem="vot-CU-ZUr" secondAttribute="bottom" id="4KT-rw-5HK"/>
@@ -2444,7 +2450,6 @@
                             <constraint firstItem="xmG-o4-bjl" firstAttribute="leading" secondItem="K5e-WE-euj" secondAttribute="trailing" constant="10" id="Dfm-yc-j5y"/>
                             <constraint firstItem="QD1-RM-Uda" firstAttribute="trailing" secondItem="vot-CU-ZUr" secondAttribute="trailing" id="Ek1-wi-6yJ"/>
                             <constraint firstItem="hk9-kG-nLN" firstAttribute="centerY" secondItem="K5e-WE-euj" secondAttribute="centerY" id="FFQ-dt-wZo"/>
-                            <constraint firstItem="xWm-ew-Wn0" firstAttribute="leading" secondItem="QD1-RM-Uda" secondAttribute="leading" constant="22" id="Jfl-HF-4iO"/>
                             <constraint firstItem="sGP-5E-ayK" firstAttribute="centerY" secondItem="xmG-o4-bjl" secondAttribute="centerY" id="N4S-kf-uUQ"/>
                             <constraint firstItem="xmG-o4-bjl" firstAttribute="centerY" secondItem="K5e-WE-euj" secondAttribute="centerY" id="Tld-d6-6zI"/>
                             <constraint firstItem="K5e-WE-euj" firstAttribute="top" secondItem="xWm-ew-Wn0" secondAttribute="bottom" constant="11" id="U5d-t2-d81"/>
@@ -2456,7 +2461,6 @@
                             <constraint firstItem="QD1-RM-Uda" firstAttribute="trailing" secondItem="hk9-kG-nLN" secondAttribute="trailing" constant="22" id="cpi-Pg-Rbo"/>
                             <constraint firstItem="vot-CU-ZUr" firstAttribute="top" secondItem="peb-8h-D6Y" secondAttribute="bottom" id="e69-sM-paU"/>
                             <constraint firstItem="QD1-RM-Uda" firstAttribute="trailing" secondItem="peb-8h-D6Y" secondAttribute="trailing" id="qZ8-Ol-6b8"/>
-                            <constraint firstItem="QD1-RM-Uda" firstAttribute="trailing" secondItem="xWm-ew-Wn0" secondAttribute="trailing" constant="22" id="sSW-YJ-Iug"/>
                             <constraint firstItem="peb-8h-D6Y" firstAttribute="firstBaseline" secondItem="9lv-8J-Irj" secondAttribute="baseline" constant="12.5" symbolType="layoutAnchor" id="tXz-tK-Q65"/>
                             <constraint firstItem="K5e-WE-euj" firstAttribute="leading" secondItem="QD1-RM-Uda" secondAttribute="leading" constant="22" id="vEf-0J-FW1"/>
                             <constraint firstItem="PXA-DP-sGO" firstAttribute="top" secondItem="fDg-Uf-Juo" secondAttribute="bottom" constant="4" id="xbx-jP-fn6"/>
@@ -2464,6 +2468,11 @@
                     </view>
                     <navigationItem key="navigationItem" title="Sack" id="Fae-SG-Z1p">
                         <barButtonItem key="backBarButtonItem" title=" " id="McQ-lq-EEs"/>
+                        <barButtonItem key="leftBarButtonItem" title="Redeem" id="sCE-4W-uVT">
+                            <connections>
+                                <segue destination="AFy-95-44G" kind="show" id="7sQ-kZ-7oZ"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Item" image="gear" id="V2b-on-jZk">
                             <connections>
                                 <action selector="settingsBtnClicked:" destination="Dw3-D5-vbd" id="6aw-1R-tzq"/>
@@ -2490,6 +2499,82 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Vk-f4-UgR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3764" y="1530.5847076461771"/>
+        </scene>
+        <!--Redeem-->
+        <scene sceneID="H6M-Ri-8pT">
+            <objects>
+                <viewController id="AFy-95-44G" customClass="RedeemViewController" customModule="Nut_House" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="7tE-D8-gD9">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nuts Available:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RvU-Bw-vGM">
+                                <rect key="frame" x="50" y="40" width="129" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dSR-6O-7l6">
+                                <rect key="frame" x="199" y="40.5" width="46" height="23"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="20" translatesAutoresizingMaskIntoConstraints="NO" id="tiY-DA-PIX">
+                                <rect key="frame" x="216" y="99" width="60" height="34"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="60" id="fWd-Ri-lku"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hL1-gA-1Rb">
+                                <rect key="frame" x="137.5" y="168" width="100" height="36"/>
+                                <color key="backgroundColor" systemColor="quaternaryLabelColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="Hww-DL-hDy"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
+                                <state key="normal" title="Redeem">
+                                    <color key="titleColor" systemColor="labelColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="redeemBtnClicked:" destination="AFy-95-44G" eventType="touchUpInside" id="xPS-ZM-ZNa"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nuts to Redeem:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yVM-1C-lPI">
+                                <rect key="frame" x="50" y="104" width="146" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="z03-cz-0rR"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="tiY-DA-PIX" firstAttribute="centerY" secondItem="yVM-1C-lPI" secondAttribute="centerY" id="0eM-F1-BSe"/>
+                            <constraint firstItem="hL1-gA-1Rb" firstAttribute="top" secondItem="yVM-1C-lPI" secondAttribute="bottom" constant="40" id="2Vy-jX-KJe"/>
+                            <constraint firstItem="dSR-6O-7l6" firstAttribute="centerY" secondItem="RvU-Bw-vGM" secondAttribute="centerY" id="9e8-v4-W1y"/>
+                            <constraint firstItem="yVM-1C-lPI" firstAttribute="leading" secondItem="RvU-Bw-vGM" secondAttribute="leading" id="NH4-oB-so7"/>
+                            <constraint firstItem="RvU-Bw-vGM" firstAttribute="top" secondItem="z03-cz-0rR" secondAttribute="top" constant="40" id="ThX-hn-z93"/>
+                            <constraint firstItem="RvU-Bw-vGM" firstAttribute="leading" secondItem="z03-cz-0rR" secondAttribute="leading" constant="50" id="Wpy-dj-hP8"/>
+                            <constraint firstItem="dSR-6O-7l6" firstAttribute="leading" secondItem="RvU-Bw-vGM" secondAttribute="trailing" constant="20" id="eOH-xn-goa"/>
+                            <constraint firstItem="yVM-1C-lPI" firstAttribute="top" secondItem="RvU-Bw-vGM" secondAttribute="bottom" constant="40" id="jRX-zr-yzv"/>
+                            <constraint firstItem="hL1-gA-1Rb" firstAttribute="centerX" secondItem="z03-cz-0rR" secondAttribute="centerX" id="kR5-n9-uNB"/>
+                            <constraint firstItem="tiY-DA-PIX" firstAttribute="leading" secondItem="yVM-1C-lPI" secondAttribute="trailing" constant="20" id="y0U-4u-N1b"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Redeem" id="DeU-hY-fbQ"/>
+                    <connections>
+                        <outlet property="nutsAvailableLbl" destination="dSR-6O-7l6" id="TDO-wt-jqX"/>
+                        <outlet property="nutsToRedeemTextField" destination="tiY-DA-PIX" id="def-hf-wCs"/>
+                        <outlet property="redeemBtn" destination="hL1-gA-1Rb" id="OoB-oO-T1s"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="058-j9-qdn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3764" y="2332.0839580209895"/>
         </scene>
         <!--View Controller Privacy Policy-->
         <scene sceneID="AeR-Am-OrS">
@@ -8947,7 +9032,7 @@ i. The laws of the State of California, excluding its conflicts of law rules, go
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="r8Y-EZ-vvK">
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="20" translatesAutoresizingMaskIntoConstraints="NO" id="r8Y-EZ-vvK">
                                 <rect key="frame" x="102.5" y="57" width="232.5" height="34"/>
                                 <color key="tintColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
@@ -8967,8 +9052,8 @@ i. The laws of the State of California, excluding its conflicts of law rules, go
                                     <action selector="createAccountClicked:" destination="Nab-T5-4pM" eventType="touchUpInside" id="GeF-3w-2sK"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Subscribe to marketing and promotional emails from Nut House" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p0U-Qf-bCb">
-                                <rect key="frame" x="90" y="118" width="255" height="24"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Subscribe to occasional promotional emails from Nut House" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p0U-Qf-bCb">
+                                <rect key="frame" x="90" y="118" width="238" height="24"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -9042,8 +9127,8 @@ i. The laws of the State of California, excluding its conflicts of law rules, go
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="yOb-7B-Jmc"/>
-        <segue reference="dEb-Nq-Rbz"/>
+        <segue reference="mxi-Kb-h4x"/>
+        <segue reference="a0p-IM-1dQ"/>
         <segue reference="QAb-O8-eIF"/>
     </inferredMetricsTieBreakers>
     <resources>

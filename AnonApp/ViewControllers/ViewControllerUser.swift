@@ -28,7 +28,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     
     @IBOutlet weak var leadingScoreBarConstraint: NSLayoutConstraint!
     
-    
+
     
   //  var bioHeightConstraint:NSLayoutConstraint?
     var uid:String?
@@ -43,7 +43,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     let bioPlaceholderText = "Insert Bio"
     var progressBarLength:CGFloat = 0
     var progress:Float = 0
-    
+    var nuts:Int = 0
    
     
  
@@ -93,7 +93,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                   setUpButtons()
                   selectNew()
         
-            
+       
     }
     
    
@@ -174,7 +174,8 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         }
         else{
             let nextScore = score % 100
-            let nuts = Int(floor(Double(score)/100.0))
+            nuts = Int(floor(Double(score)/100.0))
+            
             userScoreLabel.text = String(nextScore)
             levelLable.text = "Nut Count: \(nuts)"
             self.view.layoutIfNeeded()
@@ -574,6 +575,10 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
+        if let redeemVC = segue.destination as? RedeemViewController{
+            redeemVC.nutsAvailable = nuts
+            redeemVC.auid = uidProfile
+        }
         
         if let quipVC = segue.destination as? ViewControllerQuip{
                if newBtn.isSelected{
