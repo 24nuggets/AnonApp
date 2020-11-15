@@ -1549,6 +1549,8 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
          if indexPath.row == 0 {
              if let cell = replyTable.dequeueReusableCell(withIdentifier: "mainQuip", for: indexPath) as? QuipCells{
                 if myQuip != nil{
+                    cell.hasAcces = hasAccess
+                    cell.aQuip = myQuip
              if let myImageRef = myQuip?.imageRef  {
                      cell.addImageViewToTableCell()
                  
@@ -1608,7 +1610,7 @@ class ViewControllerQuip: myUIViewController, UITableViewDataSource, UITableView
                  }
                                                                              
                      else if let aGID = aReply.gifID {
-                                                                                            
+                        cell.table = replyTable
                         cell.gifID = aGID   
                                                                                                                                       
                  }

@@ -10,6 +10,7 @@ import UIKit
 import GiphyUISDK
 import GiphyCoreSDK
 
+let pollCache = NSCache<NSString,AnyObject>()
 
 protocol MyCellDelegate: AnyObject {
     func btnUpTapped(cell: QuipCells)
@@ -94,6 +95,8 @@ class QuipCells:UITableViewCell{
     
     weak var delegate: MyCellDelegate?
     
+    var hasAcces = false
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -128,6 +131,7 @@ class QuipCells:UITableViewCell{
                                                    mysubview.stopAnimating()
                                                }
                                            }
+                                    aGifView.media = gif
                                     
                                 }else{
                                 DispatchQueue.main.async {
@@ -142,10 +146,11 @@ class QuipCells:UITableViewCell{
                                            mysubview.stopAnimating()
                                        }
                                    }
+                                    aGifView.media = gif
                                     
                                 }
                                 }
-                                    aGifView.media = gif
+                                    
                                 
                                 
                             }
@@ -158,6 +163,7 @@ class QuipCells:UITableViewCell{
             }
         }
     
+    
     var aQuip:Quip? {
         didSet{
             if let myQuip = aQuip{
@@ -167,6 +173,7 @@ class QuipCells:UITableViewCell{
                 self.quipText?.text = myQuip.quipText
                 
                 if let numOfReplies = myQuip.quipReplies {
+                    if self.replyButton != nil{
                 if numOfReplies == 1{
                     self.replyButton.setTitle("\(numOfReplies) Reply", for: .normal)
                 }else if numOfReplies > 1{
@@ -176,11 +183,62 @@ class QuipCells:UITableViewCell{
                    self.replyButton.setTitle("Replies", for: .normal)
                     }
                 }
+                }
                 if let aQuipScore=myQuip.tempScore{
                     self.score?.text = String(aQuipScore)
                 }
                 
-                
+                if let myOptions = myQuip.myOptions{
+                    self.createStackView()
+                    self.addStackViewToTableCell(numOfOptions: myOptions.count)
+                    self.populateStackView(options:myOptions)
+                    myStackView?.crackKey = myQuip.quipID
+                    
+                    myStackView?.button1?.isEnabled = false
+                    myStackView?.button2?.isEnabled = false
+                    myStackView?.button3?.isEnabled = false
+                    myStackView?.button4?.isEnabled = false
+                    if hasAcces{
+                    if let cachePoll = pollCache.object(forKey: myQuip.quipID as! NSString) as? Poll{
+                        let selectedBtn = cachePoll.selected
+                        myStackView?.votesData = cachePoll.votes
+                        if selectedBtn == 1 {
+                            myStackView?.selectButton(selectedBtn: (myStackView?.button1)!, isCached: true)
+                        }else if selectedBtn == 2{
+                            myStackView?.selectButton(selectedBtn: (myStackView?.button2)!,  isCached: true)
+                        }else if selectedBtn == 3 {
+                            myStackView?.selectButton(selectedBtn: (myStackView?.button3)!,  isCached: true)
+                        }else if selectedBtn == 4 {
+                            myStackView?.selectButton(selectedBtn: (myStackView?.button4)!,  isCached: true)
+                        }
+                        
+                    }else{
+                    DynamoService.sharedInstance.loadPollData(key: myQuip.quipID!, uid: UserDefaults.standard.string(forKey: "UID")! ) {[weak self] (optionScores, buttonSelected, returnedKey) in
+                        if myQuip.quipID == returnedKey{
+                            self?.myStackView?.votesData = optionScores
+                            if buttonSelected == 1 || self?.myStackView?.selectedBtnInt == 1 {
+                                self?.myStackView?.selectButton(selectedBtn: (self?.myStackView?.button1)!,  isCached: false)
+                            }else if buttonSelected == 2 || self?.myStackView?.selectedBtnInt == 2{
+                                self?.myStackView?.selectButton(selectedBtn: (self?.myStackView?.button2)!, isCached: false)
+                            }else if buttonSelected == 3 || self?.myStackView?.selectedBtnInt == 3{
+                                self?.myStackView?.selectButton(selectedBtn: (self?.myStackView?.button3)!, isCached: false)
+                            }else if buttonSelected == 4 || self?.myStackView?.selectedBtnInt == 4{
+                                self?.myStackView?.selectButton(selectedBtn: (self?.myStackView?.button4)!, isCached: false)
+                            }else{
+                                DispatchQueue.main.async {
+                                self?.myStackView?.button1?.isEnabled = true
+                                self?.myStackView?.button2?.isEnabled = true
+                                self?.myStackView?.button3?.isEnabled = true
+                                self?.myStackView?.button4?.isEnabled = true
+                                }
+                            }
+                            
+                            
+                        }
+                    }
+                }
+                    }
+                }
                                              
             }
         }
@@ -220,13 +278,32 @@ class QuipCells:UITableViewCell{
     return imgView
     }()
     
+    var myStackView:pollStack? = nil
+    
+    func createStackView(){
+       
+        
+        
+        myStackView = pollStack()
+        
+    }
+    func populateStackView(options:[String]){
+        myStackView?.addOptions(options: options)
+        myStackView?.axis = .vertical;
+        myStackView?.distribution = .fillEqually;
+        myStackView?.alignment = .fill;
+        myStackView?.spacing = 8;
+        print(myStackView?.arrangedSubviews.count)
+    }
     
     
     
-    override func prepareForReuse() {
+    override func prepareForReuse(){
         super.prepareForReuse()
         
         myGifView?.media = nil
+        myStackView?.removeFromSuperview()
+        myStackView = nil
         
         myImageView.image = nil
         gifID = nil
@@ -379,7 +456,19 @@ class QuipCells:UITableViewCell{
               
           }
    
-    
+    func addStackViewToTableCell(numOfOptions:Int){
+        self.contentView.addSubview(self.myStackView!)
+        self.myStackView!.translatesAutoresizingMaskIntoConstraints = false
+        
+        let bottomConstraint = NSLayoutConstraint(item: self.contentView, attribute: .bottom, relatedBy: .equal, toItem: self.myStackView, attribute: .bottom, multiplier: 1, constant: 40)
+          let leadingContraint = NSLayoutConstraint(item: self.myStackView, attribute: .leading, relatedBy: .equal, toItem: self.contentView, attribute: .leading, multiplier: 1, constant: 10)
+          let trailingConstraint = NSLayoutConstraint(item: self.contentView, attribute: .trailing, relatedBy: .equal, toItem: self.myStackView, attribute: .trailing, multiplier: 1, constant: 77)
+          let topConstraint = NSLayoutConstraint(item: self.myStackView, attribute: .top, relatedBy: .equal, toItem: self.quipText, attribute: .bottom, multiplier: 1, constant: 4)
+        self.myStackView?.heightAnchor.constraint(equalToConstant: CGFloat(numOfOptions * 35)).isActive = true
+            
+          self.contentView.addConstraints([bottomConstraint,leadingContraint,trailingConstraint, topConstraint])
+       
+    }
    
     
     func addGifViewToTableCell(){

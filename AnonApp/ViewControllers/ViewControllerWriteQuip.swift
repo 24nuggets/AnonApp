@@ -13,7 +13,7 @@ import Firebase
 
 
 
-class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
+class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate, UITextFieldDelegate{
     
     
     weak var myChannel:Channel?
@@ -47,6 +47,20 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
     
     @IBOutlet weak var imageViewSpaceToBottom: NSLayoutConstraint!
     
+    @IBOutlet weak var gifBarBtn: UIBarButtonItem!
+    @IBOutlet weak var pollStackView: pollStack!
+    
+    @IBOutlet weak var surveyView: UIView!
+    @IBOutlet weak var option1Poll: UITextField!
+    @IBOutlet weak var option2Poll: UITextField!
+    @IBOutlet weak var addOptionButton: UIButton!
+    @IBOutlet weak var surveyBtn: UIBarButtonItem!
+    
+    @IBOutlet weak var option3Poll: UITextField!
+    @IBOutlet weak var option4Poll: UITextField!
+    @IBOutlet weak var option3DeleteBtn: UIButton!
+    @IBOutlet weak var option4DeleteBtn: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -66,6 +80,23 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         imageView.layer.cornerRadius = 8.0
         hideKeyboardWhenTappedAround()
         // Do any additional setup after loading the view.
+        surveyView.layer.cornerRadius = 20
+        surveyView.clipsToBounds = true
+        addOptionButton.layer.cornerRadius = 10
+        addOptionButton.clipsToBounds = true
+        option3DeleteBtn.layer.cornerRadius = option3DeleteBtn.bounds.width/2
+        option3DeleteBtn.clipsToBounds = true
+        option4DeleteBtn.layer.cornerRadius = option4DeleteBtn.bounds.width/2
+        option4DeleteBtn.clipsToBounds = true
+        pollStackView.removeArrangedSubview(option3Poll)
+        pollStackView.removeArrangedSubview(option4Poll)
+        option3Poll.isHidden = true
+        option4Poll.isHidden = true
+        option1Poll.delegate = self
+        option2Poll.delegate = self
+        option3Poll.delegate = self
+        option4Poll.delegate = self
+        
     }
     
     
@@ -138,6 +169,61 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         
     }
     
+    
+    @IBAction func addOptionClicked(_ sender: Any) {
+        if option3DeleteBtn.isHidden {
+            pollStackView.insertArrangedSubview(addOptionButton, at: 3)
+            pollStackView.insertArrangedSubview(option3Poll, at: 2)
+            option3DeleteBtn.isHidden = false
+            option3Poll.isHidden = false
+            surveyView.bringSubviewToFront(option3DeleteBtn)
+            option3Poll.rightView = option3DeleteBtn
+            option3Poll.rightViewMode = .always
+            
+        }else if option4DeleteBtn.isHidden{
+            pollStackView.removeArrangedSubview(addOptionButton)
+            pollStackView.insertArrangedSubview(option4Poll, at: 3)
+            option4DeleteBtn.isHidden = false
+            option4Poll.isHidden = false
+            option3DeleteBtn.isHidden = true
+            addOptionButton.isHidden = true
+            surveyView.bringSubviewToFront(option4DeleteBtn)
+            option4Poll.rightView = option4DeleteBtn
+            option4Poll.rightViewMode = .always
+        }
+    }
+    @IBAction func option4DeleteClick(_ sender: Any) {
+        pollStackView.removeArrangedSubview(option4Poll)
+        option4DeleteBtn.isHidden = true
+        option4Poll.isHidden = true
+        pollStackView.insertArrangedSubview(addOptionButton, at: 3)
+        addOptionButton.isHidden = false
+        option3Poll.rightView = option3DeleteBtn
+        option3Poll.rightViewMode = .always
+        option3DeleteBtn.isHidden = false
+        option4Poll.text = ""
+    }
+    
+    @IBAction func option3DeleteClick(_ sender: Any) {
+        pollStackView.removeArrangedSubview(option3Poll)
+        option3DeleteBtn.isHidden = true
+        option3Poll.isHidden = true
+        pollStackView.insertArrangedSubview(addOptionButton, at: 2)
+        option3Poll.text = ""
+    }
+    
+    @IBAction func surveyClicked(_ sender: Any) {
+        if gifBarBtn.isEnabled{
+        gifBarBtn.isEnabled = false
+        surveyView.isHidden = false
+           
+        }else{
+            gifBarBtn.isEnabled = true
+            surveyView.isHidden = true
+           
+        }
+        
+    }
     
     @IBAction func gifClicked(_ sender: Any) {
         let g = GiphyViewController()
@@ -214,7 +300,39 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         }
         return true
     }
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange,
+                           replacementString string: String) -> Bool
+    {
+        let maxLength = 20
+        let currentString: NSString = (textField.text ?? "") as NSString
+        let newString: NSString =
+            currentString.replacingCharacters(in: range, with: string) as NSString
+        return newString.length <= maxLength
+
+    }
     
+   func displayPollError(){
+    let title = "Error"
+    let message = "Please enter at least 2 options if you are going to post a poll."
+    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { action in
+          switch action.style{
+          case .default:
+                print("default")
+           
+                
+          case .cancel:
+                print("cancel")
+
+          case .destructive:
+                print("destructive")
+
+
+          @unknown default:
+            print("unknown action")
+        }}))
+    self.present(alert, animated: true, completion: nil)
+   }
     
     
      // -MARK: SaveQuip
@@ -223,6 +341,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         
         var gifID:String?
         var hasGif:Bool=false
+        var isPoll:Bool=false
         if imageView.image != nil  && imageView.isHidden==false {
            checkIfImageIsClean()
             return
@@ -230,8 +349,16 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         else if mediaView?.media != nil && mediaView?.isHidden == false{
             gifID = mediaView?.media?.id
             hasGif = true
+        }else if surveyView.isHidden == false{
+            if option1Poll.text == "" || option2Poll.text == "" {
+                displayPollError()
+                blackView.removeFromSuperview()
+                activityIndicator?.stopAnimating()
+                return
+            }
+            isPoll = true
         }
-       generatePost(hasImage: false, hasGif: hasGif, imageRef: nil, gifID: gifID)
+       generatePost(hasImage: false, hasGif: hasGif, imageRef: nil, gifID: gifID,isPoll: isPoll)
         
        
         
@@ -253,7 +380,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                         }
                         FirebaseStorageService.sharedInstance.uploadImage(imageRef: imageRef, imageData: imageData) { (isClean) in
                             if isClean{
-                               self.generatePost(hasImage: hasImage, hasGif: false, imageRef: imageRef, gifID: nil)
+                                self.generatePost(hasImage: hasImage, hasGif: false, imageRef: imageRef, gifID: nil, isPoll: false)
                             }else{
                                 self.displayMsgBox()
                             }
@@ -315,7 +442,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
         blackView.removeFromSuperview()
     }
     
-    func generatePost(hasImage:Bool, hasGif:Bool, imageRef:String?, gifID:String?){
+    func generatePost(hasImage:Bool, hasGif:Bool, imageRef:String?, gifID:String?, isPoll:Bool){
         guard let key = FirebaseService.sharedInstance.generatePostKey() else { return }
         Analytics.logEvent(AnalyticsEventSelectItem, parameters: [AnalyticsParameterItemID : "id- \(myChannel?.channelName ?? "Other")",
             AnalyticsParameterContentType: "PostToEvent"])
@@ -412,6 +539,17 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate{
                    post3["g"]=gifID
                    post4["g"]=gifID
                    post2["g"]=gifID
+               }else if isPoll{
+                var options = [option1Poll.text, option2Poll.text]
+                if option3Poll.text != ""{
+                    options.append(option3Poll.text)
+                }
+                if option4Poll.text != ""{
+                    options.append(option4Poll.text)
+                }
+                post3["options"]=options
+                post4["options"]=options
+                post2["options"]=options
                }
                
                queryRecentChannelQuips(data: post3, key: key,post4: post4, post2: post2)

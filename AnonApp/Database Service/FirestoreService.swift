@@ -70,9 +70,9 @@ class FirestoreService: NSObject {
                         let aReplies = 0
                           let myImageRef = myInfo["i"] as? String
                            
-                           
+                           let myOptions = myInfo["options"] as? [String]
                            let myGifRef = myInfo["g"] as? String
-                           let myQuip = Quip(text: aQuipText!, bowl: aChannelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef)
+                        let myQuip = Quip(text: aQuipText!, bowl: aChannelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef, options: myOptions)
                         myQuip.channelKey = channelkey
                         myQuip.parentKey = parentChannelkey
                          
@@ -151,7 +151,8 @@ class FirestoreService: NSObject {
                                     let aReplies = 0
                                     let myImageRef = myInfo["i"] as? String
                                    let myGifRef = myInfo["g"] as? String
-                                   let myQuip = Quip(text: aQuipText!, bowl: aChannelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef)
+                                    let myOptions = myInfo["options"] as? [String]
+                                   let myQuip = Quip(text: aQuipText!, bowl: aChannelName, time: atimePosted!, score: aQuipScore, myQuipID: aQuipID, author: myAuthor!, replies: aReplies, myImageRef: myImageRef, myGifID: myGifRef,options: myOptions)
                                      myQuip.channelKey = channelkey
                                     myQuip.parentKey = parentChannelKey
                                     newQuips.append(myQuip)
@@ -959,7 +960,7 @@ class FirestoreService: NSObject {
                     let isReply = myInfo["r"] as? Bool
                     let quipParent = myInfo["p"] as? String
                     let aemail = myInfo["email"] as? String
-                       
+                    let myOptions = myInfo["options"] as? [String]
                     var aQuipScore:Int?
                     var aReplies:Int?
                     if let myQuipNumbers = myScores[aQuipID] as? [String:Any]{
@@ -971,7 +972,7 @@ class FirestoreService: NSObject {
                     
                       let myImageRef = myInfo["i"] as? String
                       let myGifRef = myInfo["g"] as? String
-                    let myQuip = Quip(text: aQuipText ?? "", bowl: myChannel ?? "Other", time: atimePosted ?? Timestamp(), score: aQuipScore ?? 0, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent: quipParent, email: aemail)
+                    let myQuip = Quip(text: aQuipText ?? "", bowl: myChannel ?? "Other", time: atimePosted ?? Timestamp(), score: aQuipScore ?? 0, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent: quipParent, email: aemail, options: myOptions)
                     
                        newUserQuips.append(myQuip)
                     
@@ -1023,6 +1024,7 @@ class FirestoreService: NSObject {
                                   let myChannel = myInfo["c"] as? String
                                   let quipParent = myInfo["p"] as? String
                                 let aemail = myInfo["email"] as? String
+                                let myOptions = myInfo["options"] as? [String]
                                var aQuipScore:Int?
                                var aReplies:Int?
                                if let myQuipNumbers = myScores[aQuipID] as? [String:Any]{
@@ -1037,7 +1039,7 @@ class FirestoreService: NSObject {
                                 let myChannelKey = myInfo["k"] as? String
                                 let myChannelParentKey = myInfo["pk"] as? String
                                 let isReply = myInfo["r"] as? Bool
-                               let myQuip = Quip(text: aQuipText!, bowl: myChannel ?? "Other", time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent:quipParent, email: aemail)
+                                let myQuip = Quip(text: aQuipText!, bowl: myChannel ?? "Other", time: atimePosted!, score: aQuipScore!, myQuipID: aQuipID, replies: aReplies ?? 0,myImageRef: myImageRef,myGifID: myGifRef, myChannelKey: myChannelKey,myParentChannelKey: myChannelParentKey, isReply: isReply, aquipParent:quipParent, email: aemail, options: myOptions)
                                   newUserQuips.append(myQuip)
                                 
                                 
@@ -1122,7 +1124,7 @@ class FirestoreService: NSObject {
                 let isReply = mydata["r"] as? Bool
                 let imageRef = mydata["i"] as? String
                 let gifid = mydata["g"] as? String
-                    let aQuip = Quip(myQuipID: quipID, auser: author, parentchannelKey: parentchannelKey, achannelkey: channelkey, atimePosted: atimePosted, text:text, quipParent: quipParent, isReply: isReply, imageRef:imageRef, gifid:gifid)
+                    let aQuip = Quip(myQuipID: quipID, auser: author, parentchannelKey: parentchannelKey, achannelkey: channelkey, atimePosted: atimePosted, text:text, quipParent: quipParent, isReply: isReply, imageRef:imageRef, gifid:gifid, options: nil)
                     
                 completion(aQuip)
                 }

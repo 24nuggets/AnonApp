@@ -15,6 +15,7 @@ class CollectionViewCellUser: UICollectionViewCell, MyCellDelegate {
     
     var myUserController: ViewControllerUser?
     var currentTime:Double?
+    var hasAccess:Bool = true
     
     lazy var MenuLauncher:ellipsesMenuUser = {
                let launcher = ellipsesMenuUser()
@@ -500,6 +501,7 @@ class CollectionViewCellUserNew: CollectionViewCellUser, UITableViewDelegate, UI
         let cell = userQuipsTable.dequeueReusableCell(withIdentifier: "feedCell", for: indexPath) as! QuipCells
            if newUserQuips.count > 0 {
                                           if let myQuip = self.newUserQuips[indexPath.row]{
+                                            cell.hasAcces = hasAccess
                                               cell.aQuip = myQuip
                                             
                                                   if let myImageRef = myQuip.imageRef  {
@@ -712,6 +714,7 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
                            myQuip.imageRef = quipData["i"] as? String
                             myQuip.isReply = quipData["r"] as? Bool ?? false
                             myQuip.aemail = quipData["email"] as? String
+                            myQuip.myOptions = quipData["options"] as? [String]
                             if myQuip.isReply{
                                 myQuip.quipParent = quipData["p"] as? String
                             }
@@ -749,6 +752,7 @@ class CollectionViewCellUserTop: CollectionViewCellUser, UITableViewDelegate, UI
         let cell = userQuipsTable.dequeueReusableCell(withIdentifier: "feedCell", for: indexPath) as! QuipCells
           if topUserQuips.count > 0 {
                                    if let myQuip = self.topUserQuips[indexPath.row]{
+                                    cell.hasAcces = hasAccess
                                      cell.aQuip = myQuip
                                                 if let myImageRef = myQuip.imageRef  {
                                                     

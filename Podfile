@@ -21,6 +21,9 @@ pod 'Firebase/Storage'
 pod 'Firebase/ABTesting'
 pod 'Firebase/Crashlytics'
 pod 'Giphy'
+pod 'MailchimpSDK'
+pod 'AWSDynamoDB'
+pod 'AWSCore'
 
   target 'AnonAppTests' do
     inherit! :search_paths

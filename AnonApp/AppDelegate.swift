@@ -10,6 +10,7 @@ import UIKit
 import Firebase
 import GiphyUISDK
 import GiphyCoreSDK
+import AWSCore
 import MailchimpSDK
 
 
@@ -174,7 +175,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         FirebaseApp.configure()
        Database.database().isPersistenceEnabled=false
         Giphy.configure(apiKey: "5Wj0tBPL6cAW7zUJenU6lF0TG7febmp1")
-        
+        let credentialsProvider = AWSCognitoCredentialsProvider(
+            regionType: AWSRegionType.USEast1,
+            identityPoolId: "us-east-1:da355a91-d410-419f-891d-7b8dcf55a71b")
+        let configuration = AWSServiceConfiguration(
+            region: AWSRegionType.USEast1,
+            credentialsProvider: credentialsProvider)
+        AWSServiceManager.default().defaultServiceConfiguration = configuration
         if #available(iOS 10.0, *) {
           // For iOS 10 display notification (sent via APNS)
           UNUserNotificationCenter.current().delegate = self
@@ -341,20 +348,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
         do{
-            try MailchimpSDK.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
+            try Mailchimp.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
         }
         catch{
             print("error initializing mailchimp")
         }
-        MailchimpSDK.addTag(name: "SignedUp",
-                           emailAddress: email) { result in
-                           switch result {
-                           case .success:
-                               print("Successfully added tag")
-                           case .failure(let error):
-                               print("Error: \(error.localizedDescription)")
-                           }
-                       }
+        Mailchimp.addTag(name: "SignedUp", emailAddress: email)
+                      
        
         displayMsgBoxEmailLink(email: email)
         return true

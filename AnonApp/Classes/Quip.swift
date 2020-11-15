@@ -29,13 +29,14 @@ class Quip{
     var isReply = false
  var quipParent:String?
     var aemail:String?
+    var myOptions:[String]?
     
     
     
   
     
     //loading quip to user page
-    init(text:String, bowl:String, time:Timestamp, score:Int, myQuipID:String, replies:Int, myImageRef:String?, myGifID:String?, myChannelKey:String?, myParentChannelKey:String?, isReply:Bool?, aquipParent:String?, email:String?){
+    init(text:String, bowl:String, time:Timestamp, score:Int, myQuipID:String, replies:Int, myImageRef:String?, myGifID:String?, myChannelKey:String?, myParentChannelKey:String?, isReply:Bool?, aquipParent:String?, email:String?, options:[String]?){
         quipText = text
         channel = bowl
         timePosted = time
@@ -52,6 +53,7 @@ class Quip{
         quipParent=aquipParent
         aemail = email
         }
+        myOptions = options
     }
     
     //initializing reply
@@ -68,7 +70,7 @@ class Quip{
             isReply = true
        }
     //loading quip to feed page
-    init(text:String, bowl:String, time:Timestamp, score:Int, myQuipID:String, author:String,replies:Int, myImageRef:String?, myGifID:String?){
+    init(text:String, bowl:String, time:Timestamp, score:Int, myQuipID:String, author:String,replies:Int, myImageRef:String?, myGifID:String?, options:[String]?){
         quipText = text
         channel = bowl
         timePosted = time
@@ -79,6 +81,7 @@ class Quip{
         imageRef=myImageRef
         gifID=myGifID
         tempScore = score
+        myOptions = options
     }
    
     init(score:Int, replies:Int, myQuipID:String){
@@ -88,7 +91,7 @@ class Quip{
         quipReplies=replies
     }
     
-    init(myQuipID:String, auser:String?, parentchannelKey:String?, achannelkey:String?, atimePosted:Timestamp?, text:String?, quipParent:String?, isReply:Bool?, imageRef:String?, gifid:String?){
+    init(myQuipID:String, auser:String?, parentchannelKey:String?, achannelkey:String?, atimePosted:Timestamp?, text:String?, quipParent:String?, isReply:Bool?, imageRef:String?, gifid:String?, options:[String]?){
         parentKey=parentchannelKey
         channelKey=achannelkey
         quipID = myQuipID

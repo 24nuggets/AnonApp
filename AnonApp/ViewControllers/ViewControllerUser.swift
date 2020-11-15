@@ -28,7 +28,8 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     
     @IBOutlet weak var leadingScoreBarConstraint: NSLayoutConstraint!
     
-
+    @IBOutlet weak var redeemBtn: UIButton!
+    
     
   //  var bioHeightConstraint:NSLayoutConstraint?
     var uid:String?
@@ -92,7 +93,8 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
                    collectionView.dataSource = self
                   setUpButtons()
                   selectNew()
-        
+        redeemBtn.layer.cornerRadius = 20
+        redeemBtn.clipsToBounds = true
        
     }
     

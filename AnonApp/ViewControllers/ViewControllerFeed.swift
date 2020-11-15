@@ -60,7 +60,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewControllerFeed.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         // Do any additional setup after loading the view.
         
        if navigationController?.viewControllers.count != 1{
@@ -116,6 +116,11 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         
         
     }
+    @objc func appWillEnterForeground(){
+        selectNew()
+        collectionView.reloadData()
+    }
+    
     override func viewDidLayoutSubviews() {
            super.viewDidLayoutSubviews()
            if Core.shared.isNewUser(){
@@ -141,7 +146,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
         }else{
            hasAccess = false
         }
-        
+       
     }
     
     func setUpButtons(){
@@ -209,7 +214,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                 print("default")
             if let email = UserDefaults.standard.string(forKey: "Email"){
                 do{
-                    try MailchimpSDK.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
+                    try Mailchimp.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
                 }
                 catch{
                     print("error initializing mailchimp")
@@ -221,7 +226,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
             contact.tags = [Contact.Tag(name: email.components(separatedBy: "@").last ?? "", status: .active)]
                 }
            UserDefaults.standard.setValue(true, forKey: "AskedToSubscribe")
-            MailchimpSDK.createOrUpdate(contact: contact) { result in
+            Mailchimp.createOrUpdate(contact: contact) { result in
                 switch result {
                 case .success:
                     print("Successfully added or updated contact")
@@ -246,7 +251,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                     print("default")
                 if let email = UserDefaults.standard.string(forKey: "Email"){
                     do{
-                        try MailchimpSDK.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
+                        try Mailchimp.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
                     }
                     catch{
                         print("error initializing mailchimp")
@@ -261,7 +266,7 @@ class ViewControllerFeed: myUIViewController, UICollectionViewDelegate, UICollec
                 contact.status = .subscribed
                 
                UserDefaults.standard.setValue(true, forKey: "AskedToSubscribe")
-                MailchimpSDK.createOrUpdate(contact: contact) { result in
+                Mailchimp.createOrUpdate(contact: contact) { result in
                     switch result {
                     case .success:
                         print("Successfully added or updated contact")

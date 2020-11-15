@@ -18,6 +18,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
     var myFeedController:ViewControllerFeed?
      var newQuips:[Quip?] = []
      var hotQuips:[Quip?] = []
+    var hasAcces = false
    
    
     lazy var MenuLauncher:ellipsesMenuFeed = {
@@ -530,7 +531,7 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                     if let myQuip = self.newQuips[indexPath.row]{
                      //   myQuip.channel = myFeedController?.myChannel?.channelName
                      //   myQuip.parentKey = myFeedController?.myChannel?.parentKey
-                       
+                        cell?.hasAcces = (myFeedController?.hasAccess) ?? false
                         cell?.aQuip = myQuip
                            if let myImageRef = myQuip.imageRef  {
                                
@@ -545,6 +546,8 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
                             cell?.gifID = myGifID
                                                                     
                                                                }
+                        
+                        
                        /*
                         if myFeedController?.hasAccess ?? false{
                             cell?.upButton.isHidden = false
@@ -761,6 +764,7 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
                          myQuip.gifID = quipData["g"] as? String
                          myQuip.imageRef = quipData["i"] as? String
                         myQuip.parentKey = quipData["pk"] as? String
+                        myQuip.myOptions = quipData["options"] as? [String]
                       
                   }
                 }
@@ -828,6 +832,7 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
         if let cell = feedTable.dequeueReusableCell(withIdentifier: "feedCell", for: indexPath) as? QuipCells {
             if hotQuips.count > 0 {
                                if let myQuip = self.hotQuips[indexPath.row]{
+                                cell.hasAcces = (myFeedController?.hasAccess) ?? false
                                    cell.aQuip=myQuip
                                if let myImageRef = myQuip.imageRef {
                                    

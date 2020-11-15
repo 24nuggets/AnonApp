@@ -66,7 +66,8 @@ class ViewControllerCreateAccount: myUIViewController {
             Analytics.logEvent(AnalyticsEventLogin, parameters: [:])
             self.showMessagePrompt(message:"Check your email for link. If it does not show up in 1 minute, check your junk folder.")
             do{
-                try MailchimpSDK.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
+                
+                try Mailchimp.initialize(token: "2059e91faea42aa5a8ea67c9b1874d82-us2")
             }
             catch{
                 print("error initializing mailchimp")
@@ -78,7 +79,7 @@ class ViewControllerCreateAccount: myUIViewController {
             contact.status = .subscribed
             }
            UserDefaults.standard.setValue(true, forKey: "AskedToSubscribe")
-            MailchimpSDK.createOrUpdate(contact: contact) { result in
+            Mailchimp.createOrUpdate(contact: contact) { result in
                 switch result {
                 case .success:
                     print("Successfully added or updated contact")
