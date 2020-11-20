@@ -1124,7 +1124,8 @@ class FirestoreService: NSObject {
                 let isReply = mydata["r"] as? Bool
                 let imageRef = mydata["i"] as? String
                 let gifid = mydata["g"] as? String
-                    let aQuip = Quip(myQuipID: quipID, auser: author, parentchannelKey: parentchannelKey, achannelkey: channelkey, atimePosted: atimePosted, text:text, quipParent: quipParent, isReply: isReply, imageRef:imageRef, gifid:gifid, options: nil)
+                let options = mydata["options"] as? [String]
+                    let aQuip = Quip(myQuipID: quipID, auser: author, parentchannelKey: parentchannelKey, achannelkey: channelkey, atimePosted: atimePosted, text:text, quipParent: quipParent, isReply: isReply, imageRef:imageRef, gifid:gifid, options: options)
                     
                 completion(aQuip)
                 }

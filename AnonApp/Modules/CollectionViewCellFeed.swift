@@ -378,6 +378,9 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
     private var moreRecentQuipsFirebase:Bool = false
     private var moreRecentQuipsFirestore:Bool = false
    private var cellHeights = [IndexPath: CGFloat]()
+    private var gotLikes = false
+    private var gotFirestore = false
+    private var gotFirebase = false
     
     @IBOutlet weak var feedTable: UITableView!
     
@@ -406,29 +409,52 @@ class CollectionViewCellFeedRecent: CollectionCellFeed, UITableViewDelegate, UIT
         self.firestoreQuips = []
         self.myScores = [:]
         self.moreRecentQuipsFirebase = false
+        gotLikes = false
+        gotFirebase = false
+        gotFirestore = false
         if let myChannelKey = myFeedController?.myChannel?.key{
             if let aUid = myFeedController?.uid {
                 
             FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { [weak self](myLikesDislikesMap) in
             self?.myFeedController?.myLikesDislikesMap = myLikesDislikesMap
-            
+                self?.gotLikes = true
+                if self?.gotFirestore ?? false && self?.gotFirebase ?? false && self?.gotLikes ?? false{
+                    self?.mergeFirestoreFirebaseNewQuips()
+                    self?.feedTable.reloadData()
+                    self?.refreshControl.endRefreshing()
+                    completion()
+                }
+            }
             FirebaseService.sharedInstance.getNewScoresFeed(myChannelKey: myChannelKey) { [weak self](myScores, currentTime,  moreRecentQuipsFirebase) in
                 self?.myScores = myScores
                 self?.currentTime = currentTime
                 self?.moreRecentQuipsFirebase = moreRecentQuipsFirebase
-                if let myChannelName = self?.myFeedController?.myChannel?.channelName{
+                self?.gotFirebase = true
+                if self?.gotFirestore ?? false && self?.gotFirebase ?? false && self?.gotLikes ?? false{
+                    self?.mergeFirestoreFirebaseNewQuips()
+                    self?.feedTable.reloadData()
+                    self?.refreshControl.endRefreshing()
+                    completion()
+                }
+                
+            }
+                if let myChannelName = myFeedController?.myChannel?.channelName{
                     FirestoreService.sharedInstance.getNewQuipsFeed(myChannelKey: myChannelKey, myChannelName: myChannelName) { [weak self](newQuips, moreRecentQuipsFirestore) in
                         self?.firestoreQuips = newQuips
                         self?.mergeFirestoreFirebaseNewQuips()
                         self?.moreRecentQuipsFirestore = moreRecentQuipsFirestore
-                        
+                        self?.gotFirestore = true
+                        if self?.gotFirestore ?? false && self?.gotFirebase ?? false && self?.gotLikes ?? false{
+                            self?.mergeFirestoreFirebaseNewQuips()
                             self?.feedTable.reloadData()
                             self?.refreshControl.endRefreshing()
                             completion()
+                        }
+                            
                             }
                         }
-                    }
-                }
+                    
+                
                 
             }
         
@@ -701,6 +727,10 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
      private var myHotIDs:[String]=[]
     private var moreHotQuipsFirebase:Bool = false
     private var cellHeights = [IndexPath: CGFloat]()
+    private var gotLikes:Bool = false
+    private var gotCracks:Bool = false
+    private var myData:[String:Any]?
+    private var aHotQuips:[Quip]?
     
     @IBOutlet weak var feedTable: UITableView!
     
@@ -729,21 +759,36 @@ class CollectionViewCellFeedTop: CollectionCellFeed,UITableViewDelegate, UITable
          moreHotQuipsFirebase = false
          if let myChannelKey = myFeedController?.myChannel?.key{
              if let aUid = myFeedController?.uid {
-                
+            gotLikes = false
+            gotCracks = false
              FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: aUid, aKey: myChannelKey) { [weak self](myLikesDislikesMap) in
                         self?.myFeedController?.myLikesDislikesMap = myLikesDislikesMap
+                self?.gotLikes = true
+                
+                if self?.gotLikes ?? false && self?.gotCracks ?? false{
+                    self?.populateHotQuipsArr(data: self?.myData ?? [:], aHotQuips: self?.aHotQuips ?? [], more: self?.moreHotQuipsFirebase ?? false)
+                    self?.refreshControl.endRefreshing()
+                   completion()
+                }
+             }
              FirebaseService.sharedInstance.getHotFeed(myChannelKey: myChannelKey) {[weak self] (myHotQuips, myHotQuipIDs, moreHotQuipsFirebase, currentTime)  in
                  self?.hotQuips = myHotQuips
                  self?.myHotIDs = myHotQuipIDs
                  self?.currentTime = currentTime
                  FirestoreService.sharedInstance.getHotQuipsFeed(myChannelKey: myChannelKey, aHotIDs: myHotQuipIDs, hotQuips: myHotQuips) {[weak self] (myData, aHotQuips, more) in
-                     self?.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
-                     self?.moreHotQuipsFirebase = moreHotQuipsFirebase
-                     self?.refreshControl.endRefreshing()
-                    completion()
+                    self?.moreHotQuipsFirebase = moreHotQuipsFirebase
+                    self?.myData = myData
+                    self?.aHotQuips = aHotQuips
+                    self?.gotCracks = true
+                    if self?.gotLikes ?? false && self?.gotCracks ?? false{
+                        self?.populateHotQuipsArr(data: myData, aHotQuips: aHotQuips, more: more)
+                        self?.refreshControl.endRefreshing()
+                       completion()
+                    }
+                    
                  }
              }
-                    }
+                    
          
         }
         }

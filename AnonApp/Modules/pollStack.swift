@@ -19,15 +19,24 @@ class pollStack: UIStackView {
     var button4:UIButton?
     var selectedBtnInt:Int?
     var crackKey:String?
+    var voteOptions:[String]?
   
     
     
     func addOptions(options:[String]){
         let count = options.count
+        voteOptions = options
+        var isCached = false
+        if let cachePoll = pollCache.object(forKey: crackKey! as NSString) as? Poll{
+            isCached = true
+            
+        }
         if count > 0{
            
             button1 = UIButton()
+            if !isCached{
             button1?.backgroundColor = .quaternaryLabel
+            }
             button1?.setTitle(options[0], for: .normal)
             button1?.setTitleColor(.label, for: .normal)
          
@@ -40,7 +49,9 @@ class pollStack: UIStackView {
         }
         if count > 1{
             button2 = UIButton()
+            if !isCached{
             button2?.backgroundColor = .quaternaryLabel
+            }
             button2?.setTitle(options[1], for: .normal)
             button2?.setTitleColor(.label, for: .normal)
           
@@ -51,7 +62,9 @@ class pollStack: UIStackView {
         }
         if count > 2{
             button3 = UIButton()
+            if !isCached{
             button3?.backgroundColor = .quaternaryLabel
+            }
             button3?.setTitle(options[2], for: .normal)
             button3?.setTitleColor(.label, for: .normal)
            
@@ -62,7 +75,9 @@ class pollStack: UIStackView {
         }
         if count > 3{
             button4 = UIButton()
+            if !isCached{
             button4?.backgroundColor = .quaternaryLabel
+            }
             button4?.setTitle(options[3], for: .normal)
             button4?.setTitleColor(.label, for: .normal)
          
@@ -71,7 +86,20 @@ class pollStack: UIStackView {
             button4?.addTarget(self, action: #selector(self.buttonClicked(_:)), for: .touchUpInside)
             self.addArrangedSubview(button4!)
         }
-        
+        if let cachePoll = pollCache.object(forKey: crackKey! as NSString) as? Poll{
+            let selectedBtn = cachePoll.selected
+            self.votesData = cachePoll.votes
+            if selectedBtn == 1 {
+                self.selectButton(selectedBtn: (button1)!, isCached: true)
+            }else if selectedBtn == 2{
+                self.selectButton(selectedBtn: (button2)!,  isCached: true)
+            }else if selectedBtn == 3 {
+                self.selectButton(selectedBtn: (button3)!,  isCached: true)
+            }else if selectedBtn == 4 {
+                self.selectButton(selectedBtn: (button4)!,  isCached: true)
+            }
+            
+        }
         
     }
     
@@ -133,26 +161,26 @@ class pollStack: UIStackView {
                 if self.button1 != nil{
                     let dataValue = myVotes[0] / self.total
       
-                    self.setGradient(dataValue: dataValue, button: self.button1!, isCache: isCached)
+                    self.setGradient(dataValue: dataValue, button: self.button1!, isCache: isCached, buttonIndex: 0)
             
         }
         
                 if self.button2 != nil{
                     let dataValue = myVotes[1] / self.total
            
-                    self.setGradient(dataValue: dataValue, button: self.button2!,isCache: isCached)
+                    self.setGradient(dataValue: dataValue, button: self.button2!,isCache: isCached, buttonIndex: 1)
         }
             
                 if self.button3 != nil{
                     let dataValue = myVotes[2] / self.total
            
-                    self.setGradient(dataValue: dataValue, button: self.button3!,isCache: isCached)
+                    self.setGradient(dataValue: dataValue, button: self.button3!,isCache: isCached, buttonIndex: 2)
         }
         
                 if self.button4 != nil{
                     let dataValue = myVotes[3] / self.total
            
-                    self.setGradient(dataValue: dataValue, button: self.button4!,isCache: isCached)
+                    self.setGradient(dataValue: dataValue, button: self.button4!,isCache: isCached, buttonIndex: 3)
         }
  
         
@@ -176,7 +204,7 @@ class pollStack: UIStackView {
         }
     }
     
-    func setGradient(dataValue:Double, button:UIButton, isCache: Bool){
+    func setGradient(dataValue:Double, button:UIButton, isCache: Bool, buttonIndex:Int){
         let gradient1 = CAGradientLayer()
         let newColors = [
             UIColor(hexString: "ffaf46").cgColor,
@@ -214,6 +242,7 @@ class pollStack: UIStackView {
         let amount = formattedValue + "%"
         button.titleLabel?.lineBreakMode = .byTruncatingMiddle
         var i = 1
+        button.setTitle(voteOptions?[buttonIndex], for: .normal)
         let origTitle = (button.title(for: .normal))!
         while true {
            
@@ -222,7 +251,11 @@ class pollStack: UIStackView {
             button.setTitle(newTitle, for: .normal)
             
             if countLabelLines(button: button) > button.titleLabel!.numberOfLines{
+                if i - 4 < 0 {
+                paddedString = String(repeating: " ", count: 0) + amount
+                }else{
                 paddedString = String(repeating: " ", count: i - 4) + amount
+                }
                 newTitle = origTitle + paddedString
                 
                 button.setTitle(newTitle, for: .normal)

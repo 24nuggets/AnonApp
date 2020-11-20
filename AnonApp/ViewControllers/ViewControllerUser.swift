@@ -341,8 +341,74 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
             let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
                        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "EULAViewController") as! myUIViewController
                        navigationController?.pushViewController(nextViewController, animated: true)
+        }else if menuItem.name == "Share"{
+            shareApp()
         }
         
+    }
+    func shareApp(){
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "anonapp.page.link"
+        components.path = "/app"
+        
+        let eventUIDQueryItem = URLQueryItem(name: "invitedby", value: uid)
+      
+        components.queryItems = [eventUIDQueryItem]
+        guard let linkparam = components.url else {return}
+        print(linkparam)
+        let dynamicLinksDomainURIPrefix = "https://anonapp.page.link"
+        guard let sharelink = DynamicLinkComponents.init(link: linkparam, domainURIPrefix: dynamicLinksDomainURIPrefix) else {return}
+        if let bundleId = Bundle.main.bundleIdentifier {
+            sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
+        }
+        //change to app store id
+        sharelink.iOSParameters?.appStoreID = appStoreID
+        sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+        sharelink.socialMetaTagParameters?.imageURL = logoURL
+        
+       // sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
+       
+            guard let longDynamicLink = sharelink.url else { return }
+            print("The long URL is: \(longDynamicLink)")
+                sharelink.shorten {[weak self] (url, warnings, error) in
+                    if let error = error{
+                        print(error)
+                        return
+                    }
+                    if let warnings = warnings{
+                        for warning in warnings{
+                            print(warning)
+                        }
+                    }
+                    guard let url = url else {return}
+                    print(url)
+                    self?.showShareViewController(url: url)
+                }
+        
+        
+            Analytics.logEvent(AnalyticsEventShare, parameters:
+                [AnalyticsParameterItemID:"id- \(uid ?? "Other")",
+                    AnalyticsParameterItemName: uid ?? "None",
+                          AnalyticsParameterContentType: "event"])
+        
+    }
+    
+    func showShareViewController(url:URL){
+        let myactivity1 = "Join the Nut House now!"
+        let myactivity2 = url
+                             
+                        
+                               // set up activity view controller
+        let firstactivity = [myactivity1, myactivity2] as [Any]
+                        let activityViewController = UIActivityViewController(activityItems: firstactivity, applicationActivities: nil)
+                              activityViewController.popoverPresentationController?.sourceView = self.view // so that iPads won't crash
+
+                               // exclude some activity types from the list (optional)
+                        activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.addToReadingList, UIActivity.ActivityType.assignToContact, UIActivity.ActivityType.markupAsPDF, UIActivity.ActivityType.openInIBooks, UIActivity.ActivityType.print]
+
+                               // present the view controller
+                               self.present(activityViewController, animated: true, completion: nil)
     }
     
     func showNextControllerEllipses(menuItem: MenuItem, quip: Quip?){

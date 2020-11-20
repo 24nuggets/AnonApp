@@ -167,13 +167,13 @@ class QuipCells:UITableViewCell{
     var aQuip:Quip? {
         didSet{
             if let myQuip = aQuip{
-                                         
-                
-               // self.categoryLabel.font = UIFont.boldSystemFont(ofSize: 14.0)
+                 //only loads poll when going to quip screen
+                if self.replyButton != nil{
+              
                 self.quipText?.text = myQuip.quipText
                 
                 if let numOfReplies = myQuip.quipReplies {
-                    if self.replyButton != nil{
+                   
                 if numOfReplies == 1{
                     self.replyButton.setTitle("\(numOfReplies) Reply", for: .normal)
                 }else if numOfReplies > 1{
@@ -183,16 +183,17 @@ class QuipCells:UITableViewCell{
                    self.replyButton.setTitle("Replies", for: .normal)
                     }
                 }
-                }
+                
                 if let aQuipScore=myQuip.tempScore{
                     self.score?.text = String(aQuipScore)
                 }
-                
+                }
                 if let myOptions = myQuip.myOptions{
                     self.createStackView()
                     self.addStackViewToTableCell(numOfOptions: myOptions.count)
-                    self.populateStackView(options:myOptions)
                     myStackView?.crackKey = myQuip.quipID
+                    self.populateStackView(options:myOptions)
+                   
                     
                     myStackView?.button1?.isEnabled = false
                     myStackView?.button2?.isEnabled = false
@@ -200,6 +201,7 @@ class QuipCells:UITableViewCell{
                     myStackView?.button4?.isEnabled = false
                     if hasAcces{
                     if let cachePoll = pollCache.object(forKey: myQuip.quipID as! NSString) as? Poll{
+                        /*
                         let selectedBtn = cachePoll.selected
                         myStackView?.votesData = cachePoll.votes
                         if selectedBtn == 1 {
@@ -211,7 +213,7 @@ class QuipCells:UITableViewCell{
                         }else if selectedBtn == 4 {
                             myStackView?.selectButton(selectedBtn: (myStackView?.button4)!,  isCached: true)
                         }
-                        
+                        */
                     }else{
                     DynamoService.sharedInstance.loadPollData(key: myQuip.quipID!, uid: UserDefaults.standard.string(forKey: "UID")! ) {[weak self] (optionScores, buttonSelected, returnedKey) in
                         if myQuip.quipID == returnedKey{

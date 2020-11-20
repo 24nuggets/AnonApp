@@ -107,6 +107,8 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
               let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
                          let nextViewController = storyBoard.instantiateViewController(withIdentifier: "EULAViewController") as! myUIViewController
                          navigationController?.pushViewController(nextViewController, animated: true)
+          }else if menuItem.name == "Share"{
+            shareApp()
           }
           
       }

@@ -303,7 +303,7 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate, UITextFie
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange,
                            replacementString string: String) -> Bool
     {
-        let maxLength = 20
+        let maxLength = 25
         let currentString: NSString = (textField.text ?? "") as NSString
         let newString: NSString =
             currentString.replacingCharacters(in: range, with: string) as NSString
@@ -354,6 +354,8 @@ class ViewControllerWriteQuip: myUIViewController, UITextViewDelegate, UITextFie
                 displayPollError()
                 blackView.removeFromSuperview()
                 activityIndicator?.stopAnimating()
+                Quipit.leftBarButtonItem?.isEnabled = false
+                Quipit.rightBarButtonItem?.isEnabled = false
                 return
             }
             isPoll = true

@@ -328,7 +328,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         AnalyticsParameterContentType: "cont"
         ])
         UserDefaults.standard.removeObject(forKey: "HomeSchool")
-        FirestoreService.sharedInstance.getUniversities {(schools) in
+        FirestoreService.sharedInstance.getUniversities {[weak self](schools) in
             for school in schools{
                 if let schoolEmail = school.aemail{
                 if schoolEmailEnd == schoolEmail{
@@ -466,7 +466,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
     }
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        
+        completionHandler([[.alert, .sound]])
     }
     
     
@@ -482,4 +482,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
   
 }
+
 

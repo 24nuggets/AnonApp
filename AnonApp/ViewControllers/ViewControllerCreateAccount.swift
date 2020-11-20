@@ -50,6 +50,7 @@ class ViewControllerCreateAccount: myUIViewController {
         let actionCodeSettings = ActionCodeSettings()
         actionCodeSettings.url = URL(string: "https://anonapp.page.link")
         // The sign-in operation has to always be completed in the app.
+            actionCodeSettings.dynamicLinkDomain = "anonapp.page.link"
         actionCodeSettings.handleCodeInApp = true
         actionCodeSettings.setIOSBundleID(Bundle.main.bundleIdentifier!)
         Auth.auth().sendSignInLink(toEmail:email,
