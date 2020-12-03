@@ -33,6 +33,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         if let dynamiclink = dynamiclink{
             self?.handleDynamicLink(dynamicLink: dynamiclink)
+        }else {
+            DynamicLinks.dynamicLinks().resolveShortLink(webURL) { (link, error) in
+                guard let link = link,
+                      let component = (URLComponents(url: link, resolvingAgainstBaseURL: true)?.queryItems?.first { $0.name == "deep_link_id" }),
+                      let deeplink = URL(string:component.value!)  else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    _ =  self?.handleDeepLink(url: deeplink)
+                }
+            }
         }
         // ...
       }
@@ -40,6 +51,100 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
       return handled
         }
         return false
+    }
+    func handleDeepLink(url:URL){
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false), let queryItems = components.queryItems else {return}
+        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+        guard let initialVC = window?.rootViewController as? BaseTabBarController else {
+          return
+        }
+     //  let initialVC = storyBoard.instantiateViewController(withIdentifier: "BaseTabBarController") as! BaseTabBarController
+    //    self.window?.rootViewController = initialVC
+     //   self.window?.makeKeyAndVisible()
+       // let tabVC = initialVC.tabBarController as! BaseTabBarController
+        initialVC.authorizeUser { (uid) in
+            var eventName:String?
+            var parentEventKey:String?
+            var eventId:String?
+            var feedViewController:ViewControllerFeed?
+            for queryItem in queryItems{
+               
+                
+                if queryItem.name == "quipid"{
+                    guard let quipid = queryItem.value else {return}
+                    FirestoreService.sharedInstance.getUserLikesDislikesForChannelOrUser(aUid: uid, aKey: eventId!) { (likesDislikes) in
+                        
+                    
+                    FirestoreService.sharedInstance.getQuip(quipID: quipid) { (quip) in
+                        FirebaseService.sharedInstance.getQuipScore(aQuip: quip) { (aquip) in
+                            //  self?.window = UIWindow(frame: UIScreen.main.bounds)
+                                            //  self?.window?.rootViewController = tabVC
+                                           
+                                              
+                                             let quipViewController = storyBoard.instantiateViewController(withIdentifier: "ViewControllerQuip") as! ViewControllerQuip
+                                              quipViewController.myQuip = quip
+                                              quipViewController.currentTime = Date().timeIntervalSince1970 * 1000
+                                              quipViewController.uid = uid
+                            if likesDislikes[quipid] == 1 {
+                                quipViewController.quipLikeStatus = true
+                            }else if likesDislikes[quipid]  == -1{
+                                quipViewController.quipLikeStatus = false
+                            }
+                            if let score = aquip.quipScore{
+                            quipViewController.quipScore = String(score)
+                             //   guard let viewControllers = initialVC.viewControllers,
+                              //  let listIndex = viewControllers.firstIndex(where: { $0 is HomeNavigationController }),
+                          //  let navVC = viewControllers[listIndex] as? HomeNavigationController else { return }
+                               // navVC.popToRootViewController(animated: false)
+                              //  initialVC.selectedIndex = listIndex
+                                let navVC = feedViewController?.navigationController
+                                    quipViewController.parentViewFeed = feedViewController
+                                  //  feedViewController?.definesPresentationContext = true
+                                navVC?.pushViewController(quipViewController, animated: true)
+                                    
+                            }
+                        }
+                    }
+                    }
+                }else if queryItem.name == "eventid" {
+                    eventId = queryItem.value
+                    
+                   
+                        feedViewController = storyBoard.instantiateViewController(withIdentifier: "ViewControllerFeed") as? ViewControllerFeed
+                       
+                        if let eventName = eventName {
+                            let aeventid = eventId?.replacingOccurrences(of: "+", with: " ")
+                            let myChannel = Channel(name: eventName, akey: aeventid ?? "", aparent: nil, aparentkey: parentEventKey, apriority: nil, astartDate: nil, aendDate: nil)
+                            feedViewController?.myChannel = myChannel
+                            feedViewController?.uid = uid
+                            feedViewController?.isOpen = true
+                            let listIndex = 1
+                            guard let viewControllers = initialVC.viewControllers,
+                            let navVC = viewControllers[listIndex] as? UINavigationController else { return }
+                             
+                           navVC.popToRootViewController(animated: false)
+                           initialVC.selectedIndex = listIndex
+                                if let feedViewController = feedViewController{
+                                  //  navVC.definesPresentationContext = true
+                                navVC.pushViewController(feedViewController, animated: true)
+                                }
+                                
+                            
+                        }
+                    
+                    
+                }else if  queryItem.name == "eventname" {
+                    eventName = queryItem.value?.decodeUrl()
+                    
+                }else if queryItem.name == "parenteventid"{
+                    parentEventKey = queryItem.value
+                }else if queryItem.name == "invitedby"{
+                    let referer = queryItem.value
+                    UserDefaults.standard.setValue(referer, forKey: "invitedby")
+                }
+                
+            }
+        }
     }
     
     func handleDynamicLink(dynamicLink:DynamicLink){
@@ -103,14 +208,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     }
                 }else if queryItem.name == "eventid" {
                     eventId = queryItem.value
-                    
-                    FirestoreService.sharedInstance.checkIfEventIsOpen(eventID: eventId!) { (isOpen) in
+                   
                         feedViewController = storyBoard.instantiateViewController(withIdentifier: "ViewControllerFeed") as? ViewControllerFeed
-                        feedViewController?.isOpen = isOpen
+                        
                         if let eventName = eventName {
-                            let myChannel = Channel(name: eventName, akey: eventId!, aparent: nil, aparentkey: parentEventKey, apriority: nil, astartDate: nil, aendDate: nil)
+                            let aeventid = eventId?.replacingOccurrences(of: "+", with: " ")
+                            let myChannel = Channel(name: eventName, akey: aeventid ?? "", aparent: nil, aparentkey: parentEventKey, apriority: nil, astartDate: nil, aendDate: nil)
                             feedViewController?.myChannel = myChannel
                             feedViewController?.uid = uid
+                            feedViewController?.isOpen = true
                             let listIndex = 1
                             guard let viewControllers = initialVC.viewControllers,
                             let navVC = viewControllers[listIndex] as? UINavigationController else { return }
@@ -124,7 +230,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                 
                             
                         }
-                    }
+                    
                     
                 }else if  queryItem.name == "eventname" {
                     eventName = queryItem.value?.decodeUrl()
@@ -309,9 +415,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard let email = UserDefaults.standard.string(forKey: "Email") else {return true}
         guard let uid = UserDefaults.standard.string(forKey: "UID") else { return true }
         UserDefaults.standard.set(email, forKey: "EmailConfirmed")
-        FirestoreService.sharedInstance.linkEmail(uid: uid, email: email) {
-            
-        }
+      
         if email == "matthewcapriotti4@gmail.com" || email == "jmichaelthompson96@gmail.com"{
             UserDefaults.standard.set(true, forKey: "isAdmin")
         }
@@ -393,15 +497,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
    
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
-
-        InstanceID.instanceID().instanceID { (result, error) in
+        
+        Installations.installations().installationID(completion: { (result, error) in
             if let error = error {
                 print("Error fetching remote instance ID: \(error)")
             } else if let result = result {
-                print("Remote instance ID token: \(result.token)")
+                print("Remote instance ID token: \(result)")
                 //  self.instanceIDTokenMessage.text  = "Remote InstanceID token: \(result.token)"
             }
-        }
+        })
+       
 
         print(userInfo)
     }
@@ -466,6 +571,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
     }
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if let aposterID = notification.request.content.userInfo["posterID"] as? String{
+            if aposterID == UserDefaults.standard.string(forKey: "UID"){
+                return
+            }
+        }
         completionHandler([[.alert, .sound]])
     }
     

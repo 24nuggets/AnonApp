@@ -349,7 +349,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
     func shareApp(){
         var components = URLComponents()
         components.scheme = "https"
-        components.host = "anonapp.page.link"
+        components.host = "nuthouse.page.link"
         components.path = "/app"
         
         let eventUIDQueryItem = URLQueryItem(name: "invitedby", value: uid)
@@ -357,7 +357,7 @@ class ViewControllerUser: myUIViewController, UICollectionViewDelegate, UICollec
         components.queryItems = [eventUIDQueryItem]
         guard let linkparam = components.url else {return}
         print(linkparam)
-        let dynamicLinksDomainURIPrefix = "https://anonapp.page.link"
+        let dynamicLinksDomainURIPrefix = "https://nuthouse.page.link"
         guard let sharelink = DynamicLinkComponents.init(link: linkparam, domainURIPrefix: dynamicLinksDomainURIPrefix) else {return}
         if let bundleId = Bundle.main.bundleIdentifier {
             sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)

@@ -1447,6 +1447,49 @@ class FirestoreService: NSObject {
         }
     }
     
+    
+    func checkVerificationCode(uid:String, code:String, completion: @escaping (Bool)->()){
+        let docRef = db.collection("/Users").document(uid)
+                         
+                     
+                         docRef.getDocument{(document, error) in
+                             if let document = document, document.exists {
+                               if let myMap = document.data() as? [String:String]{
+                                let storedCode = myMap["code"]
+                                if storedCode == code{
+                                    completion(true)
+                                    return
+                                }else{
+                                    completion(false)
+                                    return
+                                }
+                               }
+                               
+                                completion(false)
+                                return
+                              
+                             }
+                           completion(false)
+                            return
+                         }
+        
+    }
+    
+    func sendEmailVerification(uid:String, code:String, email:String){
+        db.collection("Reports").document(uid).delete()
+
+     let data = [
+          "to": email,
+          "message": [
+            "subject": "Nut House Email Verification Code: \(code)",
+            "text": "Hi,\n\nPlease enter the verification code on Nut House to join your school community. This code will expire in 15 minutes.\n\nNut House validation code: \(code)\n\nGet Cracking!\n\n-Team Nut House"
+          ]
+        ] as [String : Any]
+        
+        db.collection("Reports").document(uid).setData(data)
+        
+    }
+    
     func addQuipToUsersHiddenPost(quipID:String, uid:String, channelkey:String?, parentChannelKey:String?, quipParentKey:String?, quipAuthoruid:String?, completion: @escaping ()->()){
        let batch = self.db.batch()
         let docRef = db.collection("/Users/\(uid)/HiddenPosts").document("HiddenPosts")
@@ -1539,9 +1582,10 @@ class FirestoreService: NSObject {
         }
     }
     
-    func linkEmail(uid:String, email:String, completion: @escaping ()->()){
+    func linkEmail(uid:String, email:String,code:String, completion: @escaping ()->()){
         let docRef = db.collection("/Users").document(uid)
-        let data = ["email":email]
+        let data = ["email":email,
+                    "code":code]
         docRef.setData(data)
         completion()
         

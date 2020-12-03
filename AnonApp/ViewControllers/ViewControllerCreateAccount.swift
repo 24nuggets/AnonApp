@@ -47,12 +47,24 @@ class ViewControllerCreateAccount: myUIViewController {
             let email2 = email1.trimmingCharacters(in: .whitespacesAndNewlines)
             let email = email2.lowercased()
        UserDefaults.standard.set(email, forKey: "Email")
+            
+            let acode = arc4random_uniform(100000)
+            let code = String(format:"%05d", acode)
+            FirestoreService.sharedInstance.linkEmail(uid: UserDefaults.standard.string(forKey: "UID")!, email: email, code: code) {
+                
+            }
+
+            FirestoreService.sharedInstance.sendEmailVerification(uid: UserDefaults.standard.string(forKey: "UID")!, code: code, email: email)
+            
+            
+       /*
         let actionCodeSettings = ActionCodeSettings()
-        actionCodeSettings.url = URL(string: "https://anonapp.page.link")
+        actionCodeSettings.url = URL(string: "https://nuthouse.page.link")
         // The sign-in operation has to always be completed in the app.
-            actionCodeSettings.dynamicLinkDomain = "anonapp.page.link"
+            actionCodeSettings.dynamicLinkDomain = "nuthouse.page.link"
         actionCodeSettings.handleCodeInApp = true
         actionCodeSettings.setIOSBundleID(Bundle.main.bundleIdentifier!)
+            
         Auth.auth().sendSignInLink(toEmail:email,
                                    actionCodeSettings: actionCodeSettings) { error in
           // ...
@@ -63,7 +75,8 @@ class ViewControllerCreateAccount: myUIViewController {
             // The link was successfully sent. Inform the user.
             // Save the email locally so you don't need to ask the user for it again
             // if they open the link on the same device.
-            
+        }
+    */
             Analytics.logEvent(AnalyticsEventLogin, parameters: [:])
             self.showMessagePrompt(message:"Check your email for link. If it does not show up in 1 minute, check your junk folder.")
             do{
@@ -89,14 +102,35 @@ class ViewControllerCreateAccount: myUIViewController {
                 }
             }
            
-        }
+        
             
         }else {
-            self.showMessagePrompt(message:"Email can't be empty")
+            self.showMessagePrompt2(message:"Email can't be empty")
         }
         
     }
     
+    func showMessagePrompt2(message:String){
+          let title = "Alert"
+          
+          let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+          alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                switch action.style{
+                case .default:
+                      print("default")
+                   
+                case .cancel:
+                      print("cancel")
+
+                case .destructive:
+                      print("destructive")
+
+
+                @unknown default:
+                  print("unknown action")
+              }}))
+          self.present(alert, animated: true, completion: nil)
+          }
     func showMessagePrompt(message:String){
           let title = "Alert"
           
@@ -105,7 +139,9 @@ class ViewControllerCreateAccount: myUIViewController {
                 switch action.style{
                 case .default:
                       print("default")
-
+                    let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+                    let nextViewController = storyBoard.instantiateViewController(withIdentifier: "VerifyViewController") as! myUIViewController
+                    self.navigationController?.pushViewController(nextViewController, animated: true)
                 case .cancel:
                       print("cancel")
 

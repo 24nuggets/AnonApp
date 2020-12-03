@@ -51,7 +51,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
         var components = URLComponents()
         var eventparentIDQueryItem2:URLQueryItem?
         components.scheme = "https"
-        components.host = "anonapp.page.link"
+        components.host = "nuthouse.page.link"
         components.path = "/quips"
          let eventIDQueryItem3 = URLQueryItem(name: "eventid", value: aquip.channelKey)
         if let parentEventKey = aquip.parentKey{
@@ -68,7 +68,7 @@ class CollectionCellFeed:UICollectionViewCell, MyCellDelegate{
         }
         guard let linkparam = components.url else {return}
         print(linkparam)
-        let dynamicLinksDomainURIPrefix = "https://anonapp.page.link"
+        let dynamicLinksDomainURIPrefix = "https://nuthouse.page.link"
         guard let sharelink = DynamicLinkComponents.init(link: linkparam, domainURIPrefix: dynamicLinksDomainURIPrefix) else {return}
         if let bundleId = Bundle.main.bundleIdentifier {
             sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)

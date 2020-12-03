@@ -119,30 +119,36 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
     }
     
     func shareApp(){
+        DynamicLinks.performDiagnostics(completion: nil)
         var components = URLComponents()
         components.scheme = "https"
-        components.host = "anonapp.page.link"
+        components.host = "nuthouse.page.link"
         components.path = "/app"
         
         let eventUIDQueryItem = URLQueryItem(name: "invitedby", value: uid)
       
         components.queryItems = [eventUIDQueryItem]
         guard let linkparam = components.url else {return}
-        print(linkparam)
-        let dynamicLinksDomainURIPrefix = "https://anonapp.page.link"
+        
+        let dynamicLinksDomainURIPrefix = "https://nuthouse.page.link"
+        
         guard let sharelink = DynamicLinkComponents.init(link: linkparam, domainURIPrefix: dynamicLinksDomainURIPrefix) else {return}
         if let bundleId = Bundle.main.bundleIdentifier {
+            print(bundleId)
             sharelink.iOSParameters = DynamicLinkIOSParameters(bundleID: bundleId)
         }
         //change to app store id
         sharelink.iOSParameters?.appStoreID = appStoreID
+        print(sharelink.iOSParameters?.appStoreID)
         sharelink.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
         sharelink.socialMetaTagParameters?.imageURL = logoURL
         
        // sharelink.socialMetaTagParameters?.descriptionText = aquip.channel
        
             guard let longDynamicLink = sharelink.url else { return }
+        
             print("The long URL is: \(longDynamicLink)")
+        
                 sharelink.shorten {[weak self] (url, warnings, error) in
                     if let error = error{
                         print(error)
@@ -158,7 +164,7 @@ class ViewControllerStudentSections: myUIViewController, UITableViewDelegate, UI
                     self?.showShareViewController(url: url)
                 }
         
-        
+       
             Analytics.logEvent(AnalyticsEventShare, parameters:
                 [AnalyticsParameterItemID:"id- \(uid ?? "Other")",
                     AnalyticsParameterItemName: uid ?? "None",

@@ -33,6 +33,7 @@ class RedeemViewController: myUIViewController {
     }
     
     @IBAction func redeemBtnClicked(_ sender: Any) {
+        redeemBtn.isEnabled = false
         if let nutsToRedeem = Int(nutsToRedeemTextField.text ?? "0"){
             if nutsToRedeem > 0 && nutsToRedeem <= nutsAvailable{
         if let uid = auid{
@@ -42,20 +43,25 @@ class RedeemViewController: myUIViewController {
                     if isSuccess{
                         self?.displaySuccessRedeem(nuts: nutsToRedeem)
                         self?.updateNutsAvailable(nutsRedeemed: nutsToRedeem)
+                        self?.redeemBtn.isEnabled = true
                     }else{
                         self?.displayErrorMsgBox()
+                        self?.redeemBtn.isEnabled = true
                     }
                 }
             }else{
                 self?.displayErrorMsgBox()
+                self?.redeemBtn.isEnabled = true
             }
         }
         }
             }else{
                 errorInvalidEntry()
+                redeemBtn.isEnabled = true
             }
         }else{
             errorInvalidEntry()
+            redeemBtn.isEnabled = true
         }
     }
     func updateNutsAvailable(nutsRedeemed:Int){

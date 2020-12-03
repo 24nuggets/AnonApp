@@ -9223,6 +9223,111 @@ i. The laws of the State of California, excluding its conflicts of law rules, go
             </objects>
             <point key="canvasLocation" x="5445.6000000000004" y="765.96701649175418"/>
         </scene>
+        <!--Verify View Controller-->
+        <scene sceneID="VfT-pq-mwk">
+            <objects>
+                <viewController storyboardIdentifier="VerifyViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="DyZ-RQ-1nj" customClass="VerifyViewController" customModule="Nut_House" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PwC-zD-eiZ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="syi-b1-K3c">
+                                <rect key="frame" x="67.5" y="48" width="40" height="45"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="WON-Jn-qgG"/>
+                                    <constraint firstAttribute="width" constant="40" id="kx5-Bf-mw2"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad" textContentType="one-time-code"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VGu-Yb-Wac">
+                                <rect key="frame" x="117.5" y="48" width="40" height="45"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="I5B-ob-s3f"/>
+                                    <constraint firstAttribute="width" constant="40" id="l5I-Rd-CbQ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad" textContentType="one-time-code"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Qfi-ci-0rZ">
+                                <rect key="frame" x="167.5" y="48" width="40" height="45"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="Q6B-aw-xdW"/>
+                                    <constraint firstAttribute="height" constant="45" id="fz3-7w-Vdq"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad" textContentType="one-time-code"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="UF8-ez-H3m">
+                                <rect key="frame" x="267.5" y="48" width="40" height="45"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="3tp-fg-SnD"/>
+                                    <constraint firstAttribute="height" constant="45" id="aDG-ir-wF0"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad" textContentType="one-time-code"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="toB-xK-Fzx">
+                                <rect key="frame" x="112.5" y="114" width="150" height="36"/>
+                                <color key="backgroundColor" systemColor="quaternaryLabelColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="150" id="b6U-1i-K4E"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
+                                <state key="normal" title="Submit Code">
+                                    <color key="titleColor" systemColor="labelColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="createAccountClicked:" destination="Nab-T5-4pM" eventType="touchUpInside" id="37D-5X-amw"/>
+                                    <action selector="submitClicked:" destination="DyZ-RQ-1nj" eventType="touchUpInside" id="msV-Od-Q43"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dlk-ZV-Nog">
+                                <rect key="frame" x="217.5" y="48" width="40" height="45"/>
+                                <color key="tintColor" systemColor="labelColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="Nyk-H1-RLv"/>
+                                    <constraint firstAttribute="height" constant="45" id="q5g-0R-S5H"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad" textContentType="one-time-code"/>
+                            </textField>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="jmH-vr-q7d"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="UF8-ez-H3m" firstAttribute="leading" secondItem="dlk-ZV-Nog" secondAttribute="trailing" constant="10" id="1qE-QJ-BNs"/>
+                            <constraint firstItem="dlk-ZV-Nog" firstAttribute="leading" secondItem="Qfi-ci-0rZ" secondAttribute="trailing" constant="10" id="4Mg-Vk-vJo"/>
+                            <constraint firstItem="toB-xK-Fzx" firstAttribute="top" secondItem="Qfi-ci-0rZ" secondAttribute="bottom" constant="21" id="S9p-vW-wGl"/>
+                            <constraint firstItem="dlk-ZV-Nog" firstAttribute="centerY" secondItem="Qfi-ci-0rZ" secondAttribute="centerY" id="aax-RH-O08"/>
+                            <constraint firstItem="Qfi-ci-0rZ" firstAttribute="leading" secondItem="VGu-Yb-Wac" secondAttribute="trailing" constant="10" id="bzn-fj-ms6"/>
+                            <constraint firstItem="VGu-Yb-Wac" firstAttribute="centerY" secondItem="Qfi-ci-0rZ" secondAttribute="centerY" id="gjj-Kx-kcT"/>
+                            <constraint firstItem="toB-xK-Fzx" firstAttribute="centerX" secondItem="jmH-vr-q7d" secondAttribute="centerX" id="glk-9s-bu8"/>
+                            <constraint firstItem="syi-b1-K3c" firstAttribute="centerY" secondItem="dlk-ZV-Nog" secondAttribute="centerY" id="jbQ-jd-EOv"/>
+                            <constraint firstItem="VGu-Yb-Wac" firstAttribute="leading" secondItem="syi-b1-K3c" secondAttribute="trailing" constant="10" id="k3j-QE-VcB"/>
+                            <constraint firstItem="Qfi-ci-0rZ" firstAttribute="top" secondItem="jmH-vr-q7d" secondAttribute="top" constant="48" id="qta-Hl-DnT"/>
+                            <constraint firstItem="UF8-ez-H3m" firstAttribute="centerY" secondItem="VGu-Yb-Wac" secondAttribute="centerY" id="wpf-iB-zog"/>
+                            <constraint firstItem="Qfi-ci-0rZ" firstAttribute="centerX" secondItem="jmH-vr-q7d" secondAttribute="centerX" id="ww7-dS-Q2h"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="KSd-jt-m32"/>
+                    <connections>
+                        <outlet property="submitBtn" destination="toB-xK-Fzx" id="7z2-Qs-NRO"/>
+                        <outlet property="textfield1" destination="syi-b1-K3c" id="bBf-jF-hZM"/>
+                        <outlet property="textfield2" destination="VGu-Yb-Wac" id="cd0-vn-6pw"/>
+                        <outlet property="textfield3" destination="Qfi-ci-0rZ" id="jNN-Dl-6nR"/>
+                        <outlet property="textfield4" destination="dlk-ZV-Nog" id="09c-3m-4Dc"/>
+                        <outlet property="textfield5" destination="UF8-ez-H3m" id="Yfd-gW-e90"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CgP-oe-FXe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6426.3999999999996" y="765.96701649175418"/>
+        </scene>
         <!--Welcome View Controller-->
         <scene sceneID="sfy-Nf-oyX">
             <objects>
@@ -9251,11 +9356,11 @@ i. The laws of the State of California, excluding its conflicts of law rules, go
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qIr-7Y-GKK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6599" y="594"/>
+            <point key="canvasLocation" x="545" y="1228"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="bc4-II-TC8"/>
+        <segue reference="BQD-lp-45l"/>
         <segue reference="a0p-IM-1dQ"/>
         <segue reference="0Bk-yL-E3w"/>
     </inferredMetricsTieBreakers>
